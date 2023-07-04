@@ -1,0 +1,17 @@
+{
+  "name": "ym-userequest",
+  "description": "基于Vue3的 useRequest",
+  "version": "0.0.1",
+  "private": false,
+  "main": "index.js",
+  "author": {
+    "name": "zhushengjie"
+  },
+  "keywords": [
+    "useRequest",
+    "vue3"
+  ],
+  "dependencies": {
+    "ym-userequest": "^0.0.1"
+  }
+}
