@@ -73,3 +73,23 @@ const handleClick = () => {
   }
 };
 ```
+
+4.按顺序执行同步任务
+
+使用 queryKey 标识为同步任务
+
+```ts
+const somePromise=(params1,params2)=>{
+    return new Promise((resolve, reject)=>{
+        resolve(params1,params2)
+    })
+}
+const req1 = useRequest(somePromise, queryKey:(args)=>1);
+
+const req2 = useRequest(somePromise, queryKey:(args)=>2);
+
+const req3 = useRequest(somePromise, queryKey:(args)=>3);
+
+req3.runQueryList()
+
+```
