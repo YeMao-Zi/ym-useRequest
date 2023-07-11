@@ -19,6 +19,9 @@ export interface Options<T, P extends any[]> {
 
   // 失败回调
   onError?: (err: any, params: P) => void;
+
+  // 接口完成回调
+  onComplete?: () => void
 }
 
 export interface IRequestResult<T> {
@@ -43,6 +46,7 @@ export function useRequest<T, P extends any[]>(
     queryKey = null,
     onSuccess,
     onError,
+    onComplete
   } = options;
   const querise = reactive<Record<string | symbol, IRequestResult<T>>>({
     [defaultQuerise]: {
@@ -72,6 +76,7 @@ export function useRequest<T, P extends any[]>(
       .finally(() => {
         querise[key].loading = false;
         queryKey && queryMap.delete(queryKey)
+        onComplete && onComplete()
       });
   };
 
