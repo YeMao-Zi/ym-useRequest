@@ -57,7 +57,6 @@ export function useRequest<T, P extends any[]>(
   });
 
   const serviceFn = async (...args: P) => {
-    console.log(args, 'args')
     const key = queryKey ? queryKey(...args) : defaultQuerise;
     if (!querise[key]) {
       querise[key] = {} as any;
