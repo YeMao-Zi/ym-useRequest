@@ -70,7 +70,7 @@ export function useRequest<T, P extends any[]>(
 
   if (!manual) {
     if (queryKey) {
-      queryMap.set(queryKey, run);
+      queryMap.set(queryKey, { fn: run, params: defaultParams });
     } else {
       run(...defaultParams);
     }
@@ -78,7 +78,7 @@ export function useRequest<T, P extends any[]>(
 
   async function runQueryList() {
     for await (let value of queryMap.values()) {
-      value();
+      value.fn(...value.params);
     }
   }
 
