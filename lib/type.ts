@@ -13,6 +13,9 @@ export interface Options<T, P extends any[]> {
   // 同步请求
   queryKey?: (...args: P) => string;
 
+  // 成功后的数据处理
+  onSuccessBefore?: (response: T) => T;
+
   // 成功回调
   onSuccess?: (response: T, params: P) => void;
 

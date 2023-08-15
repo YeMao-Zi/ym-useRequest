@@ -15,6 +15,7 @@ export function useRequest<T, P extends any[]>(
     refreshDeps = null,
     refreshDepsParams = null,
     queryKey = null,
+    onSuccessBefore,
     onSuccess,
     onError,
     onComplete,
@@ -35,7 +36,11 @@ export function useRequest<T, P extends any[]>(
     querise[key].loading = true;
     service(...args)
       .then((res) => {
-        querise[key].data = res;
+        if (onSuccessBefore) {
+          querise[key].data = onSuccessBefore(res) || res;
+        } else {
+          querise[key].data = res;
+        }
         querise[key].err = undefined;
         onSuccess && onSuccess(res, args);
       })
