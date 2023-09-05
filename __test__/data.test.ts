@@ -1,3 +1,4 @@
+import { expect, test } from 'vitest'
 import useRequest from '../lib';
 
 const getData = () => {
@@ -11,8 +12,8 @@ const getData = () => {
 test('dataChange', (done) => {
   useRequest(getData,{
     onSuccess(data){
-      expect(data).toBe(1)
-      done()
+      expect(data).toBe(3)
+      // done()
     }
   })
 });

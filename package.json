@@ -22,7 +22,8 @@
   },
   "scripts": {
     "build": "tsup",
-    "test": "jest --config jestconfig.json",
+    "test": "vitest",
+    "coverage": "vitest run --coverage",
     "format": "prettier --write \"lib/**/*.ts\" \"lib/**/*.js\""
   },
   "repository": {
@@ -35,12 +36,12 @@
     "hooks"
   ],
   "devDependencies": {
-    "tsup": "^6.7.0",
-    "@types/jest": "^29.5.3",
-    "jest": "^29.6.1",
+    "@vitest/coverage-v8": "^0.34.3",
     "prettier": "^3.0.3",
-    "ts-jest": "^29.1.1",
+    "tsup": "^6.7.0",
     "typescript": "^5.1.6",
+    "vite": "^4.4.9",
+    "vitest": "^0.34.3",
     "vue": "^3.3.4"
   }
 }
