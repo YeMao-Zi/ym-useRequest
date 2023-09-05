@@ -2,8 +2,6 @@
 
 接口的手动管理，包括请求状态，请求数据，手动更新，自动更新，并发请求，失败/成功回调，监听数据并更新
 
-ps:不一定是接口，只要是 promise 就都可以管理
-
 ## 使用
 
 1.手动执行
@@ -12,7 +10,7 @@ ps:不一定是接口，只要是 promise 就都可以管理
 const { data, loading, run } = useRequest(somePromise, { manual: true });
 const somePromise = () => {
   return new Promise((resolve, reject) => {
-    resolve("请求成功");
+    resolve('请求成功');
   });
 };
 run();
@@ -92,4 +90,22 @@ const req3 = useRequest(somePromise, queryKey:(args)=>3);
 
 req3.runQueryList()
 
+```
+
+5.对返回的数据进行处理后再返回 data
+
+```ts
+const somePromise = () => {
+  return new Promise((resolve, reject) => {
+    resolve(1);
+  });
+};
+
+const { data, loading } = useRequest(somePromise, {
+  onSuccessBefore(res) {
+    return res + 1;
+  },
+});
+
+// 最终 data 结果为 2
 ```

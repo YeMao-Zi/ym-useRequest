@@ -1,14 +1,11 @@
-import { reactive, toRefs, watch } from "vue";
-import { Options, IRequestResult } from "./type";
+import { reactive, toRefs, watch } from 'vue';
+import { Options, IRequestResult } from './type';
 
 const queryMap = new Map();
 
-const defaultQuerise = Symbol("default"); // 默认为非 queryKey 维护的普通请求
+const defaultQuerise = Symbol('default'); // 默认为非 queryKey 维护的普通请求
 
-export function useRequest<T, P extends any[]>(
-  service: (...args: P) => Promise<T>,
-  options: Options<T, P> = {}
-) {
+export function useRequest<T, P extends any[]>(service: (...args: P) => Promise<T>, options: Options<T, P> = {}) {
   const {
     manual = false,
     defaultParams = [] as unknown as P,
@@ -64,7 +61,7 @@ export function useRequest<T, P extends any[]>(
       () => {
         run(...(refreshDepsParams?.value || ([] as unknown as P)));
       },
-      { deep: true }
+      { deep: true },
     );
   }
 
@@ -77,7 +74,7 @@ export function useRequest<T, P extends any[]>(
   }
 
   async function runQueryList() {
-    for await (let value of queryMap.values()) {
+    for await (const value of queryMap.values()) {
       value.fn(...value.params);
     }
   }
@@ -89,3 +86,5 @@ export function useRequest<T, P extends any[]>(
     ...toRefs(querise[defaultQuerise]),
   };
 }
+
+export default useRequest;
