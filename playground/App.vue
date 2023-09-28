@@ -17,6 +17,7 @@ const { data, loading, run } = useRequest(somePromise, {
 });
 
 run();
+console.log(run())
 </script>
 
 <style></style>

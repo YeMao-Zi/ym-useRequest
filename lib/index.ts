@@ -1,6 +1,6 @@
-import { ref, reactive, toRefs, watch, shallowRef, Ref } from 'vue';
-import { Options, IRequestResult } from './type';
-import { useLoadingDelay } from './utils';
+import { reactive, toRefs, watch } from 'vue';
+import type { Options, IRequestResult } from './type';
+import { useDelay } from './utils';
 
 export function useRequest<T, P extends any[]>(service: (...args: P) => Promise<T>, options: Options<T, P> = {}) {
   const {
@@ -23,7 +23,7 @@ export function useRequest<T, P extends any[]>(service: (...args: P) => Promise<
 
   const serviceFn = async (...args: P) => {
     // 延时 loading
-    useLoadingDelay(() => {
+    useDelay(() => {
       !QUERY.data && (QUERY.loading = true);
     }, loadingDelay);
 

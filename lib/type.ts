@@ -1,4 +1,4 @@
-import { ComputedRef, WatchSource, Ref } from 'vue';
+import type { ComputedRef, WatchSource, Ref } from 'vue';
 export interface Options<T, P extends any[]> {
   // 是否手动发起请求
   manual?: boolean;

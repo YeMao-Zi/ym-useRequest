@@ -1,8 +1,8 @@
-export function useLoadingDelay(fn:Function, loadingDelay: number) {
-  if (loadingDelay) {
+export function useDelay(fn:Function, delay: number) {
+  if (delay) {
     setTimeout(() => {
       fn();
-    }, loadingDelay);
+    }, delay);
   } else {
     fn();
   }
