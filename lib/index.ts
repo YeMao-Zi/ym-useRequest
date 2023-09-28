@@ -1,7 +1,6 @@
-import { reactive, toRefs, watch } from 'vue';
+import { ref, reactive, toRefs, watch, shallowRef, Ref } from 'vue';
 import { Options, IRequestResult } from './type';
-
-const defaultQuerise = Symbol('default'); // 默认为非 queryKey 维护的普通请求
+import { useLoadingDelay } from './utils';
 
 export function useRequest<T, P extends any[]>(service: (...args: P) => Promise<T>, options: Options<T, P> = {}) {
   const {
@@ -9,48 +8,46 @@ export function useRequest<T, P extends any[]>(service: (...args: P) => Promise<
     defaultParams = [] as unknown as P,
     refreshDeps = null,
     refreshDepsParams = null,
-    queryKey = null,
+    loadingDelay,
     onSuccessBefore,
     onSuccess,
     onError,
     onComplete,
   } = options;
-  const querise = reactive<Record<string | symbol, IRequestResult<T>>>({
-    [defaultQuerise]: {
-      data: null,
-      loading: false,
-      err: undefined,
-    },
+
+  const QUERY = reactive<IRequestResult<T>>({
+    data: null,
+    loading: false,
+    error: undefined,
   });
 
   const serviceFn = async (...args: P) => {
-    const key = queryKey ? queryKey(...args) : defaultQuerise;
-    if (!querise[key]) {
-      querise[key] = {} as any;
-    }
-    querise[key].loading = true;
+    // 延时 loading
+    useLoadingDelay(() => {
+      !QUERY.data && (QUERY.loading = true);
+    }, loadingDelay);
+
     service(...args)
       .then((res) => {
         if (onSuccessBefore) {
-          querise[key].data = onSuccessBefore(res) || res;
+          QUERY.data = onSuccessBefore(res) || res;
         } else {
-          querise[key].data = res;
+          QUERY.data = res;
         }
-        querise[key].err = undefined;
+        QUERY.error = undefined;
         onSuccess && onSuccess(res, args);
       })
       .catch((err: any) => {
-        querise[key].err = err;
+        QUERY.error = err;
         onError && onError(err, args);
       })
       .finally(() => {
-        querise[key].loading = false;
+        QUERY.loading = false;
         onComplete && onComplete();
       });
   };
 
   const run = serviceFn;
-
   // 依赖更新
   if (refreshDeps) {
     watch(
@@ -66,11 +63,7 @@ export function useRequest<T, P extends any[]>(service: (...args: P) => Promise<
     run(...defaultParams);
   }
 
-  return {
-    run,
-    querise,
-    ...toRefs(querise[defaultQuerise]),
-  };
+  return { run, ...toRefs(QUERY) };
 }
 
 export default useRequest;

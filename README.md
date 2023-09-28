@@ -72,24 +72,22 @@ const handleClick = () => {
 };
 ```
 
-4.按顺序执行同步任务
+4.延时loading
 
-使用 queryKey 标识为同步任务
+使用 loadingDelay 定义一个 loading 的延时时间，避免请求时间较短时出现 loading 闪烁
 
 ```ts
-const somePromise=(params1,params2)=>{
-    return new Promise((resolve, reject)=>{
-        resolve(params1,params2)
-    })
-}
-const req1 = useRequest(somePromise, queryKey:(args)=>1);
-
-const req2 = useRequest(somePromise, queryKey:(args)=>2);
-
-const req3 = useRequest(somePromise, queryKey:(args)=>3);
-
-req3.runQueryList()
-
+const somePromise = (params1, params2) => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve(params1, params2);
+    }, 300);
+  });
+};
+const { data, loading } = useRequest(somePromise, {
+  defaultParams: ['参数1', '参数2'],
+  loadingDelay: 1000, // 1s 内loading状态都不会改变
+});
 ```
 
 5.对返回的数据进行处理后再返回 data

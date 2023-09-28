@@ -1,4 +1,4 @@
-import { ComputedRef, WatchSource } from 'vue';
+import { ComputedRef, WatchSource, Ref } from 'vue';
 export interface Options<T, P extends any[]> {
   // 是否手动发起请求
   manual?: boolean;
@@ -10,6 +10,8 @@ export interface Options<T, P extends any[]> {
   refreshDeps?: WatchSource<any>[];
   refreshDepsParams?: ComputedRef<P>;
 
+  // 请求延时
+  loadingDelay?: number;
   // 同步请求
   queryKey?: (...args: P) => string;
 
@@ -27,7 +29,7 @@ export interface Options<T, P extends any[]> {
 }
 
 export interface IRequestResult<T> {
-  data: T | null;
+  data: Ref<T>;
   loading: boolean;
-  err?: any;
+  error?: any;
 }
