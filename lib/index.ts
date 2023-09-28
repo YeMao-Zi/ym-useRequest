@@ -1,8 +1,6 @@
 import { reactive, toRefs, watch } from 'vue';
 import { Options, IRequestResult } from './type';
 
-const queryMap = new Map();
-
 const defaultQuerise = Symbol('default'); // 默认为非 queryKey 维护的普通请求
 
 export function useRequest<T, P extends any[]>(service: (...args: P) => Promise<T>, options: Options<T, P> = {}) {
@@ -47,7 +45,6 @@ export function useRequest<T, P extends any[]>(service: (...args: P) => Promise<
       })
       .finally(() => {
         querise[key].loading = false;
-        queryKey && queryMap.delete(queryKey);
         onComplete && onComplete();
       });
   };
@@ -66,22 +63,11 @@ export function useRequest<T, P extends any[]>(service: (...args: P) => Promise<
   }
 
   if (!manual) {
-    if (queryKey) {
-      queryMap.set(queryKey, { fn: run, params: defaultParams });
-    } else {
-      run(...defaultParams);
-    }
-  }
-
-  async function runQueryList() {
-    for await (const value of queryMap.values()) {
-      value.fn(...value.params);
-    }
+    run(...defaultParams);
   }
 
   return {
     run,
-    runQueryList,
     querise,
     ...toRefs(querise[defaultQuerise]),
   };

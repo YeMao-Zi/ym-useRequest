@@ -21,6 +21,7 @@
     "name": "zhushengjie"
   },
   "scripts": {
+    "dev": "vite",
     "build": "tsup",
     "test": "vitest",
     "coverage": "vitest run --coverage",
@@ -36,6 +37,7 @@
     "hooks"
   ],
   "devDependencies": {
+    "@vitejs/plugin-vue": "^4.3.4",
     "@vitest/coverage-v8": "^0.34.3",
     "prettier": "^3.0.3",
     "tsup": "^6.7.0",

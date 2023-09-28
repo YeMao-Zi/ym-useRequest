@@ -9,9 +9,10 @@
     // "keyofStringsOnly": true,
 
     "noImplicitAny": false,
-    "baseUrl": "./",
+    "baseUrl": ".",
     "paths": {
       "ym-userequest": ["lib/index.ts"],
+      "@/*": ["playground/*"]
     }
   },
   "exclude": ["node_modules", "__tests__", "dist"]
