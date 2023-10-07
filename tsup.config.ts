@@ -1,8 +1,9 @@
-import { defineConfig } from "tsup";
+import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  entry: ["lib/index.ts"],
+  entry: ['lib/index.ts'],
   clean: true,
   dts: true,
-  format: ["cjs", "esm"],
+  external: ['vue'],
+  format: ['cjs', 'esm'],
 });

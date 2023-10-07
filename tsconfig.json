@@ -9,7 +9,7 @@
     // "keyofStringsOnly": true,
 
     "noImplicitAny": false,
-    "baseUrl": ".",
+    "baseUrl": "./",
     "paths": {
       "ym-userequest": ["lib/index.ts"],
       "@/*": ["playground/*"]

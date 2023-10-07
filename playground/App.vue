@@ -3,7 +3,8 @@
 </template>
 
 <script setup lang="ts">
-import useRequest from 'ym-userequest';
+// import useRequest from 'ym-userequest';
+import useRequest from '../dist';
 const somePromise = (): Promise<string> => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
@@ -17,7 +18,7 @@ const { data, loading, run } = useRequest(somePromise, {
 });
 
 run();
-console.log(run())
+console.log(run(),data,loading)
 </script>
 
 <style></style>
