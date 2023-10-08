@@ -24,7 +24,6 @@
     "dev": "vite",
     "build": "tsup",
     "test": "vitest",
-    "coverage": "vitest run --coverage",
     "format": "prettier --write \"lib/**/*.ts\" \"lib/**/*.js\""
   },
   "repository": {

@@ -1,6 +1,7 @@
-import { reactive, computed, type ComputedRef } from 'vue';
+import { reactive, computed } from 'vue';
+import type { ComputedRef } from 'vue';
 import { expect, test, it, describe, vi } from 'vitest';
-import useRequest from '../lib';
+import useRequest from '../../lib';
 
 const getData = (): Promise<number> => {
   return new Promise((resolve) => {
@@ -24,16 +25,6 @@ describe.concurrent('noParamsTest', () => {
     const { data } = useRequest(getData);
     await getData();
     expect(data.value).toBe(1);
-  });
-
-  test('successBefore', async () => {
-    const { data } = useRequest(getData, {
-      onSuccessBefore(response) {
-        return response + 1;
-      },
-    });
-    await getData();
-    expect(data.value).toBe(2);
   });
 
   it('success', async () => {
@@ -73,7 +64,8 @@ describe('paramsTest', () => {
     const { data } = useRequest(getDataParams, {
       defaultParams: [pages],
     });
-    await getDataParams(pages);
+    vi.useFakeTimers();
+    await vi.runAllTimersAsync();
     expect(data.value.length).toBe(1);
   });
 

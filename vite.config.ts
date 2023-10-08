@@ -4,14 +4,14 @@ import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 
 export default defineConfig({
-  test: {
-    include: ['__test__/*'],
-  },
-  root:'./playground',
+  root: './playground',
   resolve: {
     alias: {
       'ym-userequest': path.resolve(__dirname, './lib/index.ts'),
     },
   },
   plugins: [vue()],
+  test: {
+    include: ['__test__/*'],
+  },
 });
