@@ -10,6 +10,7 @@ const pages = reactive({
   page: 1,
 });
 const somePromise = (pages: { page: number }): Promise<any[]> => {
+  console.log(pages,'pages')
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       if (pages.page >= 3) {
@@ -20,10 +21,17 @@ const somePromise = (pages: { page: number }): Promise<any[]> => {
     }, 4000);
   });
 };
-const { data, loading } = useRequest(somePromise, {
+const { data, loading, run, cancel } = useRequest(somePromise, {
+  manual: true,
   loadingDelay: 5000,
   defaultParams: [pages],
 });
+
+run();
+
+setTimeout(() => {
+  cancel();
+}, 2000);
 </script>
 
 <style></style>

@@ -4,19 +4,21 @@
 
 ## 使用
 
-1.手动执行
+### 1.手动执行
 
 ```ts
-const { data, loading, run } = useRequest(somePromise, { manual: true });
+const { data, loading, run, refresh, cancel } = useRequest(somePromise, { manual: true });
 const somePromise = () => {
   return new Promise((resolve, reject) => {
     resolve('请求成功');
   });
 };
-run();
+run(); // 手动触发一次
+refresh(); // 使用上次的参数重新请求
+cancel(); // 取消请求
 ```
 
-2.自动执行一次并带默认参数
+### 2.自动执行一次并带默认参数
 
 ```ts
 const {data,loading}=useRequest(somePromise,{
@@ -31,7 +33,7 @@ const somePromise=(params1,params2)=>{
 }
 ```
 
-3.监听响应式数据并自动执行更新数据
+### 3.监听响应式数据并自动执行更新数据
 
 ```ts
 const pages = reactive({
@@ -72,7 +74,7 @@ const handleClick = () => {
 };
 ```
 
-4.延时loading
+### 4.延时loading
 
 使用 loadingDelay 定义一个 loading 的延时时间，避免请求时间较短时出现 loading 闪烁
 
@@ -90,7 +92,7 @@ const { data, loading } = useRequest(somePromise, {
 });
 ```
 
-5.修改 data 数据
+### 5.修改 data 数据
 
 ```ts
 const somePromise = () => {

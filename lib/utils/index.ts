@@ -1,6 +1,6 @@
 export function useDelay(fn: Function, delay: number) {
   if (delay) {
-    setTimeout(() => {
+    return setTimeout(() => {
       fn();
     }, delay);
   } else {

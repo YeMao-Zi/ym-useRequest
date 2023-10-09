@@ -30,7 +30,7 @@ function createPlugin<R, P extends unknown[]>(service: Service<R, P>, options: O
 
   const runAsync = async (...args: P) => {
     loading.value = true;
-    params.value = args;
+    args.length && (params.value = args);
     status.value = 'pending';
     count.value++;
     const currentCount = count.value;
@@ -42,7 +42,7 @@ function createPlugin<R, P extends unknown[]>(service: Service<R, P>, options: O
       return breakResult;
     }
     onBefore?.(args);
-
+    console.log(params.value, 'params', defaultParams, args);
     let serverWrapper = () => new Promise<R>((resolve) => resolve(service(...params.value)));
     let { servicePromise } = callPlugin('onInit', serverWrapper);
     if (servicePromise) {
@@ -51,6 +51,9 @@ function createPlugin<R, P extends unknown[]>(service: Service<R, P>, options: O
 
     await serverWrapper()
       .then((res) => {
+        if (currentCount !== count.value) {
+          return;
+        }
         data.value = res;
         error.value = undefined;
         callPlugin('onSuccess', args);
@@ -82,9 +85,9 @@ function createPlugin<R, P extends unknown[]>(service: Service<R, P>, options: O
     callPlugin('onCancel');
   };
 
-  const refresh = () => run(...defaultParams);
+  const refresh = () => run(...params.value);
 
-  const refreshAsync = () => runAsync(...defaultParams);
+  const refreshAsync = () => runAsync(...params.value);
 
   const mutate = (v: any) => {
     data.value = v.constructor === Function ? v(data.value) : v;
