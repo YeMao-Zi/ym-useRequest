@@ -37,15 +37,17 @@ export type PluginHooks<R, P extends unknown[]> = {
   onMutate(data: R): void;
 };
 
-export interface PluginInstance<R, P extends unknown[]> extends State<R, P> {
+export interface Instance<R, P extends unknown[]> extends State<R, P> {
   status: Ref<'pending' | 'settled'>;
   functionContext: FunctionContext<R, P>;
-  plugins: Partial<PluginHooks<R, P>>[];
+  plugins: Ref<Partial<PluginHooks<R, P>>[]>;
 }
 
-export type Plugin<R, P extends unknown[]> = {
-  (Instance: PluginInstance<R, P>, options: Options<R, P>): Partial<PluginHooks<R, P>>;
-};
+export type Plugin<R, P extends unknown[]> = (
+  instance: Instance<R, P>,
+  options: Options<R, P>,
+) => Partial<PluginHooks<R, P>>;
+
 
 export type State<R, P> = {
   data: Ref<R>;

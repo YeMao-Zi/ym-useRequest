@@ -1,29 +1,29 @@
 import { ref, shallowRef } from 'vue';
 import type { Ref } from 'vue';
-import type { Service, Options, FunctionContext, PluginInstance, PluginHooks, CallPlugin } from './type';
+import type { Service, Options, FunctionContext, Instance, PluginHooks, CallPlugin } from './type';
 import { composeMiddleware } from './utils';
 
-function createPlugin<R, P extends unknown[]>(service: Service<R, P>, options: Options<R, P>): PluginInstance<R, P> {
+function createPlugin<R, P extends unknown[]>(service: Service<R, P>, options: Options<R, P>): Instance<R, P> {
   const { defaultParams, onBefore, onSuccess, onError, onFinally } = options;
 
   const data = shallowRef<R>(null);
   const loading = ref(false);
   const params = ref(defaultParams) as Ref<P>;
   const error = shallowRef();
-  const status = shallowRef('pending') as PluginInstance<R, P>['status'];
-  const plugins: PluginInstance<R, P>['plugins'] = [];
+  const status = shallowRef('pending') as Instance<R, P>['status'];
+  const plugins = ref([]) as Instance<R, P>['plugins'];
 
   const count = ref(0);
 
-  // 执行插件勾子
+  // 执行所有插件勾子
   const callPlugin = (type: keyof PluginHooks<R, P>, ...args: any[]): CallPlugin<R> => {
     if (type == 'onInit') {
-      const InstanceFn = plugins.map((i) => i.onInit).filter(Boolean);
+      const InstanceFn = plugins.value.map((i) => i.onInit).filter(Boolean);
       // 使用中间件思想为所有 plugins 执行一次 onInit，并层层传递 service 最终重新将 处理包装后的 service 返回
       return { servicePromise: composeMiddleware(InstanceFn, args[0])() };
     } else {
       // @ts-ignore
-      const res = plugins.map((i) => i[type]?.(...args));
+      const res = plugins.value.map((i) => i[type]?.(...args));
       return Object.assign({}, ...res);
     }
   };

@@ -22,7 +22,7 @@ function usePlugins<R, P extends unknown[]>(
   // 初始化构造器返回 useRequest 主体
   const Instance = createInstance(service, fetchOptions);
   // 为 useRequest 主体执行插件
-  Instance.plugins = plugins.map((p) => p(Instance, fetchOptions));
+  Instance.plugins.value = plugins.map((p) => p(Instance, fetchOptions));
 
   if (!manual) {
     Instance.functionContext.run(...defaultParams);

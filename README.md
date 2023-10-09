@@ -1,6 +1,6 @@
 ## 介绍
 
-接口的手动管理，包括请求状态，请求数据，手动更新，自动更新，并发请求，失败/成功回调，监听数据并更新
+接口的手动管理，包括请求状态，请求数据，手动更新，自动更新，回调，监听数据并更新
 
 ## 使用
 
@@ -90,7 +90,7 @@ const { data, loading } = useRequest(somePromise, {
 });
 ```
 
-5.对返回的数据进行处理后再返回 data
+5.修改 data 数据
 
 ```ts
 const somePromise = () => {
@@ -99,11 +99,13 @@ const somePromise = () => {
   });
 };
 
-const { data, loading } = useRequest(somePromise, {
-  onSuccessBefore(res) {
+const { data, loading, mutate } = useRequest(somePromise);
+
+const onChange = () => {
+  mutate((res) => {
     return res + 1;
-  },
-});
+  });
+};
 
 // 最终 data 结果为 2
 ```
