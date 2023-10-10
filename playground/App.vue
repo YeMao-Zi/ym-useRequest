@@ -1,5 +1,5 @@
 <template>
-  <div>{{ data.length }} {{ loading }}</div>
+  <div>{{ data.length }} {{ loading }}{{ pages.loadingEnd }}</div>
   <div @click="onRun">run</div>
   <div @click="onCancel">cancel</div>
 </template>
@@ -11,13 +11,13 @@ import useRequest from 'ym-userequest';
 const pages = reactive({
   page: 1,
   loadingEnd: null,
+  count: 0,
 });
 const somePromise = (pages: { page: number }): Promise<any[]> => {
-  return new Promise((resolve,reject) => {
+  return new Promise((resolve, reject) => {
     setTimeout(() => {
-      // resolve(new Array(pages.page).fill(1));
-      reject('err')
-    }, 1000);
+      reject(new Array(pages.page).fill(1));
+    }, 0);
   });
 };
 
@@ -28,20 +28,21 @@ const refreshDepsParams = computed(() => [
 ]);
 const { data, loading, mutate, cancel, run } = useRequest(somePromise, {
   defaultParams: [{ page: 1 }],
-  pollingInterval: 1000,
-  pollingErrorRetryCount: 3,
   refreshDeps: [() => pages.page],
   refreshDepsParams: refreshDepsParams,
-  onSuccess(data, params) {
-    if (data.length > 5) {
-      pages.loadingEnd = '已达最大数量5';
-    }
+  pollingInterval: 1000,
+  pollingErrorRetryCount:3,
+  onError(data, params) {
+    // pages.page++;
+    // if (data.length > 5) {
+    //   pages.loadingEnd = '已达最大数量5';
+    // }
+    // cancel();
   },
 });
 mutate(() => []);
 const onRun = () => {
-  run();
-  // !pages.loadingEnd && pages.page++;
+  !pages.loadingEnd && pages.page++;
 };
 
 const onCancel = () => {

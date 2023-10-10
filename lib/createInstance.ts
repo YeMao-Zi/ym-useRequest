@@ -42,17 +42,15 @@ function createPlugin<R, P extends unknown[]>(service: Service<R, P>, options: O
       return breakResult;
     }
     onBefore?.(args);
-    console.log(params.value, 'params', defaultParams, args);
     let serverWrapper = () => new Promise<R>((resolve) => resolve(service(...params.value)));
     let { servicePromise } = callPlugin('onInit', serverWrapper);
     if (servicePromise) {
       serverWrapper = () => servicePromise;
     }
-
     await serverWrapper()
       .then((res) => {
         if (currentCount !== count.value) {
-          return;
+          return new Promise(() => {});
         }
         data.value = res;
         error.value = undefined;
@@ -60,6 +58,9 @@ function createPlugin<R, P extends unknown[]>(service: Service<R, P>, options: O
         onSuccess?.(res, args);
       })
       .catch((err: any) => {
+        if (currentCount !== count.value) {
+          return new Promise(() => {});
+        }
         error.value = err;
         callPlugin('onError', err, args);
         onError?.(err, args);

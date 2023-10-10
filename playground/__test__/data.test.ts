@@ -207,3 +207,75 @@ describe('data with params', () => {
     expect(data.value.length).toBe(2);
   });
 });
+
+describe('polling and error retry', () => {
+  test('polling in onSuccess', async () => {
+    let count = 0;
+    const { loading, cancel } = useRequest(getData, {
+      pollingInterval: 1000,
+      onBefore() {
+        count++;
+      },
+      onSuccess() {
+        if (count === 2) {
+          cancel();
+        }
+      },
+    });
+    expect(loading.value).toBe(true);
+    expect(count).toBe(1);
+    await vi.advanceTimersByTimeAsync(1500);
+    expect(loading.value).toBe(false);
+    expect(count).toBe(1);
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(count).toBe(2);
+    expect(loading.value).toBe(true);
+    await vi.advanceTimersByTimeAsync(1500);
+    expect(loading.value).toBe(false);
+    expect(count).toBe(2);
+  });
+
+  test('polling in onError', async () => {
+    let count = 0;
+    const { loading, cancel } = useRequest(getError, {
+      pollingInterval: 1000,
+      onBefore() {
+        count++;
+      },
+      onError() {
+        if (count === 2) {
+          cancel();
+        }
+      },
+    });
+    expect(loading.value).toBe(true);
+    expect(count).toBe(1);
+    await vi.advanceTimersByTimeAsync(1500);
+    expect(loading.value).toBe(false);
+    expect(count).toBe(1);
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(count).toBe(2);
+    expect(loading.value).toBe(true);
+    await vi.advanceTimersByTimeAsync(1500);
+    expect(loading.value).toBe(false);
+    expect(count).toBe(2);
+  });
+
+  test('error retry',async ()=>{
+    const callback = vi.fn();
+    useRequest(getError,{
+      pollingInterval: 1000,
+      pollingErrorRetryCount:3,
+      onFinally:callback
+    })
+    expect(callback).toHaveBeenCalledTimes(0);
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(callback).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(callback).toHaveBeenCalledTimes(2);
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(callback).toHaveBeenCalledTimes(3);
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(callback).toHaveBeenCalledTimes(3);
+  })
+});
