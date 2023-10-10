@@ -54,7 +54,7 @@ export type Plugin<R, P extends unknown[]> = (
 export type State<R, P> = {
   data: Ref<R>;
   loading: Ref<boolean>;
-  error?: any;
+  error?: Ref<any>;
   params?: Ref<P>;
 };
 

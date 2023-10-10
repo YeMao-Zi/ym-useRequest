@@ -1,6 +1,7 @@
 <template>
   <div>{{ data.length }} {{ loading }}</div>
-  <div @click="onClick">click</div>
+  <div @click="onRun">run</div>
+  <div @click="onCancel">cancel</div>
 </template>
 
 <script setup lang="ts">
@@ -12,9 +13,10 @@ const pages = reactive({
   loadingEnd: null,
 });
 const somePromise = (pages: { page: number }): Promise<any[]> => {
-  return new Promise((resolve) => {
+  return new Promise((resolve,reject) => {
     setTimeout(() => {
-      resolve(new Array(pages.page).fill(1));
+      // resolve(new Array(pages.page).fill(1));
+      reject('err')
     }, 1000);
   });
 };
@@ -24,8 +26,10 @@ const refreshDepsParams = computed(() => [
     page: pages.page,
   },
 ]);
-const { data, loading, mutate } = useRequest(somePromise, {
+const { data, loading, mutate, cancel, run } = useRequest(somePromise, {
   defaultParams: [{ page: 1 }],
+  pollingInterval: 1000,
+  pollingErrorRetryCount: 3,
   refreshDeps: [() => pages.page],
   refreshDepsParams: refreshDepsParams,
   onSuccess(data, params) {
@@ -35,8 +39,13 @@ const { data, loading, mutate } = useRequest(somePromise, {
   },
 });
 mutate(() => []);
-const onClick = () => {
-  !pages.loadingEnd && pages.page++;
+const onRun = () => {
+  run();
+  // !pages.loadingEnd && pages.page++;
+};
+
+const onCancel = () => {
+  cancel();
 };
 </script>
 

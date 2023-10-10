@@ -1,21 +1,23 @@
 import type { Plugin } from '../type';
 import { useDelay } from '../utils';
-const useLoadingDelayPlugins: Plugin<any, any> = (instance, { loadingDelay }) => {
-  let timer: NodeJS.Timeout;
+import { ref } from 'vue';
+
+const useLoadingDelayPlugins: Plugin<any, any[]> = (instance, { loadingDelay }) => {
+  const timerRef = ref<NodeJS.Timeout>();
   return {
     onBefore() {
       if (loadingDelay) {
         instance.loading.value = false;
-        timer = useDelay(() => {
+        timerRef.value = useDelay(() => {
           instance.loading.value = true;
         }, loadingDelay);
       }
     },
     onCancel() {
-      clearTimeout(timer);
+      clearTimeout(timerRef.value);
     },
     onFinally() {
-      clearTimeout(timer);
+      clearTimeout(timerRef.value);
     },
   };
 };

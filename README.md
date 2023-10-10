@@ -108,3 +108,39 @@ const onChange = () => {
 
 // 最终 data 结果为 2
 ```
+
+### 6.轮询
+
+```ts
+const somePromise = () => {
+  return new Promise((resolve, reject) => {
+    resolve(1);
+  });
+};
+// 每 3000 ms 进行一次请求
+const { data, run, cancel } = useRequest(getUsername, {
+  pollingInterval: 3000,
+});
+
+const onRun = () => {
+  run(); // 继续轮询
+};
+
+const onCancel = () => {
+  cancel(); // 停止轮询
+};
+```
+
+错误重试
+
+```ts
+const errPromise = () => {
+  return new Promise((resolve, reject) => {
+    reject('请求出错了');
+  });
+};
+const { data, run, cancel } = useRequest(getUsername, {
+  pollingInterval: 3000,
+  pollingErrorRetryCount:3 // 请求错误重试，将在三次轮询后不再轮询
+});
+```
