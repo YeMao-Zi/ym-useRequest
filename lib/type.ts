@@ -6,14 +6,17 @@ export interface Options<R, P extends any[]> {
   // 当 manual 为false时，自动执行的默认参数
   defaultParams?: P;
 
-  // 依赖项更新
+  // 监听依赖
   refreshDeps?: WatchSource<any>[];
-  refreshDepsParams?: ComputedRef<P>;
+  // 依赖变更后的执行参数
+  refreshDepsParams?: Ref<P>;
 
   // 请求延时
   loadingDelay?: number;
   // 轮询
   pollingInterval?: number;
+  // 轮询错误重试
+  pollingErrorRetryCount?: number;
   // 请求前回调
   onBefore?: (params: P) => void;
   // 成功回调
@@ -47,7 +50,6 @@ export type Plugin<R, P extends unknown[]> = (
   instance: Instance<R, P>,
   options: Options<R, P>,
 ) => Partial<PluginHooks<R, P>>;
-
 
 export type State<R, P> = {
   data: Ref<R>;

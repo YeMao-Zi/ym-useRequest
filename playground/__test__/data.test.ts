@@ -1,6 +1,6 @@
 import { ref, reactive, computed, defineComponent } from 'vue';
 import type { ComputedRef } from 'vue';
-import { expect, test, describe, vi } from 'vitest';
+import { expect, test, describe, vi, beforeAll } from 'vitest';
 import useRequest from '../../lib';
 import { mount } from './utils';
 
@@ -39,12 +39,15 @@ const getDataParams = (pages: { page: number }): Promise<any[]> => {
   });
 };
 
+beforeAll(() => {
+  vi.useFakeTimers();
+});
+
 test('should be defined', () => {
   expect(useRequest).toBeDefined();
 });
 
 test('shoud mount', async () => {
-  vi.useFakeTimers();
   const demo = mount(
     defineComponent({
       template: '<div/>',
@@ -66,7 +69,6 @@ test('shoud mount', async () => {
 
 describe.concurrent('simple example with result', () => {
   test('loading and run', async () => {
-    vi.useFakeTimers();
     const { loading, run } = useRequest(getData, { manual: true });
     expect(loading.value).toBe(false);
     run();
@@ -76,7 +78,6 @@ describe.concurrent('simple example with result', () => {
   });
 
   test('data', async () => {
-    vi.useFakeTimers();
     const { data, mutate } = useRequest(getData);
     await vi.runAllTimersAsync();
     expect(data.value).toBe(1);
@@ -86,7 +87,6 @@ describe.concurrent('simple example with result', () => {
   });
 
   test('cancel', async () => {
-    vi.useFakeTimers();
     const { data, run, cancel } = useRequest(getData, { manual: true, defaultParams: [5] });
     await vi.runAllTimersAsync();
     expect(data.value).toBe(null);
@@ -100,7 +100,6 @@ describe.concurrent('simple example with result', () => {
   });
 
   test('mutate', async () => {
-    vi.useFakeTimers();
     const { data, mutate } = useRequest(getData, { defaultParams: [5] });
     await vi.runAllTimersAsync();
     mutate((v) => v + 1);
@@ -108,7 +107,6 @@ describe.concurrent('simple example with result', () => {
   });
 
   test('refresh', async () => {
-    vi.useFakeTimers();
     const { data, run, refresh } = useRequest(getData, { manual: true });
     run(2);
     await vi.runAllTimersAsync();
@@ -121,7 +119,6 @@ describe.concurrent('simple example with result', () => {
 
 describe.concurrent('life cycle', () => {
   test('onBefore', async () => {
-    vi.useFakeTimers();
     const callback = vi.fn();
     useRequest(getData, {
       onBefore: callback,
@@ -131,7 +128,6 @@ describe.concurrent('life cycle', () => {
     expect(callback).toHaveBeenCalledWith([2]);
   });
   test('onSuccess', async () => {
-    vi.useFakeTimers();
     let data: any;
     const callback = vi.fn((v, p) => {
       data = v + 1;
@@ -146,7 +142,6 @@ describe.concurrent('life cycle', () => {
   });
 
   test('onError', async () => {
-    vi.useFakeTimers();
     const callback = vi.fn();
     useRequest(getError, {
       onError: callback,
@@ -156,7 +151,6 @@ describe.concurrent('life cycle', () => {
   });
 
   test('onFinally', async () => {
-    vi.useFakeTimers();
     const callback = vi.fn();
     useRequest(getError, {
       onFinally: callback,
@@ -168,7 +162,6 @@ describe.concurrent('life cycle', () => {
 });
 
 test('loadingDelay', async () => {
-  vi.useFakeTimers();
   const { loading } = useRequest(getData, {
     loadingDelay: 600,
   });
@@ -182,7 +175,6 @@ test('loadingDelay', async () => {
 });
 
 test('loadingDelay and delay out request time', async () => {
-  vi.useFakeTimers();
   const { loading } = useRequest(getData, {
     loadingDelay: 1200,
   });
@@ -197,7 +189,6 @@ describe('data with params', () => {
     const { data } = useRequest(getDataParams, {
       defaultParams: [pages],
     });
-    vi.useFakeTimers();
     await vi.runAllTimersAsync();
     expect(data.value.length).toBe(1);
   });
@@ -208,7 +199,6 @@ describe('data with params', () => {
       refreshDeps: [() => pages.page],
       refreshDepsParams: params,
     });
-    vi.useFakeTimers();
     pages.page = 2;
     await vi.runAllTimersAsync();
     expect(data.value.length).toBe(2);
