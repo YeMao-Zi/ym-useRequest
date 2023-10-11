@@ -1,7 +1,7 @@
 import { ref, reactive, computed, defineComponent } from 'vue';
 import type { ComputedRef } from 'vue';
 import { expect, test, describe, vi, beforeAll } from 'vitest';
-import useRequest from '../../lib';
+import useRequest from '../lib';
 import { mount } from './utils';
 
 const getData = (value = 1): Promise<number> => {

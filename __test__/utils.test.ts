@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { composeMiddleware } from '../../lib/utils';
+import { composeMiddleware } from '../lib/utils';
 
 test('composeMiddleware', async () => {
   let data: any[] = [];
