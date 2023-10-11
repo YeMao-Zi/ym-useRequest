@@ -4,10 +4,7 @@
     "module": "ESNext",
     "lib": ["ESNext", "DOM"],
     "moduleResolution": "node",
-
     "esModuleInterop": true,
-    // "keyofStringsOnly": true,
-
     "noImplicitAny": false,
     "baseUrl": "./",
     "paths": {
@@ -15,5 +12,5 @@
       "@/*": ["playground/*"]
     }
   },
-  "exclude": ["node_modules", "__tests__", "dist"]
+  "exclude": ["node_modules", "playground/__tests__", "dist"]
 }
