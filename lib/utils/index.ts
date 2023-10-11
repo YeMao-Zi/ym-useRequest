@@ -1,4 +1,4 @@
-export function useDelay(fn: Function, delay: number) {
+export function useDelay(fn: Function, delay?: number) {
   if (delay) {
     return setTimeout(() => {
       fn();

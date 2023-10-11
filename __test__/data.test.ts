@@ -67,6 +67,31 @@ test('shoud mount', async () => {
   expect(demo.data).toBe(1);
 });
 
+test('when unMount request cancel',async()=>{
+  const demo = mount(
+    defineComponent({
+      template: '<div/>',
+      setup() {
+        const { data, run } = useRequest(getData);
+        const test = ref(0);
+        return {
+          data,
+          test,
+          run
+        };
+      },
+    }),
+  );
+  setTimeout(() => {
+    demo.unmount();
+  }, 3000);
+
+  await vi.advanceTimersByTimeAsync(2500);
+  demo.run(4)
+  await vi.advanceTimersByTimeAsync(2000);
+  expect(demo.data).toBe(1);
+})
+
 describe.concurrent('simple example with result', () => {
   test('loading and run', async () => {
     const { loading, run } = useRequest(getData, { manual: true });
@@ -207,6 +232,18 @@ describe('data with params', () => {
     refresh();
     await vi.runAllTimersAsync();
     expect(data.value.length).toBe(1);
+  });
+
+  test('depend params without refreshDepsParams', async () => {
+    const { data, run } = useRequest(getDataParams, {
+      refreshDeps: [() => pages.page],
+    });
+    run({page:2})
+    await vi.runAllTimersAsync();
+    expect(data.value.length).toBe(2);
+    pages.page=1
+    await vi.runAllTimersAsync();
+    expect(data.value.length).toBe(2);
   });
 });
 
