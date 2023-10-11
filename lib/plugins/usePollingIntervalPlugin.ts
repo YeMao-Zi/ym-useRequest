@@ -2,7 +2,7 @@ import type { Plugin } from '../type';
 import { ref } from 'vue';
 import { useDelay } from '../utils';
 
-const usePollingInterval: Plugin<any, any[]> = (instance, { pollingInterval, pollingErrorRetryCount = 0 }) => {
+const usePollingIntervalPlugin: Plugin<any, any[]> = (instance, { pollingInterval, pollingErrorRetryCount = 0 }) => {
   const timerRef = ref<NodeJS.Timeout>();
   const countRef = ref(0);
   const stopPollingRef = ref(false);
@@ -46,4 +46,4 @@ const usePollingInterval: Plugin<any, any[]> = (instance, { pollingInterval, pol
   };
 };
 
-export default usePollingInterval;
+export default usePollingIntervalPlugin;

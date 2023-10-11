@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive } from 'vue';
+import { computed, reactive, ref } from 'vue';
 import useRequest from 'ym-userequest';
 // import useRequest from '../dist';
 const pages = reactive({
@@ -26,23 +26,27 @@ const refreshDepsParams = computed(() => [
     page: pages.page + 1,
   },
 ]);
+
+const ready = ref(false);
 const { data, loading, mutate, cancel, run } = useRequest(somePromise, {
   defaultParams: [{ page: 1 }],
-  refreshDeps: [() => pages.page],
-  refreshDepsParams: refreshDepsParams,
-  pollingInterval: 1000,
-  pollingErrorRetryCount: 3,
+  ready,
+  // refreshDeps: [() => pages.page],
+  // refreshDepsParams: refreshDepsParams,
+  // pollingInterval: 1000,
+  // pollingErrorRetryCount: 3,
   onFinally() {
     // pages.page++;
     // if (data.length > 5) {
     //   pages.loadingEnd = '已达最大数量5';
     // }
-    cancel();
+    // cancel();
   },
 });
 mutate(() => []);
 const onRun = () => {
-  !pages.loadingEnd && pages.page++;
+  // !pages.loadingEnd && pages.page++;
+  ready.value = true;
 };
 
 const onCancel = () => {

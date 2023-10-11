@@ -1,4 +1,4 @@
-import { onUnmounted, watch } from 'vue';
+import { onUnmounted } from 'vue';
 import type { Service, Options, Request, Plugin } from './type';
 import createInstance from './createInstance';
 
@@ -7,13 +7,7 @@ function usePlugins<R, P extends unknown[]>(
   options: Options<R, P> = {},
   plugins: Plugin<R, P>[],
 ): Request<R, P> {
-  const {
-    manual = false,
-    defaultParams = [] as unknown as P,
-    refreshDeps = null,
-    refreshDepsParams = null,
-    ...rest
-  } = options;
+  const { manual = false, defaultParams = [] as unknown as P, ...rest } = options;
   const fetchOptions = {
     manual,
     defaultParams,
@@ -31,22 +25,6 @@ function usePlugins<R, P extends unknown[]>(
   onUnmounted(() => {
     Instance.functionContext.cancel();
   });
-
-  // 依赖更新
-  if (refreshDeps) {
-    watch(
-      refreshDeps,
-      () => {
-        console.log(refreshDeps,'refreshDeps',refreshDepsParams)
-        if (refreshDepsParams) {
-          Instance.functionContext.run(...refreshDepsParams.value);
-        } else {
-          Instance.functionContext.refresh();
-        }
-      },
-      { deep: true },
-    );
-  }
 
   return {
     loading: Instance.loading,

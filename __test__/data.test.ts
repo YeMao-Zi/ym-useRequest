@@ -67,7 +67,7 @@ test('shoud mount', async () => {
   expect(demo.data).toBe(1);
 });
 
-test('when unMount request cancel',async()=>{
+test('when unMount request cancel', async () => {
   const demo = mount(
     defineComponent({
       template: '<div/>',
@@ -77,7 +77,7 @@ test('when unMount request cancel',async()=>{
         return {
           data,
           test,
-          run
+          run,
         };
       },
     }),
@@ -87,10 +87,10 @@ test('when unMount request cancel',async()=>{
   }, 3000);
 
   await vi.advanceTimersByTimeAsync(2500);
-  demo.run(4)
+  demo.run(4);
   await vi.advanceTimersByTimeAsync(2000);
   expect(demo.data).toBe(1);
-})
+});
 
 describe.concurrent('simple example with result', () => {
   test('loading and run', async () => {
@@ -238,10 +238,10 @@ describe('data with params', () => {
     const { data, run } = useRequest(getDataParams, {
       refreshDeps: [() => pages.page],
     });
-    run({page:2})
+    run({ page: 2 });
     await vi.runAllTimersAsync();
     expect(data.value.length).toBe(2);
-    pages.page=1
+    pages.page = 1;
     await vi.runAllTimersAsync();
     expect(data.value.length).toBe(2);
   });
@@ -343,4 +343,34 @@ describe('polling and error retry', () => {
     await vi.advanceTimersByTimeAsync(2000);
     expect(callback).toHaveBeenCalledTimes(3);
   });
+});
+
+test('ready with manual=false', async () => {
+  const ready = ref(false);
+  const { data } = useRequest(getData, {
+    defaultParams: [1],
+    ready,
+  });
+  expect(data.value).toBeNull();
+  await vi.runAllTimersAsync();
+  expect(data.value).toBeNull();
+  ready.value = true;
+  await vi.runAllTimersAsync();
+  expect(data.value).toBe(1);
+});
+
+test('ready with manual=true', async () => {
+  const ready = ref(false);
+  const { data, run } = useRequest(getData, {
+    manual: true,
+    defaultParams: [1],
+    ready,
+  });
+  run();
+  await vi.runAllTimersAsync();
+  expect(data.value).toBeNull();
+  ready.value = true;
+  run();
+  await vi.runAllTimersAsync();
+  expect(data.value).toBe(1);
 });

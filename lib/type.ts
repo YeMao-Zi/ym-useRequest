@@ -1,4 +1,4 @@
-import type { ComputedRef, WatchSource, Ref } from 'vue';
+import type { WatchSource, Ref } from 'vue';
 export interface Options<R, P extends any[]> {
   // 是否手动发起请求
   manual?: boolean;
@@ -17,6 +17,8 @@ export interface Options<R, P extends any[]> {
   pollingInterval?: number;
   // 轮询错误重试
   pollingErrorRetryCount?: number;
+  // 是否允许请求
+  ready?: Ref<boolean>;
   // 请求前回调
   onBefore?: (params: P) => void;
   // 成功回调

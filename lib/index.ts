@@ -1,10 +1,17 @@
 import type { Service, Options, Request } from './type';
 import usePlugins from './usePlugins';
 import useLoadingDelayPlugins from './plugins/useLoadingDelayPlugin';
-import usePollingInterval from './plugins/usePollingInterval';
+import usePollingIntervalPlugin from './plugins/usePollingIntervalPlugin';
+import useReadyPlugin from './plugins/useReadyPlugin';
+import useRefreshDepsPlugin from './plugins/useRefreshDepsPlugin';
 
 function useRequest<R, P extends unknown[] = any>(service: Service<R, P>, options?: Options<R, P>): Request<R, P> {
-  return usePlugins<R, P>(service, options, [useLoadingDelayPlugins, usePollingInterval]);
+  return usePlugins<R, P>(service, options, [
+    useLoadingDelayPlugins,
+    usePollingIntervalPlugin,
+    useRefreshDepsPlugin,
+    useReadyPlugin,
+  ]);
 }
 
 export default useRequest;

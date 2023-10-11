@@ -2,7 +2,7 @@ import type { Plugin } from '../type';
 import { useDelay } from '../utils';
 import { ref } from 'vue';
 
-const useLoadingDelayPlugins: Plugin<any, any[]> = (instance, { loadingDelay }) => {
+const useLoadingDelayPlugin: Plugin<any, any[]> = (instance, { loadingDelay }) => {
   const timerRef = ref<NodeJS.Timeout>();
   return {
     onBefore() {
@@ -22,4 +22,4 @@ const useLoadingDelayPlugins: Plugin<any, any[]> = (instance, { loadingDelay }) 
   };
 };
 
-export default useLoadingDelayPlugins;
+export default useLoadingDelayPlugin;
