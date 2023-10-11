@@ -16,14 +16,14 @@ const pages = reactive({
 const somePromise = (pages: { page: number }): Promise<any[]> => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      reject(new Array(pages.page).fill(1));
+      resolve(new Array(pages.page).fill(1));
     }, 0);
   });
 };
 
 const refreshDepsParams = computed(() => [
   {
-    page: pages.page,
+    page: pages.page + 1,
   },
 ]);
 const { data, loading, mutate, cancel, run } = useRequest(somePromise, {
@@ -31,13 +31,13 @@ const { data, loading, mutate, cancel, run } = useRequest(somePromise, {
   refreshDeps: [() => pages.page],
   refreshDepsParams: refreshDepsParams,
   pollingInterval: 1000,
-  pollingErrorRetryCount:3,
-  onError(data, params) {
+  pollingErrorRetryCount: 3,
+  onFinally() {
     // pages.page++;
     // if (data.length > 5) {
     //   pages.loadingEnd = '已达最大数量5';
     // }
-    // cancel();
+    cancel();
   },
 });
 mutate(() => []);

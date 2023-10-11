@@ -37,8 +37,12 @@ function usePlugins<R, P extends unknown[]>(
     watch(
       refreshDeps,
       () => {
-        console.log(refreshDepsParams,'refreshDepsParams')
-        Instance.functionContext.run(...(refreshDepsParams.value || ([] as unknown as P)));
+        console.log(refreshDeps,'refreshDeps',refreshDepsParams)
+        if (refreshDepsParams) {
+          Instance.functionContext.run(...refreshDepsParams.value);
+        } else {
+          Instance.functionContext.refresh();
+        }
       },
       { deep: true },
     );

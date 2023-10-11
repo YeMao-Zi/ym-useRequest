@@ -58,7 +58,7 @@ const refreshDepsParams = computed(() => [
 const { data, loading } = useRequest(somePromise, {
   defaultParams: [{ page: 1 }], // 默认数据
   refreshDeps: [() => pages.page], // 监听的依赖
-  refreshDepsParams: refreshDepsParams, // 可选，依赖变更后执行的参数
+  refreshDepsParams: refreshDepsParams, // 可选，依赖变更后执行的参数,不传则在依赖变更后执行 refresh
   onSuccess(data, params) {
     if (data.length > 5) {
       pages.loadingEnd = '已达最大数量5';
@@ -118,7 +118,7 @@ const somePromise = () => {
   });
 };
 // 每 3000 ms 进行一次请求
-const { data, run, cancel } = useRequest(getUsername, {
+const { data, run, cancel } = useRequest(somePromise, {
   pollingInterval: 3000,
 });
 
@@ -139,8 +139,8 @@ const errPromise = () => {
     reject('请求出错了');
   });
 };
-const { data, run, cancel } = useRequest(getUsername, {
+const { data, run, cancel } = useRequest(errPromise, {
   pollingInterval: 3000,
-  pollingErrorRetryCount:3 // 请求错误重试，将在三次轮询后不再轮询
+  pollingErrorRetryCount: 3, // 请求错误重试，将在三次轮询后不再轮询
 });
 ```
