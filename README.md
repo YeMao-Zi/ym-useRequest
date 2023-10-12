@@ -144,3 +144,23 @@ const { data, run, cancel } = useRequest(errPromise, {
   pollingErrorRetryCount: 3, // 请求错误重试，将在三次轮询后不再轮询
 });
 ```
+
+### 7.允许请求
+
+ready 参数控制本次请求是否被允许，若 ready 为 false ，该请求始终不会被允许
+
+```ts
+const somePromise = () => {
+  return new Promise((resolve, reject) => {
+    resolve(1);
+  });
+};
+
+const ready = ref(false);
+const { data } = useRequest(somePromise, {
+  ready,
+});
+console.log(data.value); // null
+ready.value = true;
+console.log(data.value); // 1
+```

@@ -14,24 +14,24 @@ function usePlugins<R, P extends unknown[]>(
     ...rest,
   };
 
-  const Instance = createInstance(service, fetchOptions);
+  const instance = createInstance(service, fetchOptions);
 
-  Instance.plugins.value = plugins.map((p) => p(Instance, fetchOptions));
+  instance.plugins.value = plugins.map((p) => p(instance, fetchOptions));
 
   if (!manual) {
-    Instance.functionContext.run(...defaultParams);
+    instance.functionContext.run(...defaultParams);
   }
 
   onUnmounted(() => {
-    Instance.functionContext.cancel();
+    instance.functionContext.cancel();
   });
 
   return {
-    loading: Instance.loading,
-    data: Instance.data,
-    error: Instance.error,
-    params: Instance.params,
-    ...Instance.functionContext,
+    loading: instance.loading,
+    data: instance.data,
+    error: instance.error,
+    params: instance.params,
+    ...instance.functionContext,
   };
 }
 

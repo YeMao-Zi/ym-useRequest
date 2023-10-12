@@ -19,7 +19,7 @@ function createPlugin<R, P extends unknown[]>(service: Service<R, P>, options: O
   const callPlugin = (type: keyof PluginHooks<R, P>, ...args: any[]): CallPlugin<R> => {
     if (type == 'onInit') {
       const InstanceFn = plugins.value.map((i) => i.onInit).filter(Boolean);
-      // 使用中间件思想为所有 plugins 执行一次 onInit，并层层传递 service 最终重新将 处理包装后的 service 返回
+      // 为所有 plugins 执行一次 onInit，并层层传递 service 最终重新将 处理包装后的 service 返回
       return { servicePromise: composeMiddleware(InstanceFn, args[0])() };
     } else {
       // @ts-ignore

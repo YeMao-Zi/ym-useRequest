@@ -1,4 +1,10 @@
 import type { WatchSource, Ref } from 'vue';
+
+interface DebounceOptions {
+  leading?: boolean;
+  trailing?: boolean;
+  maxWait?: number;
+}
 export interface Options<R, P extends any[]> {
   // 是否手动发起请求
   manual?: boolean;
@@ -13,12 +19,27 @@ export interface Options<R, P extends any[]> {
 
   // 请求延时
   loadingDelay?: number;
+
   // 轮询
   pollingInterval?: number;
   // 轮询错误重试
   pollingErrorRetryCount?: number;
+
   // 是否允许请求
   ready?: Ref<boolean>;
+
+  // 防抖等待时间
+  debounceWait?: number;
+  // 防抖函数属性
+  debounceOptions?: {
+    // 是否在延迟开始前执行
+    leading?: boolean;
+    // 是否在延迟开始后执行
+    trailing?: boolean;
+    // 允许被延迟的最大值
+    maxWait?: number;
+  };
+
   // 请求前回调
   onBefore?: (params: P) => void;
   // 成功回调
