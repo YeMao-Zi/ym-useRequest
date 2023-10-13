@@ -20,6 +20,10 @@
   "author": {
     "name": "zhushengjie"
   },
+  "np": {
+    "yarn": false,
+    "contents": "dist"
+  },
   "scripts": {
     "dev": "vite --config ./playground/vite.config.ts ./playground",
     "build": "tsup",
