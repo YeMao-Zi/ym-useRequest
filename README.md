@@ -164,3 +164,78 @@ console.log(data.value); // null
 ready.value = true;
 console.log(data.value); // 1
 ```
+
+### 8.函数防抖
+
+```ts
+const somePromise = () => {
+  console.log(1);
+  return new Promise((resolve, reject) => {
+    resolve(1);
+  });
+};
+
+const { data, run } = useRequest(somePromise, {
+  manual: true,
+  debounceWait: 2000,
+  debounceOptions: {
+    // 参数同 loadsh 的 debounce
+    leading: true,
+    trailing: false,
+  },
+});
+
+const onRun = () => {
+  run();
+};
+```
+
+
+## 所有配置项
+
+``` ts
+{
+  // 是否手动发起请求
+  manual?: boolean;
+
+  // 当 manual 为 false 时，自动执行的默认参数
+  defaultParams?: P;
+
+  // 监听依赖
+  refreshDeps?: WatchSource<any>[];
+  // 依赖变更后的执行参数
+  refreshDepsParams?: Ref<P>;
+
+  // 请求延时
+  loadingDelay?: number;
+
+  // 轮询
+  pollingInterval?: number;
+  // 轮询错误重试
+  pollingErrorRetryCount?: number;
+
+  // 是否允许请求
+  ready?: Ref<boolean>;
+
+  // 防抖等待时间
+  debounceWait?: number;
+  // 防抖函数属性
+  debounceOptions?: {
+    // 是否在延迟开始前执行
+    leading?: boolean;
+    // 是否在延迟开始后执行
+    trailing?: boolean;
+    // 允许被延迟的最大值
+    maxWait?: number;
+  };
+
+  // 请求前回调
+  onBefore?: (params: P) => void;
+  // 成功回调
+  onSuccess?: (response: R, params: P) => void;
+  // 失败回调
+  onError?: (err: any, params: P) => void;
+  // 接口完成回调
+  onFinally?: () => void;
+}
+```

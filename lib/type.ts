@@ -1,15 +1,19 @@
 import type { WatchSource, Ref } from 'vue';
 
-interface DebounceOptions {
+interface DebounceOptionsBase {
+  // 是否在延迟开始前执行
   leading?: boolean;
+  // 是否在延迟开始后执行
   trailing?: boolean;
+  // 允许被延迟的最大值
   maxWait?: number;
 }
+
 export interface Options<R, P extends any[]> {
   // 是否手动发起请求
   manual?: boolean;
 
-  // 当 manual 为false时，自动执行的默认参数
+  // 当 manual 为 false 时，自动执行的默认参数
   defaultParams?: P;
 
   // 监听依赖
@@ -29,16 +33,9 @@ export interface Options<R, P extends any[]> {
   ready?: Ref<boolean>;
 
   // 防抖等待时间
-  debounceWait?: number;
+  debounceWait?: Ref<number> | number;
   // 防抖函数属性
-  debounceOptions?: {
-    // 是否在延迟开始前执行
-    leading?: boolean;
-    // 是否在延迟开始后执行
-    trailing?: boolean;
-    // 允许被延迟的最大值
-    maxWait?: number;
-  };
+  debounceOptions?: Ref<DebounceOptionsBase> | DebounceOptionsBase;
 
   // 请求前回调
   onBefore?: (params: P) => void;

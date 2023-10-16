@@ -28,7 +28,9 @@ function createPlugin<R, P extends unknown[]>(service: Service<R, P>, options: O
     }
   };
 
-  const runAsync = async (...args: P) => {
+  const functionContext = {} as FunctionContext<R, P>;
+
+  functionContext.runAsync = async (...args: P) => {
     loading.value = true;
     args.length && (params.value = args);
     status.value = 'pending';
@@ -74,35 +76,26 @@ function createPlugin<R, P extends unknown[]>(service: Service<R, P>, options: O
       });
   };
 
-  const run = (...args: P) => {
-    runAsync(...args).catch((err) => {
+  functionContext.run = (...args: P) => {
+    functionContext.runAsync(...args).catch((err) => {
       !onError && console.error(err);
     });
   };
 
-  const cancel = () => {
+  functionContext.cancel = () => {
     count.value--;
     loading.value = false;
     callPlugin('onCancel');
   };
 
-  const refresh = () => run(...params.value);
+  functionContext.refresh = () => functionContext.run(...params.value);
 
-  const refreshAsync = () => runAsync(...params.value);
+  functionContext.refreshAsync = () => functionContext.runAsync(...params.value);
 
-  const mutate = (v: any) => {
+  functionContext.mutate = (v: any) => {
     data.value = v.constructor === Function ? v(data.value) : v;
     callPlugin('onMutate', data.value);
   };
-
-  const functionContext = {
-    run,
-    runAsync,
-    cancel,
-    refresh,
-    refreshAsync,
-    mutate,
-  } as FunctionContext<R, P>;
 
   return {
     status,

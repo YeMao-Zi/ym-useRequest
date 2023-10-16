@@ -20,23 +20,23 @@ export const composeMiddleware = (middleArray: any[], hook: any) => {
   };
 };
 
-export const type = function (o: any): Type {
+export const isType = function (o: any): IsType {
   const s = Object.prototype.toString.call(o);
   return s.match(/\[object (.*?)\]/)[1].toLowerCase();
 };
 
-export const isNull = (v: any) => type(v) === 'null';
-export const isUndefined = (v: any) => type(v) === 'undefined';
-export const isObject = (v: any) => type(v) === 'object';
-export const isArray = (v: any) => type(v) === 'array';
-export const isString = (v: any) => type(v) === 'string';
-export const isNumber = (v: any) => type(v) === 'number';
-export const isBoolean = (v: any) => type(v) === 'boolean';
-export const isFunction = (v: any) => type(v) === 'function';
-export const isRegExp = (v: any) => type(v) === 'regexp';
+export const isNull = (v: any) => isType(v) === 'null';
+export const isUndefined = (v: any) => isType(v) === 'undefined';
+export const isObject = (v: any) => isType(v) === 'object';
+export const isArray = (v: any) => isType(v) === 'array';
+export const isString = (v: any) => isType(v) === 'string';
+export const isNumber = (v: any) => isType(v) === 'number';
+export const isBoolean = (v: any) => isType(v) === 'boolean';
+export const isFunction = (v: any) => isType(v) === 'function';
+export const isRegExp = (v: any) => isType(v) === 'regexp';
 export const isPromise = (v: any) => Boolean(v && typeof v.then === 'function');
 
-export const isType: IsType = {
+export const type: Type = {
   isNull,
   isUndefined,
   isObject,

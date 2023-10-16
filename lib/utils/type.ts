@@ -1,4 +1,4 @@
-export type IsType = {
+export type Type = {
   isNull: (v: any) => boolean;
   isUndefined: (v: any) => boolean;
   isObject: (v: any) => boolean;
@@ -11,7 +11,7 @@ export type IsType = {
   isPromise: (v: any) => boolean;
 };
 
-export type Type =
+export type IsType =
   | 'null'
   | 'undefined'
   | 'object'

@@ -106,9 +106,6 @@ describe.concurrent('simple example with result', () => {
     const { data, mutate } = useRequest(getData);
     await vi.runAllTimersAsync();
     expect(data.value).toBe(1);
-    mutate((data) => data + 1);
-    await vi.runAllTimersAsync();
-    expect(data.value).toBe(2);
   });
 
   test('cancel', async () => {
@@ -127,6 +124,8 @@ describe.concurrent('simple example with result', () => {
   test('mutate', async () => {
     const { data, mutate } = useRequest(getData, { defaultParams: [5] });
     await vi.runAllTimersAsync();
+    mutate(5);
+    expect(data.value).toBe(5);
     mutate((v) => v + 1);
     expect(data.value).toBe(6);
   });
@@ -186,27 +185,29 @@ describe.concurrent('life cycle', () => {
   });
 });
 
-test('loadingDelay', async () => {
-  const { loading } = useRequest(getData, {
-    loadingDelay: 600,
+describe.concurrent('loadingDelay', () => {
+  test('loadingDelay normal', async () => {
+    const { loading } = useRequest(getData, {
+      loadingDelay: 600,
+    });
+    expect(loading.value).toBe(false);
+    await vi.advanceTimersByTimeAsync(500);
+    expect(loading.value).toBe(false);
+    await vi.advanceTimersByTimeAsync(200);
+    expect(loading.value).toBe(true);
+    await vi.advanceTimersByTimeAsync(400);
+    expect(loading.value).toBe(false);
   });
-  expect(loading.value).toBe(false);
-  await vi.advanceTimersByTimeAsync(500);
-  expect(loading.value).toBe(false);
-  await vi.advanceTimersByTimeAsync(200);
-  expect(loading.value).toBe(true);
-  await vi.advanceTimersByTimeAsync(400);
-  expect(loading.value).toBe(false);
-});
 
-test('loadingDelay and delay out request time', async () => {
-  const { loading } = useRequest(getData, {
-    loadingDelay: 1200,
+  test('loadingDelay and delay out request time', async () => {
+    const { loading } = useRequest(getData, {
+      loadingDelay: 1200,
+    });
+    await vi.advanceTimersByTimeAsync(1100);
+    expect(loading.value).toBe(false);
+    await vi.advanceTimersByTimeAsync(200);
+    expect(loading.value).toBe(false);
   });
-  await vi.advanceTimersByTimeAsync(1100);
-  expect(loading.value).toBe(false);
-  await vi.advanceTimersByTimeAsync(200);
-  expect(loading.value).toBe(false);
 });
 
 describe('data with params', () => {
@@ -345,32 +346,125 @@ describe('polling and error retry', () => {
   });
 });
 
-test('ready with manual=false', async () => {
-  const ready = ref(false);
-  const { data } = useRequest(getData, {
-    defaultParams: [1],
-    ready,
+describe.concurrent('ready', () => {
+  test('ready with manual=false', async () => {
+    const ready = ref(false);
+    const { data } = useRequest(getData, {
+      defaultParams: [1],
+      ready,
+    });
+    expect(data.value).toBeNull();
+    await vi.runAllTimersAsync();
+    expect(data.value).toBeNull();
+    ready.value = true;
+    await vi.runAllTimersAsync();
+    expect(data.value).toBe(1);
   });
-  expect(data.value).toBeNull();
-  await vi.runAllTimersAsync();
-  expect(data.value).toBeNull();
-  ready.value = true;
-  await vi.runAllTimersAsync();
-  expect(data.value).toBe(1);
+
+  test('ready with manual=true', async () => {
+    const ready = ref(false);
+    const { data, run } = useRequest(getData, {
+      manual: true,
+      defaultParams: [1],
+      ready,
+    });
+    run();
+    await vi.runAllTimersAsync();
+    expect(data.value).toBeNull();
+    ready.value = true;
+    run();
+    await vi.runAllTimersAsync();
+    expect(data.value).toBe(1);
+  });
 });
 
-test('ready with manual=true', async () => {
-  const ready = ref(false);
-  const { data, run } = useRequest(getData, {
-    manual: true,
-    defaultParams: [1],
-    ready,
+describe('debounce', () => {
+  test('debounce with debounceInterval', async () => {
+    const callback = vi.fn();
+    const { run, cancel } = useRequest(
+      () => {
+        callback();
+        return getData();
+      },
+      {
+        manual: true,
+        debounceWait: 100,
+      },
+    );
+    for (let index = 0; index < 100; index++) {
+      run();
+      await vi.advanceTimersByTimeAsync(50);
+    }
+    expect(callback).toHaveBeenCalledTimes(0);
+    await vi.advanceTimersByTimeAsync(50);
+    expect(callback).toHaveBeenCalledTimes(1);
+
+    for (let index = 0; index < 100; index++) {
+      run();
+      await vi.advanceTimersByTimeAsync(50);
+    }
+    cancel()
+    expect(callback).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(50);
+    expect(callback).toHaveBeenCalledTimes(1);
   });
-  run();
-  await vi.runAllTimersAsync();
-  expect(data.value).toBeNull();
-  ready.value = true;
-  run();
-  await vi.runAllTimersAsync();
-  expect(data.value).toBe(1);
+
+  test('debounce with debounceOptions', async () => {
+    const callback = vi.fn();
+    const { run } = useRequest(
+      () => {
+        callback();
+        return getData();
+      },
+      {
+        manual: true,
+        debounceWait: 100,
+        debounceOptions: {
+          leading: true,
+          trailing: false,
+        },
+      },
+    );
+
+    for (let index = 0; index < 100; index++) {
+      run();
+      await vi.advanceTimersByTimeAsync(50);
+    }
+    expect(callback).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(100);
+    expect(callback).toHaveBeenCalledTimes(1);
+
+    for (let index = 0; index < 100; index++) {
+      run();
+      await vi.advanceTimersByTimeAsync(50);
+    }
+    expect(callback).toHaveBeenCalledTimes(2);
+    await vi.advanceTimersByTimeAsync(100);
+    expect(callback).toHaveBeenCalledTimes(2);
+  });
+
+  test('debounce with debounceInterval change', async () => {
+    const callback = vi.fn();
+    const debounceWaitRef = ref(100);
+    const { run } = useRequest(
+      () => {
+        callback();
+        return getData();
+      },
+      {
+        manual: true,
+        debounceWait: debounceWaitRef,
+      },
+    );
+    run();
+    expect(callback).toHaveBeenCalledTimes(0);
+    await vi.advanceTimersByTimeAsync(50);
+    expect(callback).toHaveBeenCalledTimes(0);
+    debounceWaitRef.value = 150;
+    await vi.advanceTimersByTimeAsync(50);
+    expect(callback).toHaveBeenCalledTimes(0);
+    run();
+    await vi.advanceTimersByTimeAsync(150);
+    expect(callback).toHaveBeenCalledTimes(1);
+  });
 });
