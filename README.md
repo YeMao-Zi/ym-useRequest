@@ -23,16 +23,14 @@ run(); // 手动触发一次
 ### 2.自动执行一次并带默认参数
 
 ```ts
-const somePromise=(params1,params2)=>{
-    return new Promise((resolve, reject)=>{
-        resolve({params1,params2})
-    })
-}
-const {data,loading}=useRequest(somePromise,{
-  defaultParams: [
-      params1: '参数1',
-      params2: '参数2',
-]})
+const somePromise = (params1, params2) => {
+  return new Promise((resolve, reject) => {
+    resolve({ params1, params2 });
+  });
+};
+const { data, loading } = useRequest(somePromise, {
+  defaultParams: ['参数1', '参数2'],
+});
 ```
 
 ### 3.监听响应式数据并自动执行更新数据
@@ -190,10 +188,9 @@ const onRun = () => {
 };
 ```
 
-
 ## 所有配置项
 
-``` ts
+```ts
 {
   // 是否手动发起请求
   manual?: boolean;
