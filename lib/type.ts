@@ -9,6 +9,13 @@ interface DebounceOptionsBase {
   maxWait?: number;
 }
 
+interface ThrottleOptionsBase {
+  // 是否在延迟开始前执行
+  leading?: boolean;
+  // 是否在延迟开始后执行
+  trailing?: boolean;
+}
+
 export interface Options<R, P extends any[]> {
   // 是否手动发起请求
   manual?: boolean;
@@ -36,6 +43,10 @@ export interface Options<R, P extends any[]> {
   debounceWait?: Ref<number> | number;
   // 防抖函数属性
   debounceOptions?: Ref<DebounceOptionsBase> | DebounceOptionsBase;
+  // 节流等待时间
+  throttleWait?: Ref<number> | number;
+  // 节流函数属性
+  throttleOptions?: Ref<ThrottleOptionsBase> | ThrottleOptionsBase;
 
   // 请求前回调
   onBefore?: (params: P) => void;

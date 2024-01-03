@@ -1,6 +1,8 @@
 <template>
   <div>{{ data.length }} {{ loading }}{{ pages.loadingEnd }}</div>
-  <div @click="onRun">run</div>
+  <div @click="gorun">run</div>
+  <div @click="onRun1">run1</div>
+  <div @click="onRun2">run2</div>
   <div @click="onCancel">cancel</div>
   <div @click="testFn">testFun</div>
 </template>
@@ -11,15 +13,16 @@ import useRequest from 'ym-userequest';
 // import useRequest from '../dist';
 import debounce from '../lib/utils/debounce';
 const pages = reactive({
-  page: 1,
+  page: 2,
   loadingEnd: null,
   count: 0,
 });
 const somePromise = (pages: { page: number }): Promise<any[]> => {
+  console.log(pages.page,'pages.page')
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       resolve(new Array(pages.page).fill(1));
-    }, 1000);
+    }, 100);
   });
 };
 
@@ -32,17 +35,22 @@ const refreshDepsParams = computed(() => [
 const ready = ref(false);
 const { data, loading, mutate, cancel, run, runAsync } = useRequest(somePromise, {
   manual: true,
-  defaultParams: [{ page: 1 }],
+  defaultParams: [{ page: 2 }],
   // ready,
   // refreshDeps: [() => pages.page],
   // refreshDepsParams: refreshDepsParams,
   // pollingInterval: 1000,
   // pollingErrorRetryCount: 3,
-  debounceWait: 2000,
-  debounceOptions: {
-    leading: true,
-    trailing: false,
-  },
+  // debounceWait: 2000,
+  // debounceOptions: {
+  //   leading: true,
+  //   trailing: false,
+  // },
+  throttleWait: 2000,
+  // throttleOptions: {
+  //   leading: true,
+  //   trailing: false,
+  // },
   onFinally() {
     // pages.page++;
     // if (data.length > 5) {
@@ -52,34 +60,40 @@ const { data, loading, mutate, cancel, run, runAsync } = useRequest(somePromise,
   },
 });
 
-setTimeout(() => {
-  console.log(runAsync);
-}, 1000);
 mutate(() => []);
-const onRun = () => {
-  !pages.loadingEnd && pages.page++;
+const gorun=()=>{
+  pages.page++
+  runAsync({
+    page: pages.page,
+  })
+}
+const onRun1 = () => {
   // ready.value = true;
   run({
-    page: pages.page,
+    page: 10,
   });
 };
+const onRun2 = () => {
+  // ready.value = true;
+  run({
+    page: 20,
+  });
+};
+
 
 const onCancel = () => {
   cancel();
 };
 
-let testNum = 0;
-const testFn = debounce(
-  () => {
-    testNum++;
-    console.log(testNum);
-  },
-  2000,
-  {
-    leading: true,
-    trailing: false,
-  },
-);
+const testFn = debounce(() => {
+  pages.page++
+  somePromise({
+    page:pages.page
+  })
+
+}, 1000,{
+  leading: true,
+});
 </script>
 
 <style></style>

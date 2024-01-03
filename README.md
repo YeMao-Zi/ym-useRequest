@@ -165,6 +165,8 @@ console.log(data.value); // 1
 
 ### 8.函数防抖
 
+有一个问题：防抖内部使用的是 lodash 的 debounce 方法，但由于 debounce 不是 promise,只能在内部的 promise 中包裹 debounce，导致了防抖后的参数不是第一次的触发参数而是最后一次触发的参数
+
 ```ts
 const somePromise = () => {
   console.log(1);
@@ -177,6 +179,31 @@ const { data, run } = useRequest(somePromise, {
   manual: true,
   debounceWait: 2000,
   debounceOptions: {
+    // 参数同 loadsh 的 debounce
+    leading: true,
+    trailing: false,
+  },
+});
+
+const onRun = () => {
+  run();
+};
+```
+
+### 9.函数节流
+
+```ts
+const somePromise = () => {
+  console.log(1);
+  return new Promise((resolve, reject) => {
+    resolve(1);
+  });
+};
+
+const { data, run } = useRequest(somePromise, {
+  manual: true,
+  throttleWait: 2000,
+  throttleOptions: {
     // 参数同 loadsh 的 debounce
     leading: true,
     trailing: false,
@@ -224,6 +251,16 @@ const onRun = () => {
     trailing?: boolean;
     // 允许被延迟的最大值
     maxWait?: number;
+  };
+
+  // 节流等待时间
+  throttleWait?: number;
+  // 节流函数属性
+  throttleOptions?: {
+    // 是否在延迟开始前执行
+    leading?: boolean;
+    // 是否在延迟开始后执行
+    trailing?: boolean;
   };
 
   // 请求前回调
