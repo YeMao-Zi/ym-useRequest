@@ -1,5 +1,12 @@
 
 
+# [1.5.0](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.4.0...v1.5.0) (2024-01-04)
+
+
+### Features
+
+* 添加函数节流 ([8d52b0d](https://github.com/YeMao-Zi/ym-useRequest/commit/8d52b0dd4fb6af7a4486e28ae7957f10cf8c4571))
+
 # [1.4.0](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.3.0...v1.4.0) (2023-10-16)
 
 
