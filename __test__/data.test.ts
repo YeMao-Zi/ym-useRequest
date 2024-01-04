@@ -403,7 +403,7 @@ describe('debounce', () => {
       run();
       await vi.advanceTimersByTimeAsync(50);
     }
-    cancel()
+    cancel();
     expect(callback).toHaveBeenCalledTimes(1);
     await vi.advanceTimersByTimeAsync(50);
     expect(callback).toHaveBeenCalledTimes(1);
@@ -466,5 +466,84 @@ describe('debounce', () => {
     run();
     await vi.advanceTimersByTimeAsync(150);
     expect(callback).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('throttle', () => {
+  test('throttle with throttleInterval', async () => {
+    const callback = vi.fn();
+    const { run } = useRequest(
+      () => {
+        callback();
+        return getData();
+      },
+      {
+        manual: true,
+        throttleWait: 100,
+      },
+    );
+    run();
+    await vi.advanceTimersByTimeAsync(50);
+    run();
+    run();
+    run();
+    await vi.advanceTimersByTimeAsync(50);
+    expect(callback).toHaveBeenCalledTimes(2);
+  });
+
+  test('throttle with throttleOptions',async () => {
+    const callback = vi.fn();
+    const { run } = useRequest(
+      () => {
+        callback();
+        return getData();
+      },
+      {
+        manual: true,
+        throttleWait: 100,
+        throttleOptions: {
+          leading: true,
+          trailing: false,
+        },
+      },
+    );
+
+    run();
+    expect(callback).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(50);
+    run();
+    run();
+    run();
+    await vi.advanceTimersByTimeAsync(50);
+    expect(callback).toHaveBeenCalledTimes(1);
+    run();
+    expect(callback).toHaveBeenCalledTimes(2);
+  });
+
+  test('throttle with throttleInterval change', async () => {
+    const callback = vi.fn();
+    const throttleWaitRef = ref(100);
+    const { run } = useRequest(
+      () => {
+        callback();
+        return getData();
+      },
+      {
+        manual: true,
+        throttleWait: throttleWaitRef,
+      },
+    );
+    run();
+    run();
+    expect(callback).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(50);
+    throttleWaitRef.value=150
+    run();
+    run();
+    expect(callback).toHaveBeenCalledTimes(1);
+    run();
+    await vi.advanceTimersByTimeAsync(100);
+    run();
+    expect(callback).toHaveBeenCalledTimes(2);
   });
 });
