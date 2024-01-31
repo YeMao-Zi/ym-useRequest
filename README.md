@@ -2,6 +2,10 @@
 
 接口的手动管理，包括请求状态，请求数据，手动更新，自动更新，回调，监听数据并更新
 
+## 安装
+
+npm install ym-userequest
+
 ## 使用
 
 ### 1.手动执行
@@ -63,7 +67,7 @@ const { data, loading } = useRequest(somePromise, {
     }
   },
 });
-mutate(() => []); // 设置 data 默认值
+mutate(() => []); // 手动设置 data 值
 const onClick = () => {
   !pages.loadingEnd && pages.page++;
 };
@@ -97,6 +101,8 @@ const somePromise = () => {
 };
 
 const { data, loading, mutate } = useRequest(somePromise);
+
+mutate(5555);
 
 const onChange = () => {
   mutate((res) => {
@@ -194,7 +200,6 @@ const onRun = () => {
 
 ```ts
 const somePromise = () => {
-  console.log(1);
   return new Promise((resolve, reject) => {
     resolve(1);
   });
@@ -271,5 +276,32 @@ const onRun = () => {
   onError?: (err: any, params: P) => void;
   // 接口完成回调
   onFinally?: () => void;
+}
+```
+
+## 所有返回项
+
+```ts
+{
+  // 返回请求执行成功后的返回的数据
+  data: Ref<R>;
+  // 返回请求的执行状态
+  loading: Ref<boolean>;
+  // 返回请求失败的错误信息
+  error?: Ref<any>;
+  // 返回本次请求的参数
+  params?: Ref<P>;
+  // 手动执行请求（返回promise）
+  runAsync: (...arg: P) => Promise<R>;
+  // 手动执行请求
+  run: (...arg: P) => void;
+  // 手动取消请求
+  cancel: () => void;
+  // 手动刷新请求
+  refresh: () => void;
+  // 手动刷新请求（返回promise）
+  refreshAsync: () => Promise<R>;
+  // 修改返回的data数据
+  mutate: (newData: R) => void | (arg: (oldData: R) => R) => void;;
 }
 ```
