@@ -1,5 +1,7 @@
 
 
+## [1.5.1](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.5.0...v1.5.1) (2024-01-31)
+
 # [1.5.0](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.4.0...v1.5.0) (2024-01-04)
 
 
