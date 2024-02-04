@@ -9,8 +9,8 @@
 
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue';
-import useRequest from 'ym-userequest';
-// import useRequest from '../dist';
+// import { useRequest } from 'ym-userequest';
+import {useRequest} from '../dist';
 import debounce from '../lib/utils/debounce';
 const pages = reactive({
   page: 2,
@@ -18,7 +18,7 @@ const pages = reactive({
   count: 0,
 });
 const somePromise = (pages: { page: number }): Promise<any[]> => {
-  console.log(pages.page,'pages.page')
+  console.log(pages.page, 'pages.page');
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       resolve(new Array(pages.page).fill(1));
@@ -61,12 +61,12 @@ const { data, loading, mutate, cancel, run, runAsync } = useRequest(somePromise,
 });
 
 mutate(() => []);
-const gorun=()=>{
-  pages.page++
+const gorun = () => {
+  pages.page++;
   runAsync({
     page: pages.page,
-  })
-}
+  });
+};
 const onRun1 = () => {
   // ready.value = true;
   run({
@@ -80,20 +80,22 @@ const onRun2 = () => {
   });
 };
 
-
 const onCancel = () => {
   cancel();
 };
 
-const testFn = debounce(() => {
-  pages.page++
-  somePromise({
-    page:pages.page
-  })
-
-}, 1000,{
-  leading: true,
-});
+const testFn = debounce(
+  () => {
+    pages.page++;
+    somePromise({
+      page: pages.page,
+    });
+  },
+  1000,
+  {
+    leading: true,
+  },
+);
 </script>
 
 <style></style>

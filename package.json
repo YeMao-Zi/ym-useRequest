@@ -1,18 +1,27 @@
 {
   "name": "ym-userequest",
   "description": "基于Vue3的 useRequest",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "private": false,
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "require": "./dist/index.mjs",
-      "import": "./dist/index.js"
+      "node": {
+        "import": {
+          "default": "./dist/index.mjs"
+        },
+        "require": {
+          "default": "./dist/index.js"
+        }
+      },
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
     },
-    "./*": "./*"
+    "./*": "./*",
+    "./dist/*": "./dist/*"
   },
-  "main": "index.mjs",
-  "module": "dist/index.js",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "files": [
     "dist"
