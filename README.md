@@ -276,6 +276,8 @@ const onRun = () => {
   onError?: (err: any, params: P) => void;
   // 接口完成回调
   onFinally?: () => void;
+   // 取消接口回调
+  onCancel?:()=>void;
 }
 ```
 

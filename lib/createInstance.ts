@@ -4,7 +4,7 @@ import type { Service, Options, FunctionContext, Instance, PluginHooks, CallPlug
 import { composeMiddleware } from './utils';
 
 function createPlugin<R, P extends unknown[]>(service: Service<R, P>, options: Options<R, P>): Instance<R, P> {
-  const { defaultParams, onBefore, onSuccess, onError, onFinally } = options;
+  const { defaultParams, onBefore, onSuccess, onError, onFinally, onCancel } = options;
 
   const data = shallowRef<R>(null);
   const loading = ref(false);
@@ -86,6 +86,7 @@ function createPlugin<R, P extends unknown[]>(service: Service<R, P>, options: O
     count.value--;
     loading.value = false;
     callPlugin('onCancel');
+    onCancel?.()
   };
 
   functionContext.refresh = () => functionContext.run(...params.value);
