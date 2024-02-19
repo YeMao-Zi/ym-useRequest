@@ -1,5 +1,13 @@
 
 
+# [1.6.0](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.5.1...v1.6.0) (2024-02-19)
+
+
+### Features
+
+* 1.5.2 ([6c9901f](https://github.com/YeMao-Zi/ym-useRequest/commit/6c9901f082c23f3be87ee9e5783c09ac8cc3f241))
+* add onCancel ([d57ee77](https://github.com/YeMao-Zi/ym-useRequest/commit/d57ee778840d3f287edb5ea166775b2491926387))
+
 ## [1.5.1](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.5.0...v1.5.1) (2024-01-31)
 
 # [1.5.0](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.4.0...v1.5.0) (2024-01-04)
