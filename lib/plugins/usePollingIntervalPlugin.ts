@@ -22,15 +22,16 @@ const usePollingIntervalPlugin: Plugin<any, any[]> = (instance, { pollingInterva
     onCancel() {
       stopPolling();
       stopPollingRef.value = true;
+      instance.pollingCount.value = 0;
     },
     onSuccess() {
       countRef.value = 0;
     },
     onError() {
-      console.log('onError');
       countRef.value++;
     },
     onFinally() {
+      instance.pollingCount.value++;
       if (stopPollingRef.value) {
         stopPollingRef.value = false;
         return;

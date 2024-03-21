@@ -1,7 +1,7 @@
 import { ref, reactive, computed, defineComponent } from 'vue';
 import type { ComputedRef } from 'vue';
 import { expect, test, describe, vi, beforeAll } from 'vitest';
-import useRequest from '../lib';
+import { useRequest } from '../lib';
 import { mount } from './utils';
 
 const getData = (value = 1): Promise<number> => {
@@ -344,6 +344,26 @@ describe('polling and error retry', () => {
     await vi.advanceTimersByTimeAsync(2000);
     expect(callback).toHaveBeenCalledTimes(3);
   });
+
+  test('pollingCount', async () => {
+    const { cancel,pollingCount } = useRequest(getData, {
+      pollingInterval: 100,
+      onSuccess() {
+        if (pollingCount.value === 3) {
+          cancel();
+        }
+      },
+    });
+    expect(pollingCount.value).toBe(0);
+    await vi.advanceTimersByTimeAsync(1100);
+    expect(pollingCount.value).toBe(1);
+    await vi.advanceTimersByTimeAsync(1100);
+    expect(pollingCount.value).toBe(2);
+    await vi.advanceTimersByTimeAsync(1100);
+    expect(pollingCount.value).toBe(3);
+    await vi.advanceTimersByTimeAsync(100);
+    expect(pollingCount.value).toBe(3);
+  });
 });
 
 describe.concurrent('ready', () => {
@@ -491,7 +511,7 @@ describe('throttle', () => {
     expect(callback).toHaveBeenCalledTimes(2);
   });
 
-  test('throttle with throttleOptions',async () => {
+  test('throttle with throttleOptions', async () => {
     const callback = vi.fn();
     const { run } = useRequest(
       () => {
@@ -537,7 +557,7 @@ describe('throttle', () => {
     run();
     expect(callback).toHaveBeenCalledTimes(1);
     await vi.advanceTimersByTimeAsync(50);
-    throttleWaitRef.value=150
+    throttleWaitRef.value = 150;
     run();
     run();
     expect(callback).toHaveBeenCalledTimes(1);

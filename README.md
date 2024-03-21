@@ -73,7 +73,7 @@ const onClick = () => {
 };
 ```
 
-### 4.延时loading
+### 4.延时 loading
 
 使用 loadingDelay 定义一个 loading 的延时时间，避免请求时间较短时出现 loading 闪烁
 
@@ -146,6 +146,26 @@ const errPromise = () => {
 const { data, run, cancel } = useRequest(errPromise, {
   pollingInterval: 3000,
   pollingErrorRetryCount: 3, // 请求错误重试，将在三次轮询后不再轮询
+});
+```
+
+轮询次数
+
+在进行一次 cancel 后，轮询次数会被清空
+
+```ts
+const somePromise = () => {
+  return new Promise((resolve, reject) => {
+    resolve(1);
+  });
+};
+const { cancel, pollingCount } = useRequest(somePromise, {
+  pollingInterval: 100,
+  onFinally() {
+    if (pollingCount.value === 3) {
+      cancel();
+    }
+  },
 });
 ```
 
@@ -293,6 +313,8 @@ const onRun = () => {
   error?: Ref<any>;
   // 返回本次请求的参数
   params?: Ref<P>;
+  // 进行轮询时累计轮询次数
+  pollingCount:Ref<number>
   // 手动执行请求（返回promise）
   runAsync: (...arg: P) => Promise<R>;
   // 手动执行请求

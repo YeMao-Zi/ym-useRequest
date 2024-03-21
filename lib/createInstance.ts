@@ -9,6 +9,7 @@ function createPlugin<R, P extends unknown[]>(service: Service<R, P>, options: O
   const data = shallowRef<R>(null);
   const loading = ref(false);
   const params = ref(defaultParams) as Ref<P>;
+  const pollingCount=ref(0)
   const error = shallowRef();
   const status = shallowRef('pending') as Instance<R, P>['status'];
   const plugins = ref([]) as Instance<R, P>['plugins'];
@@ -102,6 +103,7 @@ function createPlugin<R, P extends unknown[]>(service: Service<R, P>, options: O
     status,
     data,
     params,
+    pollingCount,
     loading,
     error,
     plugins,

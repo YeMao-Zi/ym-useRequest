@@ -1,5 +1,5 @@
 <template>
-  <div>{{ data.length }} {{ loading }}{{ pages.loadingEnd }}</div>
+  <div>{{ data.length }} {{ loading }}{{ pages.loadingEnd }}{{ pollingCount }}</div>
   <div @click="gorun">run</div>
   <div @click="onRun1">run1</div>
   <div @click="onRun2">run2</div>
@@ -9,8 +9,8 @@
 
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue';
-// import { useRequest } from 'ym-userequest';
-import {useRequest} from '../dist';
+import { useRequest } from 'ym-userequest';
+// import { useRequest } from '../dist';
 import debounce from '../lib/utils/debounce';
 const pages = reactive({
   page: 2,
@@ -33,20 +33,20 @@ const refreshDepsParams = computed(() => [
 ]);
 
 const ready = ref(false);
-const { data, loading, mutate, cancel, run, runAsync } = useRequest(somePromise, {
-  manual: true,
+const { data, loading, mutate, cancel, run, runAsync, pollingCount } = useRequest(somePromise, {
+  // manual: true,
   defaultParams: [{ page: 2 }],
   // ready,
   // refreshDeps: [() => pages.page],
   // refreshDepsParams: refreshDepsParams,
-  // pollingInterval: 1000,
+  pollingInterval: 1000,
   // pollingErrorRetryCount: 3,
   // debounceWait: 2000,
   // debounceOptions: {
   //   leading: true,
   //   trailing: false,
   // },
-  throttleWait: 2000,
+  // throttleWait: 2000,
   // throttleOptions: {
   //   leading: true,
   //   trailing: false,
@@ -56,6 +56,9 @@ const { data, loading, mutate, cancel, run, runAsync } = useRequest(somePromise,
     // if (data.length > 5) {
     //   pages.loadingEnd = '已达最大数量5';
     // }
+    if(pollingCount.value===3){
+      cancel();
+    }
     // cancel();
   },
 });

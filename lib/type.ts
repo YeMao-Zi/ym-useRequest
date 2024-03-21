@@ -89,6 +89,7 @@ export type State<R, P> = {
   loading: Ref<boolean>;
   error?: Ref<any>;
   params?: Ref<P>;
+  pollingCount:Ref<number>
 };
 
 type MutateData<R> = (newData: R) => void;
