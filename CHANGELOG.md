@@ -1,5 +1,12 @@
 
 
+# [1.7.0](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.6.0...v1.7.0) (2024-03-21)
+
+
+### Features
+
+* add pollingCount ([bfd8426](https://github.com/YeMao-Zi/ym-useRequest/commit/bfd84260660133b81763d85a84bd100cdc95c15b))
+
 # [1.6.0](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.5.1...v1.6.0) (2024-02-19)
 
 
