@@ -11,6 +11,7 @@ npm install ym-userequest
 ### 1.手动执行
 
 ```ts
+import { useRequest } from 'ym-userequest';
 const { data, loading, run, runAsync, refresh, refreshAsync, cancel } = useRequest(somePromise, { manual: true });
 const somePromise = () => {
   return new Promise((resolve, reject) => {
@@ -242,6 +243,7 @@ const onRun = () => {
 ### 10.缓存
 
 ```ts
+import { useRequest, clearCache } from 'ym-userequest';
 const somePromise = (value) => {
   return new Promise((resolve, reject) => {
     resolve(value);
@@ -264,6 +266,9 @@ const { data, run } = useRequest(somePromise, {
 
 run(1); // 1
 run(2); // 1
+
+// 手动清除缓存 clearCache(params?:string[])
+// clearCache()
 
 setTimeOut(() => {
   run(2);
