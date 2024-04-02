@@ -5,6 +5,7 @@
   <div @click="onRun2">run2</div>
   <div @click="onCancel">cancel</div>
   <div @click="testFn">testFun</div>
+  <div @click="mutate([1, 2, 3])">mutate</div>
 </template>
 
 <script setup lang="ts">
@@ -37,8 +38,8 @@ const { data, loading, mutate, cancel, run, runAsync, pollingCount } = useReques
   // manual: true,
   defaultParams: [{ page: 2 }],
   // ready,
-  // refreshDeps: [() => pages.page],
-  // refreshDepsParams: refreshDepsParams,
+  refreshDeps: [() => pages.page],
+  refreshDepsParams: refreshDepsParams,
   pollingInterval: 1000,
   // pollingErrorRetryCount: 3,
   // debounceWait: 2000,
@@ -51,19 +52,30 @@ const { data, loading, mutate, cancel, run, runAsync, pollingCount } = useReques
   //   leading: true,
   //   trailing: false,
   // },
+  cacheKey: 'test',
+  cacheTime: 10000,
+  staleTime: 10000,
+  setCache(cacheKey, data) {
+    localStorage.setItem(cacheKey, JSON.stringify(data));
+  },
+  getCache(cacheKey) {
+    return JSON.parse(localStorage.getItem(cacheKey) || '[]');
+  },
+
   onFinally() {
-    // pages.page++;
-    // if (data.length > 5) {
-    //   pages.loadingEnd = '已达最大数量5';
-    // }
-    if(pollingCount.value===3){
+    if (data.value.length > 5) {
+      pages.loadingEnd = '已达最大数量5';
+      cancel();
+    } else {
+      pages.page++;
+    }
+    if (pollingCount.value === 5) {
       cancel();
     }
     // cancel();
   },
 });
 
-mutate(() => []);
 const gorun = () => {
   pages.page++;
   runAsync({

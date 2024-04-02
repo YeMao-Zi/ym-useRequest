@@ -1,4 +1,5 @@
 import type { WatchSource, Ref } from 'vue';
+import type {CacheData} from './utils/cache'
 
 interface DebounceOptionsBase {
   // 是否在延迟开始前执行
@@ -47,6 +48,16 @@ export interface Options<R, P extends any[]> {
   throttleWait?: Ref<number> | number;
   // 节流函数属性
   throttleOptions?: Ref<ThrottleOptionsBase> | ThrottleOptionsBase;
+  // 请求的唯一标识
+  cacheKey?: string | ((params?: P) => string);
+  // 缓存时间
+  cacheTime?: number;
+  // 缓存数据保持新鲜时间(什么时候会重新发送请求更新缓存)
+  staleTime?: number;
+  // 自定义获取缓存
+  getCache?: (cacheKey: string) => CacheData;
+  // 自定义设置缓存
+  setCache?: (cacheKey: string, cacheData: CacheData) => void;
 
   // 请求前回调
   onBefore?: (params: P) => void;
@@ -57,14 +68,11 @@ export interface Options<R, P extends any[]> {
   // 接口完成回调
   onFinally?: () => void;
   // 取消接口回调
-  onCancel?:()=>void;
+  onCancel?: () => void;
 }
 
 export type PluginHooks<R, P extends unknown[]> = {
-  onBefore: (params: P) => {
-    isBreak?: Boolean;
-    breakResult?: any;
-  } | void;
+  onBefore: (params: P) => CallPlugin<R>['data'] | void;
   onInit: (service: () => Promise<R>) => () => Promise<R>;
   onSuccess(data: R, params: P): void;
   onError(error: Error, params: P): void;
@@ -89,7 +97,7 @@ export type State<R, P> = {
   loading: Ref<boolean>;
   error?: Ref<any>;
   params?: Ref<P>;
-  pollingCount:Ref<number>
+  pollingCount: Ref<number>;
 };
 
 type MutateData<R> = (newData: R) => void;
@@ -109,7 +117,7 @@ export interface Request<R, P extends unknown[]> extends State<R, P>, FunctionCo
 export type Service<R, P extends unknown[]> = (...args: P) => Promise<R>;
 
 export type CallPlugin<R> = {
-  isBreak?: Boolean;
-  breakResult?: any;
+  returnNow?:boolean;
+  data?: any;
   servicePromise: Promise<R>;
 };

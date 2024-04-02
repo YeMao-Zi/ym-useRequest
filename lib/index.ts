@@ -1,4 +1,5 @@
 import type { Service, Options, Request } from './type';
+import { clearCache } from './utils/cache';
 import usePlugins from './usePlugins';
 import useLoadingDelayPlugins from './plugins/useLoadingDelayPlugin';
 import usePollingIntervalPlugin from './plugins/usePollingIntervalPlugin';
@@ -6,6 +7,7 @@ import useReadyPlugin from './plugins/useReadyPlugin';
 import useRefreshDepsPlugin from './plugins/useRefreshDepsPlugin';
 import useDebouncePlugin from './plugins/useDebouncePlugin';
 import useThrottlePlugin from './plugins/useThrottlePlugin';
+import useCachePlugin from './plugins/useCachePlugin';
 
 function useRequest<R, P extends unknown[] = any>(service: Service<R, P>, options?: Options<R, P>): Request<R, P> {
   return usePlugins<R, P>(service, options, [
@@ -15,6 +17,7 @@ function useRequest<R, P extends unknown[] = any>(service: Service<R, P>, option
     useReadyPlugin,
     useDebouncePlugin,
     useThrottlePlugin,
+    useCachePlugin,
   ]);
-};
-export { useRequest };
+}
+export { useRequest, clearCache };

@@ -9,7 +9,7 @@ function createPlugin<R, P extends unknown[]>(service: Service<R, P>, options: O
   const data = shallowRef<R>(null);
   const loading = ref(false);
   const params = ref(defaultParams) as Ref<P>;
-  const pollingCount=ref(0)
+  const pollingCount = ref(0);
   const error = shallowRef();
   const status = shallowRef('pending') as Instance<R, P>['status'];
   const plugins = ref([]) as Instance<R, P>['plugins'];
@@ -38,11 +38,13 @@ function createPlugin<R, P extends unknown[]>(service: Service<R, P>, options: O
     count.value++;
     const currentCount = count.value;
 
-    const { isBreak, breakResult } = callPlugin('onBefore', args);
+    const callPluginBefore = callPlugin('onBefore', args);
 
-    if (isBreak) {
+    if (callPluginBefore?.returnNow) {
       status.value = 'settled';
-      return breakResult;
+      data.value = callPluginBefore?.data ?? null;
+      loading.value = false;
+      return callPluginBefore?.data ?? null;
     }
     onBefore?.(args);
     let serverWrapper = () => new Promise<R>((resolve) => resolve(service(...params.value)));
@@ -53,16 +55,16 @@ function createPlugin<R, P extends unknown[]>(service: Service<R, P>, options: O
     await serverWrapper()
       .then((res) => {
         if (currentCount !== count.value) {
-          return new Promise(() => {});
+          return;
         }
         data.value = res;
         error.value = undefined;
-        callPlugin('onSuccess', args);
+        callPlugin('onSuccess', data.value, args);
         onSuccess?.(res, args);
       })
       .catch((err: any) => {
         if (currentCount !== count.value) {
-          return new Promise(() => {});
+          return;
         }
         error.value = err;
         callPlugin('onError', err, args);
@@ -87,7 +89,7 @@ function createPlugin<R, P extends unknown[]>(service: Service<R, P>, options: O
     count.value--;
     loading.value = false;
     callPlugin('onCancel');
-    onCancel?.()
+    onCancel?.();
   };
 
   functionContext.refresh = () => functionContext.run(...params.value);

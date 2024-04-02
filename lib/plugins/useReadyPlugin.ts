@@ -17,7 +17,7 @@ const useReadyPlugin: Plugin<any, any[]> = (instance, { ready = ref(true), manua
       if (!ready.value) {
         instance.loading.value = false;
         return {
-          isBreak: true,
+          returnNow: true,
         };
       }
     },

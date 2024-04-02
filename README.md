@@ -195,7 +195,6 @@ console.log(data.value); // 1
 
 ```ts
 const somePromise = () => {
-  console.log(1);
   return new Promise((resolve, reject) => {
     resolve(1);
   });
@@ -238,6 +237,37 @@ const { data, run } = useRequest(somePromise, {
 const onRun = () => {
   run();
 };
+```
+
+### 10.缓存
+
+```ts
+const somePromise = (value) => {
+  return new Promise((resolve, reject) => {
+    resolve(value);
+  });
+};
+
+const { data, run } = useRequest(somePromise, {
+  manual: true,
+  cacheKey: 'test',
+  cacheTime: 5000,
+  // 自定义设置缓存
+  setCache(cacheKey, data) {
+    localStorage.setItem(cacheKey, JSON.stringify(data));
+  },
+  // 自定义获取缓存
+  getCache(cacheKey) {
+    return JSON.parse(localStorage.getItem(cacheKey) || 'null');
+  },
+});
+
+run(1); // 1
+run(2); // 1
+
+setTimeOut(() => {
+  run(2);
+}, 5000); // 2
 ```
 
 ## 所有配置项
@@ -287,6 +317,17 @@ const onRun = () => {
     // 是否在延迟开始后执行
     trailing?: boolean;
   };
+
+  // 请求的唯一标识
+  cacheKey?: string | ((params?: P) => string);
+  // 缓存时间,默认: 5 * 60 * 1000
+  cacheTime?: number;
+  // 缓存数据保持新鲜时间(什么时候会重新发送请求更新缓存),默认 0,若为-1表示始终不再发送请求
+  staleTime?: number;
+  // 自定义获取缓存
+  getCache?: (cacheKey: string) => CacheData;
+  // 自定义设置缓存
+  setCache?: (cacheKey: string, cacheData: CacheData) => void;
 
   // 请求前回调
   onBefore?: (params: P) => void;
