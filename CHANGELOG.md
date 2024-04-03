@@ -1,5 +1,13 @@
 
 
+# [1.8.0](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.7.0...v1.8.0) (2024-04-03)
+
+
+### Features
+
+* add useCache ([c6df7e6](https://github.com/YeMao-Zi/ym-useRequest/commit/c6df7e6633dfbd4bf5795ac7e344fc10d6b043bf))
+* coverage ([4bc6c08](https://github.com/YeMao-Zi/ym-useRequest/commit/4bc6c081afc7319ca480de9f12de87b4278d2e26))
+
 # [1.7.0](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.6.0...v1.7.0) (2024-03-21)
 
 
