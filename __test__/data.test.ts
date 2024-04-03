@@ -1,14 +1,14 @@
 import { ref, reactive, computed, defineComponent } from 'vue';
 import type { ComputedRef } from 'vue';
 import { expect, test, describe, vi, beforeAll } from 'vitest';
-import { useRequest } from '../lib';
+import { useRequest, clearCache } from '../lib';
 import { mount } from './utils';
 
-const getData = (value = 1): Promise<number> => {
+const getData = (value = 1, time = 1000): Promise<number> => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(value);
-    }, 1000);
+    }, time);
   });
 };
 
@@ -183,6 +183,21 @@ describe.concurrent('life cycle', () => {
     await vi.runAllTimersAsync();
     expect(callback).toHaveBeenCalledTimes(1);
   });
+
+  test('onCancel', async () => {
+    let data: any;
+    const callback = vi.fn(() => {
+      data = 1;
+    });
+    const { cancel } = useRequest(getData, {
+      onCancel: callback,
+      defaultParams: [2],
+    });
+    await vi.advanceTimersByTimeAsync(100);
+    cancel();
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(data).toBe(1);
+  });
 });
 
 describe.concurrent('loadingDelay', () => {
@@ -346,7 +361,7 @@ describe('polling and error retry', () => {
   });
 
   test('pollingCount', async () => {
-    const { cancel,pollingCount } = useRequest(getData, {
+    const { cancel, pollingCount } = useRequest(getData, {
       pollingInterval: 100,
       onSuccess() {
         if (pollingCount.value === 3) {
@@ -565,5 +580,153 @@ describe('throttle', () => {
     await vi.advanceTimersByTimeAsync(100);
     run();
     expect(callback).toHaveBeenCalledTimes(2);
+  });
+
+  test('throttle with cancel', async () => {
+    const callback = vi.fn();
+    const { run ,cancel} = useRequest(
+      () => {
+        callback();
+        return getData();
+      },
+      {
+        manual: true,
+        throttleWait: 200,
+      },
+    );
+    run();
+    await vi.advanceTimersByTimeAsync(50);
+    expect(callback).toHaveBeenCalledTimes(1);
+    run();
+    await vi.advanceTimersByTimeAsync(50);
+    expect(callback).toHaveBeenCalledTimes(1);
+    cancel()
+    run();
+    await vi.advanceTimersByTimeAsync(50);
+    expect(callback).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('cache', () => {
+  test('cacheTime', async () => {
+    const { data, run } = useRequest(getData, {
+      manual: true,
+      cacheTime: 10000,
+      staleTime: -1,
+      cacheKey: () => 'test',
+    });
+    run(1);
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(data.value).toBe(1);
+    run(2);
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(data.value).toBe(1);
+    run(2);
+    await vi.advanceTimersByTimeAsync(3000);
+    expect(data.value).toBe(1);
+    await vi.advanceTimersByTimeAsync(6000);
+    run(2);
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(data.value).toBe(2);
+  });
+
+  test('staleTime', async () => {
+    const { data, run } = useRequest(getData, {
+      manual: true,
+      cacheTime: 10000,
+      staleTime: 5000,
+      cacheKey: 'test2',
+    });
+    run(1, 0);
+    await vi.advanceTimersByTimeAsync(10);
+    expect(data.value).toBe(1);
+    run(2, 0);
+    await vi.advanceTimersByTimeAsync(10);
+    expect(data.value).toBe(1);
+    await vi.advanceTimersByTimeAsync(5000);
+    run(2, 0);
+    await vi.advanceTimersByTimeAsync(10);
+    expect(data.value).toBe(2);
+  });
+
+  test('clearCache with all', async () => {
+    const { data, run } = useRequest(getData, {
+      manual: true,
+      cacheTime: 10000,
+      staleTime: -1,
+      cacheKey: 'test3',
+    });
+    run(1, 0);
+    await vi.advanceTimersByTimeAsync(10);
+    expect(data.value).toBe(1);
+    run(2, 0);
+    await vi.advanceTimersByTimeAsync(10);
+    expect(data.value).toBe(1);
+    clearCache();
+    run(2, 0);
+    await vi.advanceTimersByTimeAsync(10);
+    expect(data.value).toBe(2);
+  });
+
+  test('clearCache with key', async () => {
+    const { data, run } = useRequest(getData, {
+      manual: true,
+      cacheTime: 10000,
+      staleTime: -1,
+      cacheKey: 'test4',
+    });
+    run(1, 0);
+    await vi.advanceTimersByTimeAsync(10);
+    expect(data.value).toBe(1);
+    run(2, 0);
+    await vi.advanceTimersByTimeAsync(10);
+    expect(data.value).toBe(1);
+    clearCache(['test4']);
+    run(2, 0);
+    await vi.advanceTimersByTimeAsync(10);
+    expect(data.value).toBe(2);
+  });
+
+  test('setCache and getCache', async () => {
+    const { data, run } = useRequest(getData, {
+      manual: true,
+      cacheTime: 10000,
+      staleTime: -1,
+      cacheKey: 'test5',
+      setCache(cacheKey, data) {
+        localStorage.setItem(cacheKey, JSON.stringify(data));
+      },
+      getCache(cacheKey) {
+        return JSON.parse(localStorage.getItem(cacheKey) || 'null');
+      },
+    });
+    run(1, 0);
+    await vi.advanceTimersByTimeAsync(10);
+    expect(data.value).toBe(1);
+    run(2, 0);
+    await vi.advanceTimersByTimeAsync(10);
+    expect(data.value).toBe(1);
+    localStorage.clear();
+    run(2, 0);
+    await vi.advanceTimersByTimeAsync(10);
+    expect(data.value).toBe(2);
+  });
+
+  test('cache with mutate', async () => {
+    const { data, run, mutate } = useRequest(getData, {
+      manual: true,
+      cacheTime: 10000,
+      staleTime: -1,
+      cacheKey: 'test4',
+    });
+    run(1, 0);
+    await vi.advanceTimersByTimeAsync(10);
+    expect(data.value).toBe(2);
+    await vi.advanceTimersByTimeAsync(10000);
+    run(1, 0);
+    await vi.advanceTimersByTimeAsync(10);
+    expect(data.value).toBe(1);
+    mutate(3);
+    expect(data.value).toBe(3);
   });
 });

@@ -12,10 +12,11 @@ const useCachePlugin: Plugin<any, any[]> = (
     setCache: customGetCache,
   },
 ) => {
-  const cacheKey = (isFunction(customCacheKey) ? customCacheKey : () => customCacheKey) as (params?: any) => string;
-  if (!cacheKey) {
+  if (!customCacheKey) {
     return {};
   }
+  const cacheKey = (isFunction(customCacheKey) ? customCacheKey : () => customCacheKey) as (params?: any) => string;
+
 
   const _setCache = (key: string, cacheData: CacheData, time: number) => {
     if (customGetCache) {
@@ -41,14 +42,13 @@ const useCachePlugin: Plugin<any, any[]> = (
       if (!cache || !Reflect.has(cache, 'data')) {
         return {};
       }
-
       if (staleTime === -1 || new Date().getTime() - cache.time <= staleTime) {
         return {
           returnNow: true,
           data: cache.data,
         };
       } else {
-        return {};
+        return { data: cache.data };
       }
     },
     // onInit(service) {

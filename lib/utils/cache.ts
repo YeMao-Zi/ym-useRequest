@@ -34,7 +34,7 @@ const getCache = (key: CachedKey) => {
   return cache.get(key);
 };
 
-const clearCache = (key: CachedKey | CachedKey[]) => {
+const clearCache = (key?: CachedKey | CachedKey[]) => {
   if (key) {
     const cachedKeys = Array.isArray(key) ? key : [key];
     cachedKeys.forEach((cachedKey) => cache.delete(cachedKey));

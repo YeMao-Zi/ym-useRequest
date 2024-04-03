@@ -255,19 +255,19 @@ const { data, run } = useRequest(somePromise, {
   cacheKey: 'test',
   cacheTime: 5000,
   // 自定义设置缓存
-  setCache(cacheKey, data) {
-    localStorage.setItem(cacheKey, JSON.stringify(data));
-  },
+  // setCache(cacheKey, data) {
+  //   localStorage.setItem(cacheKey, JSON.stringify(data));
+  // },
   // 自定义获取缓存
-  getCache(cacheKey) {
-    return JSON.parse(localStorage.getItem(cacheKey) || 'null');
-  },
+  // getCache(cacheKey) {
+  //   return JSON.parse(localStorage.getItem(cacheKey) || 'null');
+  // },
 });
 
 run(1); // 1
 run(2); // 1
 
-// 手动清除缓存 clearCache(params?:string[])
+// 手动清除缓存 clearCache(params?:string[]|string)
 // clearCache()
 
 setTimeOut(() => {

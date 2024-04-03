@@ -1,5 +1,5 @@
 <template>
-  <div>{{ data.length }} {{ loading }}{{ pages.loadingEnd }}{{ pollingCount }}</div>
+  <div>{{ data?.length }} {{ loading }}{{ pages.loadingEnd }}{{ pollingCount }}</div>
   <div @click="gorun">run</div>
   <div @click="onRun1">run1</div>
   <div @click="onRun2">run2</div>
@@ -14,7 +14,7 @@ import { useRequest } from 'ym-userequest';
 // import { useRequest } from '../dist';
 import debounce from '../lib/utils/debounce';
 const pages = reactive({
-  page: 2,
+  page: 0,
   loadingEnd: null,
   count: 0,
 });
@@ -29,18 +29,18 @@ const somePromise = (pages: { page: number }): Promise<any[]> => {
 
 const refreshDepsParams = computed(() => [
   {
-    page: pages.page + 1,
+    page: pages.page,
   },
 ]);
 
 const ready = ref(false);
 const { data, loading, mutate, cancel, run, runAsync, pollingCount } = useRequest(somePromise, {
-  // manual: true,
-  defaultParams: [{ page: 2 }],
+  manual: true,
+  // defaultParams: [{ page: 1 }],
   // ready,
   refreshDeps: [() => pages.page],
   refreshDepsParams: refreshDepsParams,
-  pollingInterval: 1000,
+  // pollingInterval: 1000,
   // pollingErrorRetryCount: 3,
   // debounceWait: 2000,
   // debounceOptions: {
@@ -54,20 +54,20 @@ const { data, loading, mutate, cancel, run, runAsync, pollingCount } = useReques
   // },
   cacheKey: 'test',
   cacheTime: 10000,
-  staleTime: 10000,
-  setCache(cacheKey, data) {
-    localStorage.setItem(cacheKey, JSON.stringify(data));
-  },
-  getCache(cacheKey) {
-    return JSON.parse(localStorage.getItem(cacheKey) || '[]');
-  },
+  staleTime: -1,
+  // setCache(cacheKey, data) {
+  //   localStorage.setItem(cacheKey, JSON.stringify(data));
+  // },
+  // getCache(cacheKey) {
+  //   return JSON.parse(localStorage.getItem(cacheKey) || '[]');
+  // },
 
   onFinally() {
     if (data.value.length > 5) {
-      pages.loadingEnd = '已达最大数量5';
+      pages.loadingEnd = '已达最大数量5;';
       cancel();
     } else {
-      pages.page++;
+      // pages.page++;
     }
     if (pollingCount.value === 5) {
       cancel();

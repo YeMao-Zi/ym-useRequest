@@ -46,6 +46,9 @@ function createPlugin<R, P extends unknown[]>(service: Service<R, P>, options: O
       loading.value = false;
       return callPluginBefore?.data ?? null;
     }
+    if(callPluginBefore?.data){
+      data.value=callPluginBefore.data
+    }
     onBefore?.(args);
     let serverWrapper = () => new Promise<R>((resolve) => resolve(service(...params.value)));
     let { servicePromise } = callPlugin('onInit', serverWrapper);
