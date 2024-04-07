@@ -1,5 +1,12 @@
 
 
+# [1.9.0](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.8.0...v1.9.0) (2024-04-07)
+
+
+### Features
+
+* callPlugin before change ([e2c35d8](https://github.com/YeMao-Zi/ym-useRequest/commit/e2c35d860eb00ee8a9686090ea59b431cd7d5421))
+
 # [1.8.0](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.7.0...v1.8.0) (2024-04-03)
 
 
