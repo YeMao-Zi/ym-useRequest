@@ -38,16 +38,16 @@ function createPlugin<R, P extends unknown[]>(service: Service<R, P>, options: O
     count.value++;
     const currentCount = count.value;
 
-    const callPluginBefore = callPlugin('onBefore', args);
+    const { returnNow = false, returnData = null } = callPlugin('onBefore', args);
 
-    if (callPluginBefore?.returnNow) {
+    if (returnNow) {
       status.value = 'settled';
-      data.value = callPluginBefore?.data ?? null;
+      data.value = returnData;
       loading.value = false;
-      return callPluginBefore?.data ?? null;
+      return returnData;
     }
-    if(callPluginBefore?.data){
-      data.value=callPluginBefore.data
+    if (returnData) {
+      data.value =returnData;
     }
     onBefore?.(args);
     let serverWrapper = () => new Promise<R>((resolve) => resolve(service(...params.value)));

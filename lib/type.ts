@@ -72,7 +72,7 @@ export interface Options<R, P extends any[]> {
 }
 
 export type PluginHooks<R, P extends unknown[]> = {
-  onBefore: (params: P) => CallPlugin<R>['data'] | void;
+  onBefore: (params: P) => CallPlugin<R>['returnData'] | void;
   onInit: (service: () => Promise<R>) => () => Promise<R>;
   onSuccess(data: R, params: P): void;
   onError(error: Error, params: P): void;
@@ -118,6 +118,6 @@ export type Service<R, P extends unknown[]> = (...args: P) => Promise<R>;
 
 export type CallPlugin<R> = {
   returnNow?:boolean;
-  data?: any;
+  returnData?: any;
   servicePromise: Promise<R>;
 };

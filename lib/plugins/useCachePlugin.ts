@@ -45,10 +45,10 @@ const useCachePlugin: Plugin<any, any[]> = (
       if (staleTime === -1 || new Date().getTime() - cache.time <= staleTime) {
         return {
           returnNow: true,
-          data: cache.data,
+          returnData: cache.data,
         };
       } else {
-        return { data: cache.data };
+        return { returnData: cache.data };
       }
     },
     // onInit(service) {
