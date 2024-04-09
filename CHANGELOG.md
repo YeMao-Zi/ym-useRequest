@@ -1,5 +1,12 @@
 
 
+# [1.10.0](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.9.0...v1.10.0) (2024-04-09)
+
+
+### Features
+
+* use same cache promise ([10cf3bc](https://github.com/YeMao-Zi/ym-useRequest/commit/10cf3bc01d4e7d0ae0d12383cc62123a5ad90279))
+
 # [1.9.0](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.8.0...v1.9.0) (2024-04-07)
 
 
