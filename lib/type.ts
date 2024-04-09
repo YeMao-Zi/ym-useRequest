@@ -95,8 +95,8 @@ export type Plugin<R, P extends unknown[]> = (
 export type State<R, P> = {
   data: Ref<R>;
   loading: Ref<boolean>;
-  error?: Ref<any>;
-  params?: Ref<P>;
+  error: Ref<any>;
+  params: Ref<P>;
   pollingCount: Ref<number>;
 };
 
@@ -119,5 +119,5 @@ export type Service<R, P extends unknown[]> = (...args: P) => Promise<R>;
 export type CallPlugin<R> = {
   returnNow?:boolean;
   returnData?: any;
-  servicePromise: Promise<R>;
+  servicePromise?: Promise<R>;
 };

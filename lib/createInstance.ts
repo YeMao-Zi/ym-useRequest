@@ -6,7 +6,7 @@ import { composeMiddleware } from './utils';
 function createPlugin<R, P extends unknown[]>(service: Service<R, P>, options: Options<R, P>): Instance<R, P> {
   const { defaultParams, onBefore, onSuccess, onError, onFinally, onCancel } = options;
 
-  const data = shallowRef<R>(null);
+  const data = shallowRef(null) as Ref<R>;
   const loading = ref(false);
   const params = ref(defaultParams) as Ref<P>;
   const pollingCount = ref(0);
@@ -33,7 +33,9 @@ function createPlugin<R, P extends unknown[]>(service: Service<R, P>, options: O
 
   functionContext.runAsync = async (...args: P) => {
     loading.value = true;
-    args.length && (params.value = args);
+    if (args?.length) {
+      params.value = args;
+    }
     status.value = 'pending';
     count.value++;
     const currentCount = count.value;
@@ -47,7 +49,7 @@ function createPlugin<R, P extends unknown[]>(service: Service<R, P>, options: O
       return returnData;
     }
     if (returnData) {
-      data.value =returnData;
+      data.value = returnData;
     }
     onBefore?.(args);
     let serverWrapper = () => new Promise<R>((resolve) => resolve(service(...params.value)));

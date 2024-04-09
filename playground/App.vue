@@ -6,12 +6,16 @@
   <div @click="onCancel">cancel</div>
   <div @click="testFn">testFun</div>
   <div @click="mutate([1, 2, 3])">mutate</div>
+  <div v-for="item in 10" :key="item">
+    <Item />
+  </div>
 </template>
 
 <script setup lang="ts">
+import Item from './item.vue';
 import { computed, reactive, ref } from 'vue';
-import { useRequest } from 'ym-userequest';
-// import { useRequest } from '../dist';
+// import { useRequest } from 'ym-userequest';
+import { useRequest } from '../dist';
 import debounce from '../lib/utils/debounce';
 const pages = reactive({
   page: 0,

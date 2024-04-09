@@ -22,6 +22,7 @@ export const composeMiddleware = (middleArray: any[], hook: any) => {
 
 export const isType = function (o: any): IsType {
   const s = Object.prototype.toString.call(o);
+  // @ts-ignore
   return s.match(/\[object (.*?)\]/)[1].toLowerCase();
 };
 

@@ -2,7 +2,6 @@
  * source by `lodash`
  * https://github.com/lodash/lodash.git
  */
-/* istanbul ignore next */
 import { isObject } from './index';
 import debounce from './debounce';
 
@@ -17,7 +16,7 @@ function throttle(
   if (typeof func !== 'function') {
     throw new TypeError('Expected a function');
   }
-  if (isObject(options)) {
+  if (options && isObject(options)) {
     leading = 'leading' in options ? !!options.leading : leading;
     trailing = 'trailing' in options ? !!options.trailing : trailing;
   }

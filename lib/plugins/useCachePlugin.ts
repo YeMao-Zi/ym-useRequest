@@ -1,6 +1,9 @@
+import { onBeforeUnmount } from 'vue';
 import type { Plugin } from '../type';
 import { isFunction } from '../utils';
 import { setCache, getCache, type CacheData } from '../utils/cache';
+import { subscribe } from '../utils/cacheSubscribe';
+import { getCachePromise, setCachePromise } from '../utils/cachePromise';
 
 const useCachePlugin: Plugin<any, any[]> = (
   instance,
@@ -15,8 +18,11 @@ const useCachePlugin: Plugin<any, any[]> = (
   if (!customCacheKey) {
     return {};
   }
-  const cacheKey = (isFunction(customCacheKey) ? customCacheKey : () => customCacheKey) as (params?: any) => string;
 
+  let unSubscribe = () => {};
+  let currentPromise: Promise<any>;
+
+  const cacheKey = (isFunction(customCacheKey) ? customCacheKey : () => customCacheKey) as (params?: any) => string;
 
   const _setCache = (key: string, cacheData: CacheData, time: number) => {
     if (customGetCache) {
@@ -34,11 +40,29 @@ const useCachePlugin: Plugin<any, any[]> = (
     }
   };
 
+  // get data from cache when init
+  const cache = _getCache(cacheKey());
+  if (cache && Reflect.has(cache, 'data')) {
+    instance.data.value = cache.data;
+    instance.params.value = cache.params;
+  }
+
+  // subscribe same cachekey update, trigger update
+  const setUnSubscribe = (params?: any) => {
+    unSubscribe = subscribe(cacheKey(params), (data) => {
+      instance.data.value = data;
+    });
+  };
+  setUnSubscribe();
+
+  onBeforeUnmount(() => {
+    unSubscribe();
+  });
+
   return {
     onBefore(params) {
       const _cacheKey = cacheKey(params);
       const cache = _getCache(_cacheKey);
-
       if (!cache || !Reflect.has(cache, 'data')) {
         return {};
       }
@@ -51,23 +75,37 @@ const useCachePlugin: Plugin<any, any[]> = (
         return { returnData: cache.data };
       }
     },
-    // onInit(service) {
-    //   const params = instance.params.value;
-    //   const _cacheKey = cacheKey(params);
-    //   const servicePromise = service();
-    // },
+    onInit(service) {
+      const params = instance.params.value;
+      const _cacheKey = cacheKey(params);
+      let servicePromise = getCachePromise(_cacheKey);
+      // If has servicePromise, and is not trigger by self, then use it
+      if (servicePromise && servicePromise !== currentPromise) {
+        return () => servicePromise;
+      }
+      servicePromise = service();
+      currentPromise = servicePromise;
+      setCachePromise(_cacheKey, servicePromise);
+      return () => servicePromise;
+    },
 
     onSuccess(data, params) {
       const _cacheKey = cacheKey(params);
       if (_cacheKey) {
+        // cancel subscribe, avoid trigger self
+        unSubscribe();
         _setCache(_cacheKey, { data, params, time: new Date().getTime() }, cacheTime);
+        setUnSubscribe(params);
       }
     },
     onMutate(data) {
       const params = instance.params.value;
       const _cacheKey = cacheKey(params);
       if (_cacheKey) {
+        // cancel subscribe, avoid trigger self
+        unSubscribe();
         _setCache(_cacheKey, { data, params, time: new Date().getTime() }, cacheTime);
+        setUnSubscribe(params);
       }
     },
   };

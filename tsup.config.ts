@@ -6,4 +6,5 @@ export default defineConfig({
   dts: true,
   external: ['vue'],
   format: ['cjs', 'esm'],
+  target:'es5'
 });
