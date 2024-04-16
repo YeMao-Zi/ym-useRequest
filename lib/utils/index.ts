@@ -37,7 +37,7 @@ export const isFunction = (v: any) => isType(v) === 'function';
 export const isRegExp = (v: any) => isType(v) === 'regexp';
 export const isPromise = (v: any) => Boolean(v && typeof v.then === 'function');
 
-export const type: Type = {
+export const TypeChecker: Type = {
   isNull,
   isUndefined,
   isObject,

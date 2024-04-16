@@ -1,5 +1,5 @@
 import { expect, test, vi, beforeAll } from 'vitest';
-import { composeMiddleware, useDelay, type } from '../lib/utils';
+import { composeMiddleware, useDelay, TypeChecker } from '../lib/utils';
 
 beforeAll(() => {
   vi.useFakeTimers();
@@ -33,15 +33,15 @@ test('composeMiddleware', async () => {
   expect(data).toEqual([2, 1, 'serve']);
 });
 
-test('type', () => {
-  expect(type.isArray([])).toBe(true);
-  expect(type.isBoolean(false)).toBe(true);
-  expect(type.isFunction(() => [])).toBe(true);
-  expect(type.isNull(null)).toBe(true);
-  expect(type.isNumber(2)).toBe(true);
-  expect(type.isObject({})).toBe(true);
-  expect(type.isPromise(new Promise((resolve) => resolve(0)))).toBe(true);
-  expect(type.isRegExp(/abcd/)).toBe(true);
-  expect(type.isString('123')).toBe(true);
-  expect(type.isUndefined(undefined)).toBe(true);
+test('TypeChecker', () => {
+  expect(TypeChecker.isArray([])).toBe(true);
+  expect(TypeChecker.isBoolean(false)).toBe(true);
+  expect(TypeChecker.isFunction(() => [])).toBe(true);
+  expect(TypeChecker.isNull(null)).toBe(true);
+  expect(TypeChecker.isNumber(2)).toBe(true);
+  expect(TypeChecker.isObject({})).toBe(true);
+  expect(TypeChecker.isPromise(new Promise((resolve) => resolve(0)))).toBe(true);
+  expect(TypeChecker.isRegExp(/abcd/)).toBe(true);
+  expect(TypeChecker.isString('123')).toBe(true);
+  expect(TypeChecker.isUndefined(undefined)).toBe(true);
 });

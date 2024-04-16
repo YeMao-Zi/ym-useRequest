@@ -14,8 +14,8 @@
 <script setup lang="ts">
 import Item from './item.vue';
 import { computed, reactive, ref } from 'vue';
-// import { useRequest } from 'ym-userequest';
-import { useRequest } from '../dist';
+import { useRequest } from 'ym-userequest';
+// import { useRequest } from '../dist';
 import debounce from '../lib/utils/debounce';
 const pages = reactive({
   page: 0,

@@ -1,4 +1,7 @@
 import type { Service, Options, Request } from './type';
+import debounce from './utils/debounce';
+import throttle from './utils/throttle';
+import { TypeChecker } from './utils/index';
 import { clearCache } from './utils/cache';
 import usePlugins from './usePlugins';
 import useLoadingDelayPlugins from './plugins/useLoadingDelayPlugin';
@@ -20,4 +23,4 @@ function useRequest<R, P extends unknown[] = any>(service: Service<R, P>, option
     useCachePlugin,
   ]);
 }
-export { useRequest, clearCache };
+export { useRequest, clearCache, debounce, throttle, TypeChecker };
