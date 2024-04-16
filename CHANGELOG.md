@@ -1,5 +1,12 @@
 
 
+# [1.11.0](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.10.0...v1.11.0) (2024-04-16)
+
+
+### Features
+
+* output utility ([c64bd8b](https://github.com/YeMao-Zi/ym-useRequest/commit/c64bd8bcac2fb15e984ea3ab92c2d3e89d3759ad))
+
 # [1.10.0](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.9.0...v1.10.0) (2024-04-09)
 
 
