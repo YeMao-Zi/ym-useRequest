@@ -40,7 +40,7 @@ const refreshDepsParams = computed(() => [
 const ready = ref(false);
 const { data, loading, mutate, cancel, run, runAsync, pollingCount } = useRequest(somePromise, {
   manual: true,
-  // defaultParams: [{ page: 1 }],
+  defaultParams: { page: 1 },
   // ready,
   refreshDeps: [() => pages.page],
   refreshDepsParams: refreshDepsParams,

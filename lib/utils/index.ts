@@ -1,3 +1,4 @@
+import { unref } from 'vue';
 import type { Type, IsType } from './type';
 
 export function useDelay(fn: Function, delay?: number) {
@@ -9,6 +10,12 @@ export function useDelay(fn: Function, delay?: number) {
     fn();
   }
 }
+
+export const useUnrefParmsWithArray = (value: any) => {
+  let _value = unref(value);
+  _value = TypeChecker.isArray(_value) ? _value : [_value];
+  return _value;
+};
 
 export const composeMiddleware = (middleArray: any[], hook: any) => {
   return () => {

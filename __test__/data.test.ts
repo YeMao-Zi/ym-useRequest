@@ -24,11 +24,15 @@ const pages = reactive({
   page: 1,
 });
 
-const params: ComputedRef = computed(() => [
+const paramsArray: ComputedRef = computed(() => [
   {
     page: pages.page + 1,
   },
 ]);
+const params: ComputedRef = computed(() => ({
+  page: pages.page + 1,
+}));
+
 const getDataParams = (pages: { page: number }): Promise<any[]> => {
   return new Promise((resolve) => {
     if (pages.page >= 3) {
@@ -106,6 +110,18 @@ describe.concurrent('simple example with result', () => {
     const { data, mutate } = useRequest(getData);
     await vi.runAllTimersAsync();
     expect(data.value).toBe(1);
+  });
+
+  test('defaultParams', async () => {
+    const { data } = useRequest(getData, { defaultParams: 5 });
+    await vi.runAllTimersAsync();
+    expect(data.value).toBe(5);
+  });
+
+  test('defaultParamsWithArray', async () => {
+    const { data } = useRequest(getData, { defaultParams: [5] });
+    await vi.runAllTimersAsync();
+    expect(data.value).toBe(5);
   });
 
   test('cancel', async () => {
@@ -239,6 +255,23 @@ describe('data with params', () => {
       defaultParams: [pages],
       refreshDeps: [() => pages.page],
       refreshDepsParams: params,
+    });
+    await vi.runAllTimersAsync();
+    expect(data.value.length).toBe(1);
+    pages.page = 0;
+    await vi.runAllTimersAsync();
+    expect(data.value.length).toBe(1);
+    refresh();
+    await vi.runAllTimersAsync();
+    expect(data.value.length).toBe(1);
+  });
+
+  test('depend paramsWithArray and refresh', async () => {
+    pages.page = 1;
+    const { data, refresh } = useRequest(getDataParams, {
+      defaultParams: pages,
+      refreshDeps: [() => pages.page],
+      refreshDepsParams: paramsArray,
     });
     await vi.runAllTimersAsync();
     expect(data.value.length).toBe(1);
@@ -584,7 +617,7 @@ describe('throttle', () => {
 
   test('throttle with cancel', async () => {
     const callback = vi.fn();
-    const { run ,cancel} = useRequest(
+    const { run, cancel } = useRequest(
       () => {
         callback();
         return getData();
@@ -600,7 +633,7 @@ describe('throttle', () => {
     run();
     await vi.advanceTimersByTimeAsync(50);
     expect(callback).toHaveBeenCalledTimes(1);
-    cancel()
+    cancel();
     run();
     await vi.advanceTimersByTimeAsync(50);
     expect(callback).toHaveBeenCalledTimes(2);

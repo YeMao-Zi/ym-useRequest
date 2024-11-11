@@ -1,5 +1,6 @@
-import { onUnmounted } from 'vue';
+import { onUnmounted, unref } from 'vue';
 import type { Service, Options, Request, Plugin } from './type';
+import { useUnrefParmsWithArray } from './utils';
 import createInstance from './createInstance';
 
 function usePlugins<R, P extends unknown[]>(
@@ -8,9 +9,10 @@ function usePlugins<R, P extends unknown[]>(
   plugins: Plugin<R, P>[],
 ): Request<R, P> {
   const { manual = false, defaultParams = [] as unknown as P, ...rest } = options;
+  const _defaultParams=useUnrefParmsWithArray(defaultParams)
   const fetchOptions = {
     manual,
-    defaultParams,
+    defaultParams:_defaultParams,
     ...rest,
   };
 
@@ -19,7 +21,7 @@ function usePlugins<R, P extends unknown[]>(
   instance.plugins.value = plugins.map((p) => p(instance, fetchOptions));
 
   if (!manual) {
-    instance.functionContext.run(...defaultParams);
+    instance.functionContext.run(..._defaultParams);
   }
 
   onUnmounted(() => {
@@ -31,7 +33,7 @@ function usePlugins<R, P extends unknown[]>(
     data: instance.data,
     error: instance.error,
     params: instance.params,
-    pollingCount:instance.pollingCount,
+    pollingCount: instance.pollingCount,
     ...instance.functionContext,
   };
 }

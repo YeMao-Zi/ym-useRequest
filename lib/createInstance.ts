@@ -1,9 +1,9 @@
-import { ref, shallowRef } from 'vue';
+import { ref, shallowRef, unref } from 'vue';
 import type { Ref } from 'vue';
 import type { Service, Options, FunctionContext, Instance, PluginHooks, CallPlugin } from './type';
-import { composeMiddleware } from './utils';
+import { composeMiddleware, TypeChecker } from './utils';
 
-function createPlugin<R, P extends unknown[]>(service: Service<R, P>, options: Options<R, P>): Instance<R, P> {
+function createInstance<R, P extends unknown[]>(service: Service<R, P>, options: Options<R, P>): Instance<R, P> {
   const { defaultParams, onBefore, onSuccess, onError, onFinally, onCancel } = options;
 
   const data = shallowRef(null) as Ref<R>;
@@ -118,4 +118,4 @@ function createPlugin<R, P extends unknown[]>(service: Service<R, P>, options: O
   };
 }
 
-export default createPlugin;
+export default createInstance;

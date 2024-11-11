@@ -22,7 +22,7 @@ export interface Options<R, P extends any[]> {
   manual?: boolean;
 
   // 当 manual 为 false 时，自动执行的默认参数
-  defaultParams?: P;
+  defaultParams?: any;
 
   // 监听依赖
   refreshDeps?: WatchSource<any>[];
