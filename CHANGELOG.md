@@ -1,5 +1,7 @@
 
 
+## [1.11.1](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.11.0...v1.11.1) (2024-11-11)
+
 # [1.11.0](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.10.0...v1.11.0) (2024-04-16)
 
 
