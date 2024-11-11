@@ -1,5 +1,5 @@
 import type { WatchSource, Ref } from 'vue';
-import type {CacheData} from './utils/cache'
+import type { CacheData } from './utils/cache';
 
 interface DebounceOptionsBase {
   // 是否在延迟开始前执行
@@ -25,7 +25,7 @@ export interface Options<R, P extends any[]> {
   defaultParams?: any;
 
   // 监听依赖
-  refreshDeps?: WatchSource<any>[];
+  refreshDeps?: WatchSource<any>[] | WatchSource<any>;
   // 依赖变更后的执行参数
   refreshDepsParams?: Ref<P>;
 
@@ -117,7 +117,7 @@ export interface Request<R, P extends unknown[]> extends State<R, P>, FunctionCo
 export type Service<R, P extends unknown[]> = (...args: P) => Promise<R>;
 
 export type CallPlugin<R> = {
-  returnNow?:boolean;
+  returnNow?: boolean;
   returnData?: any;
   servicePromise?: Promise<R>;
 };

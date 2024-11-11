@@ -42,7 +42,7 @@ const { data, loading, mutate, cancel, run, runAsync, pollingCount } = useReques
   manual: true,
   defaultParams: { page: 1 },
   // ready,
-  refreshDeps: [() => pages.page],
+  refreshDeps: () => pages.page,
   refreshDepsParams: refreshDepsParams,
   // pollingInterval: 1000,
   // pollingErrorRetryCount: 3,
