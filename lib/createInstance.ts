@@ -1,12 +1,12 @@
-import { ref, shallowRef, unref } from 'vue';
+import { ref, shallowRef } from 'vue';
 import type { Ref } from 'vue';
 import type { Service, Options, FunctionContext, Instance, PluginHooks, CallPlugin } from './type';
-import { composeMiddleware, TypeChecker } from './utils';
+import { composeMiddleware } from './utils';
 
 function createInstance<R, P extends unknown[]>(service: Service<R, P>, options: Options<R, P>): Instance<R, P> {
   const { defaultParams, onBefore, onSuccess, onError, onFinally, onCancel } = options;
 
-  const data = shallowRef(null) as Ref<R>;
+  const data = shallowRef() as Ref<R>;
   const loading = ref(false);
   const params = ref(defaultParams) as Ref<P>;
   const pollingCount = ref(0);
@@ -40,7 +40,7 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
     count.value++;
     const currentCount = count.value;
 
-    const { returnNow = false, returnData = null } = callPlugin('onBefore', args);
+    const { returnNow = false, returnData } = callPlugin('onBefore', args);
 
     if (returnNow) {
       status.value = 'settled';

@@ -66,7 +66,7 @@ test('shoud mount', async () => {
     }),
   );
   expect(demo.test).toBe(0);
-  expect(demo.data).toBeNull();
+  expect(demo.data).toBeUndefined();
   await vi.runAllTimersAsync();
   expect(demo.data).toBe(1);
 });
@@ -127,7 +127,7 @@ describe.concurrent('simple example with result', () => {
   test('cancel', async () => {
     const { data, run, cancel } = useRequest(getData, { manual: true, defaultParams: [5] });
     await vi.runAllTimersAsync();
-    expect(data.value).toBe(null);
+    expect(data.value).toBe(undefined);
     run();
     await vi.runAllTimersAsync();
     expect(data.value).toBe(5);
@@ -421,9 +421,9 @@ describe.concurrent('ready', () => {
       defaultParams: [1],
       ready,
     });
-    expect(data.value).toBeNull();
+    expect(data.value).toBeUndefined();
     await vi.runAllTimersAsync();
-    expect(data.value).toBeNull();
+    expect(data.value).toBeUndefined();
     ready.value = true;
     await vi.runAllTimersAsync();
     expect(data.value).toBe(1);
@@ -438,7 +438,7 @@ describe.concurrent('ready', () => {
     });
     run();
     await vi.runAllTimersAsync();
-    expect(data.value).toBeNull();
+    expect(data.value).toBeUndefined();
     ready.value = true;
     run();
     await vi.runAllTimersAsync();

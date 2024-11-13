@@ -18,7 +18,7 @@ const useReadyPlugin: Plugin<any, any[]> = (instance, { ready = ref(true), manua
         instance.loading.value = false;
         return {
           returnNow: true,
-          returnData: null,
+          returnData: undefined,
         };
       }
     },
