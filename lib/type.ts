@@ -17,17 +17,19 @@ interface ThrottleOptionsBase {
   trailing?: boolean;
 }
 
+type Params<P extends any[]> = Ref<P> | P | P[0] | Ref<P[0]>;
+
 export interface Options<R, P extends any[]> {
   // 是否手动发起请求
   manual?: boolean;
 
   // 当 manual 为 false 时，自动执行的默认参数
-  defaultParams?: any;
+  defaultParams?: Params<P>;
 
   // 监听依赖
   refreshDeps?: WatchSource<any>[] | WatchSource<any>;
   // 依赖变更后的执行参数
-  refreshDepsParams?: Ref<P>;
+  refreshDepsParams?:  Params<P>;
 
   // 请求延时
   loadingDelay?: number;

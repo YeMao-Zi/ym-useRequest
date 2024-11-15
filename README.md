@@ -283,12 +283,12 @@ setTimeOut(() => {
   manual?: boolean;
 
   // 当 manual 为 false 时，自动执行的默认参数
-  defaultParams?: P;
+  defaultParams?: Params<P>;
 
   // 监听依赖
-  refreshDeps?: WatchSource<any>[];
+  refreshDeps?: WatchSource<any>[] | WatchSource<any>;
   // 依赖变更后的执行参数
-  refreshDepsParams?: Ref<P>;
+  refreshDepsParams?:  Params<P>;
 
   // 请求延时
   loadingDelay?: number;
@@ -326,8 +326,11 @@ setTimeOut(() => {
   // 请求的唯一标识
   cacheKey?: string | ((params?: P) => string);
   // 缓存时间,默认: 5 * 60 * 1000
+  // 超出缓存时间会清除对应缓存
+  // 另外需要注意的是，当缓存失效时，无论 staleTime 是否存在都会重新请求
   cacheTime?: number;
   // 缓存数据保持新鲜时间(什么时候会重新发送请求更新缓存),默认 0,若为-1表示始终不再发送请求
+  // 即在新鲜时间内都直接获取缓存中的数据
   staleTime?: number;
   // 自定义获取缓存
   getCache?: (cacheKey: string) => CacheData;
