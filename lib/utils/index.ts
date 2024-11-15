@@ -1,4 +1,5 @@
 import { unref } from 'vue';
+import type { Params } from '../type';
 import type { Type, IsType } from './type';
 
 export function useDelay(fn: Function, delay?: number) {
@@ -11,7 +12,7 @@ export function useDelay(fn: Function, delay?: number) {
   }
 }
 
-export const useUnrefParmsWithArray = (value: any) => {
+export const useUnrefParmsWithArray = <P extends any[]>(value: Params<P>): P => {
   let _value = unref(value);
   _value = TypeChecker.isArray(_value) ? _value : [_value];
   return _value;

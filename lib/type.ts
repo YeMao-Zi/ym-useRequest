@@ -17,7 +17,7 @@ interface ThrottleOptionsBase {
   trailing?: boolean;
 }
 
-type Params<P extends any[]> = Ref<P> | P | P[0] | Ref<P[0]>;
+export type Params<P extends any[]> = Ref<P> | P | P[0] | Ref<P[0]>;
 
 export interface Options<R, P extends any[]> {
   // 是否手动发起请求

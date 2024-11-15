@@ -9,7 +9,7 @@ function usePlugins<R, P extends unknown[]>(
   plugins: Plugin<R, P>[],
 ): Request<R, P> {
   const { manual = false, defaultParams = [] as unknown as P, ...rest } = options;
-  const _defaultParams=useUnrefParmsWithArray(defaultParams)
+  const _defaultParams=useUnrefParmsWithArray<P>(defaultParams)
   const fetchOptions = {
     manual,
     defaultParams:_defaultParams,
