@@ -1,5 +1,12 @@
 
 
+# [1.12.0](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.11.2...v1.12.0) (2024-11-15)
+
+
+### Features
+
+* change type ([e859afc](https://github.com/YeMao-Zi/ym-useRequest/commit/e859afc98286f9886b5a18488005e77f85cca172))
+
 ## [1.11.2](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.11.1...v1.11.2) (2024-11-13)
 
 ## [1.11.1](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.11.0...v1.11.1) (2024-11-11)
