@@ -27,7 +27,9 @@ run(); // 手动触发一次
 
 ### 2.自动执行一次并带默认参数
 
+传入的参数可以是数组（多参数）也可以是对象（单参数），对象会被自动转化为请求函数的第一个参数
 ```ts
+// 多参数请求
 const somePromise = (params1, params2) => {
   return new Promise((resolve, reject) => {
     resolve({ params1, params2 });
