@@ -11,6 +11,7 @@ import useRefreshDepsPlugin from './plugins/useRefreshDepsPlugin';
 import useDebouncePlugin from './plugins/useDebouncePlugin';
 import useThrottlePlugin from './plugins/useThrottlePlugin';
 import useCachePlugin from './plugins/useCachePlugin';
+import useRetryPlugin from './plugins/useRetryPlugin';
 
 function useRequest<R, P extends unknown[] = any>(service: Service<R, P>, options?: Options<R, P>): Request<R, P> {
   return usePlugins<R, P>(service, options, [
@@ -21,6 +22,7 @@ function useRequest<R, P extends unknown[] = any>(service: Service<R, P>, option
     useDebouncePlugin,
     useThrottlePlugin,
     useCachePlugin,
+    useRetryPlugin,
   ]);
 }
 export { useRequest, clearCache, debounce, throttle, TypeChecker };

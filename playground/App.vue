@@ -31,11 +31,27 @@ const somePromise = (pages: { page: number }): Promise<any[]> => {
   });
 };
 
+const errorPromise = () => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      reject('error');
+    }, 1000);
+  });
+}
+
 const refreshDepsParams = computed(() => [
   {
     page: pages.page,
   },
 ]);
+
+useRequest(errorPromise, {
+  retryCount: 3,
+  retryInterval:1000,
+  onError(){
+    console.log('error')
+  }
+})
 
 const ready = ref(false);
 const { data, loading, mutate, cancel, run, runAsync, pollingCount } = useRequest(somePromise, {

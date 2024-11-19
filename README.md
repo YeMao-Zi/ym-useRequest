@@ -53,13 +53,13 @@ const somePromise = (pages: { page: number }): Promise<any[]> => {
   });
 };
 
-const refreshDepsParams = computed(() => [
+const refreshDepsParams = computed(() =>
   {
     page: pages.page,
   },
-]);
+);
 const { data, loading } = useRequest(somePromise, {
-  defaultParams: [{ page: 1 }], // 默认数据
+  defaultParams: { page: 1 }, // 默认数据
   refreshDeps: [() => pages.page], // 监听的依赖
   refreshDepsParams: refreshDepsParams, // 可选，依赖变更后执行的参数,不传则在依赖变更后执行 refresh
   onSuccess(data, params) {
@@ -275,6 +275,25 @@ setTimeOut(() => {
 }, 5000); // 2
 ```
 
+## 11.错误重试
+
+```ts
+const errorPromise = () => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      reject('error');
+    }, 1000);
+  });
+};
+
+const { data } = useRequest(errorPromise, {
+  retryCount: 3,
+  onError() {
+    console.log('error');
+  },
+});
+```
+
 ## 所有配置项
 
 ```ts
@@ -297,6 +316,13 @@ setTimeOut(() => {
   pollingInterval?: number;
   // 轮询错误重试
   pollingErrorRetryCount?: number;
+
+  // 错误重试次数
+  retryCount?:number;
+  // 重试时间间隔
+  // 如果不设置，默认采用简易的指数退避算法，取 1000 * 2 ** retryCount，
+  // 也就是第一次重试等待 2s，第二次重试等待 4s，以此类推，如果大于 30s，则取 30s
+  retryInterval?:number;
 
   // 是否允许请求
   ready?: Ref<boolean>;

@@ -31,6 +31,11 @@ export interface Options<R, P extends any[]> {
   // 依赖变更后的执行参数
   refreshDepsParams?:  Params<P>;
 
+  // 错误重试次数
+  retryCount?:number;
+  // 重试时间间隔
+  retryInterval?:number;
+
   // 请求延时
   loadingDelay?: number;
 
