@@ -762,4 +762,147 @@ describe('cache', () => {
     mutate(3);
     expect(data.value).toBe(3);
   });
+
+  test('cache with sameKey', async () => {
+    const getData1 = (): Promise<number> => {
+      return new Promise<number>((resolve, reject) => {
+        resolve(1);
+      });
+    };
+    const getData2 = (): Promise<number> => {
+      return new Promise<number>((resolve, reject) => {
+        resolve(4);
+      });
+    };
+    const { data: data1, run: run1 } = useRequest(getData1, {
+      manual: true,
+      cacheTime: 10000,
+      staleTime: -1,
+      cacheKey: 'test6',
+    });
+
+    run1();
+    await vi.advanceTimersByTimeAsync(10);
+    expect(data1.value).toBe(1);
+    const { data: data2, run: run2 } = useRequest(getData2, {
+      manual: true,
+      cacheTime: 10000,
+      staleTime: -1,
+      cacheKey: 'test6',
+    });
+    run2();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(data2.value).toBe(1);
+    run2();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(data2.value).toBe(1);
+  });
+
+  test('cache with changeKey', async () => {
+    const getData1 = (): Promise<number> => {
+      return new Promise<number>((resolve, reject) => {
+        resolve(1);
+      });
+    };
+    const getData2 = (): Promise<number> => {
+      return new Promise<number>((resolve, reject) => {
+        resolve(4);
+      });
+    };
+    const { data: data1, run: run1 } = useRequest(getData1, {
+      manual: true,
+      cacheTime: 10000,
+      staleTime: -1,
+      cacheKey: 'test7',
+    });
+    let key = 'test8';
+    const { data: data2, run: run2 } = useRequest(getData2, {
+      manual: true,
+      cacheTime: 10000,
+      staleTime: -1,
+      cacheKey: key,
+    });
+    run2();
+    await vi.advanceTimersByTimeAsync(10);
+    expect(data2.value).toBe(4);
+    run1();
+    await vi.advanceTimersByTimeAsync(10);
+    expect(data1.value).toBe(1);
+    key='test7'
+    run1();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(data2.value).toBe(4);
+  });
+});
+
+describe('retry', () => {
+  test('retry base', async () => {
+    // 2s 4s 30s
+    const callback = vi.fn();
+    useRequest(getError, {
+      retryCount: 3,
+      onError: callback,
+    });
+    // call time: 1 1+2+1 1+2+1+4+1 1+2+1+4+1+8+1
+    expect(callback).toHaveBeenCalledTimes(0);
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(callback).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(callback).toHaveBeenCalledTimes(2);
+    await vi.advanceTimersByTimeAsync(5000);
+    expect(callback).toHaveBeenCalledTimes(3);
+    await vi.advanceTimersByTimeAsync(9000);
+    expect(callback).toHaveBeenCalledTimes(4);
+    await vi.advanceTimersByTimeAsync(17000);
+    expect(callback).toHaveBeenCalledTimes(4);
+  });
+
+  test('retryInterval', async () => {
+    const callback = vi.fn();
+    useRequest(getError, {
+      retryCount: 3,
+      retryInterval: 1000,
+      onError: callback,
+    });
+    expect(callback).toHaveBeenCalledTimes(0);
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(callback).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(callback).toHaveBeenCalledTimes(2);
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(callback).toHaveBeenCalledTimes(3);
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(callback).toHaveBeenCalledTimes(4);
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(callback).toHaveBeenCalledTimes(4);
+  });
+
+  test('retry success', async () => {
+    const callback = vi.fn();
+    useRequest(getData, {
+      retryCount: 3,
+      onFinally: callback,
+    });
+    expect(callback).toHaveBeenCalledTimes(0);
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(callback).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(callback).toHaveBeenCalledTimes(1);
+  });
+
+  test('retry cancel', async () => {
+    const callback = vi.fn();
+    const { cancel } = useRequest(getError, {
+      retryCount: 3,
+      onError: callback,
+    });
+    expect(callback).toHaveBeenCalledTimes(0);
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(callback).toHaveBeenCalledTimes(1);
+    cancel();
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(callback).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(10000);
+    expect(callback).toHaveBeenCalledTimes(1);
+  });
 });
