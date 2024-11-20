@@ -28,13 +28,13 @@ export interface Options<R, P extends any[]> {
 
   // 监听依赖
   refreshDeps?: WatchSource<any>[] | WatchSource<any>;
-  // 依赖变更后的执行参数
-  refreshDepsParams?:  Params<P>;
+  // 依赖变更后的执行参数，若为函数会执行该函数，有返回值则会将返回值作为参数发起一次请求
+  refreshDepsParams?: Params<P> | (() => void | Params<P>);
 
   // 错误重试次数
-  retryCount?:number;
+  retryCount?: number;
   // 重试时间间隔
-  retryInterval?:number;
+  retryInterval?: number;
 
   // 请求延时
   loadingDelay?: number;

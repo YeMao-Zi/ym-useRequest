@@ -27,16 +27,25 @@ run(); // 手动触发一次
 
 ### 2.自动执行一次并带默认参数
 
-传入的参数可以是数组（多参数）也可以是对象（单参数），对象会被自动转化为请求函数的第一个参数
 ```ts
 // 多参数请求
-const somePromise = (params1, params2) => {
+const somePromise1 = (params1, params2) => {
   return new Promise((resolve, reject) => {
     resolve({ params1, params2 });
   });
 };
-const { data, loading } = useRequest(somePromise, {
+const { data, loading } = useRequest(somePromise1, {
   defaultParams: ['参数1', '参数2'],
+});
+
+// 单参数请求
+const somePromise2 = (params1) => {
+  return new Promise((resolve, reject) => {
+    resolve({ params1 });
+  });
+};
+const { data, loading } = useRequest(somePromise2, {
+  defaultParams: '参数1', // 或者 ['参数1']
 });
 ```
 
@@ -55,15 +64,16 @@ const somePromise = (pages: { page: number }): Promise<any[]> => {
   });
 };
 
-const refreshDepsParams = computed(() =>
-  {
-    page: pages.page,
-  },
-);
+const refreshDepsParams = computed(() => ({
+  page: pages.page,
+}));
+
 const { data, loading } = useRequest(somePromise, {
   defaultParams: { page: 1 }, // 默认数据
   refreshDeps: [() => pages.page], // 监听的依赖
-  refreshDepsParams: refreshDepsParams, // 可选，依赖变更后执行的参数,不传则在依赖变更后执行 refresh
+  // 可选，依赖变更后执行的参数,不传则在依赖变更后执行 refresh,
+  // 如果不想监听后立即请求,可以传递一个没有返回值的函数 ()=>void
+  refreshDepsParams: refreshDepsParams,
   onSuccess(data, params) {
     if (data.length > 5) {
       pages.loadingEnd = '已达最大数量5';
@@ -279,6 +289,8 @@ setTimeOut(() => {
 
 ## 11.错误重试
 
+当请求失败后重新请求次数
+
 ```ts
 const errorPromise = () => {
   return new Promise((resolve, reject) => {
@@ -287,13 +299,20 @@ const errorPromise = () => {
     }, 1000);
   });
 };
-
+let count = 0;
 const { data } = useRequest(errorPromise, {
   retryCount: 3,
+  // retryInterval:1000,
   onError() {
-    console.log('error');
+    count += 1;
+    console.log(count);
   },
 });
+
+// count：1
+// count：2
+// count：3
+// count：4
 ```
 
 ## 所有配置项
@@ -308,8 +327,8 @@ const { data } = useRequest(errorPromise, {
 
   // 监听依赖
   refreshDeps?: WatchSource<any>[] | WatchSource<any>;
-  // 依赖变更后的执行参数
-  refreshDepsParams?:  Params<P>;
+  // 依赖变更后的执行参数，若为函数会执行该函数，有返回值则会将返回值作为参数发起一次请求
+  refreshDepsParams?: Params<P> | (() => void | Params<P>);
 
   // 请求延时
   loadingDelay?: number;

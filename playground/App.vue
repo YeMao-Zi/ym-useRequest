@@ -37,7 +37,7 @@ const errorPromise = () => {
       reject('error');
     }, 1000);
   });
-}
+};
 
 const refreshDepsParams = computed(() => [
   {
@@ -47,11 +47,11 @@ const refreshDepsParams = computed(() => [
 
 useRequest(errorPromise, {
   retryCount: 3,
-  retryInterval:1000,
-  onError(){
-    console.log('error')
-  }
-})
+  retryInterval: 1000,
+  onError() {
+    console.log('error');
+  },
+});
 
 const ready = ref(false);
 const { data, loading, mutate, cancel, run, runAsync, pollingCount } = useRequest(somePromise, {
@@ -59,7 +59,7 @@ const { data, loading, mutate, cancel, run, runAsync, pollingCount } = useReques
   defaultParams: { page: 1 },
   // ready,
   refreshDeps: () => pages.page,
-  refreshDepsParams: refreshDepsParams,
+  refreshDepsParams: () => refreshDepsParams,
   // pollingInterval: 1000,
   // pollingErrorRetryCount: 3,
   // debounceWait: 2000,

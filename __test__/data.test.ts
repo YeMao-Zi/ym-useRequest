@@ -283,6 +283,41 @@ describe('data with params', () => {
     expect(data.value.length).toBe(1);
   });
 
+  test('depend params with function return', async () => {
+    pages.page = 1;
+    const { data, refresh } = useRequest(getDataParams, {
+      defaultParams: pages,
+      refreshDeps: () => pages.page,
+      refreshDepsParams: () => {
+        return {
+          page: 2,
+        };
+      },
+    });
+    await vi.runAllTimersAsync();
+    expect(data.value.length).toBe(1);
+    pages.page = 0;
+    await vi.runAllTimersAsync();
+    expect(data.value.length).toBe(2);
+  });
+
+  test('depend params with function void', async () => {
+    pages.page = 1;
+    const { data, refresh } = useRequest(getDataParams, {
+      defaultParams: pages,
+      refreshDeps: () => pages.page,
+      refreshDepsParams: () => {},
+    });
+    await vi.runAllTimersAsync();
+    expect(data.value.length).toBe(1);
+    pages.page = 0;
+    await vi.runAllTimersAsync();
+    expect(data.value.length).toBe(1);
+    refresh();
+    await vi.runAllTimersAsync();
+    expect(data.value.length).toBe(0);
+  });
+
   test('depend params without refreshDepsParams', async () => {
     const { data, run } = useRequest(getDataParams, {
       refreshDeps: [() => pages.page],
@@ -828,7 +863,7 @@ describe('cache', () => {
     run1();
     await vi.advanceTimersByTimeAsync(10);
     expect(data1.value).toBe(1);
-    key='test7'
+    key = 'test7';
     run1();
     await vi.advanceTimersByTimeAsync(1000);
     expect(data2.value).toBe(4);
