@@ -5,7 +5,6 @@
   "private": false,
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
       "node": {
         "import": {
           "default": "./dist/index.mjs"
@@ -14,8 +13,14 @@
           "default": "./dist/index.js"
         }
       },
-      "require": "./dist/index.js",
-      "import": "./dist/index.mjs"
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      }
     },
     "./*": "./*",
     "./dist/*": "./dist/*"
@@ -46,6 +51,9 @@
     "vue3",
     "hooks"
   ],
+  "peerDependencies": {
+    "vue": "^3.2.47"
+  },
   "devDependencies": {
     "@release-it/conventional-changelog": "^9.0.0",
     "@vitejs/plugin-vue": "^4.3.4",
