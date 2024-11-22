@@ -244,8 +244,10 @@ describe.concurrent('loadingDelay', () => {
 describe('data with params', () => {
   test('default params', async () => {
     const { data } = useRequest(getDataParams, {
+      defaultData: [1,1],
       defaultParams: [pages],
     });
+    expect(data.value.length).toBe(2);
     await vi.runAllTimersAsync();
     expect(data.value.length).toBe(1);
   });

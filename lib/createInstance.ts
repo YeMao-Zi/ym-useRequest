@@ -4,9 +4,9 @@ import type { Service, Options, FunctionContext, Instance, PluginHooks, CallPlug
 import { composeMiddleware } from './utils';
 
 function createInstance<R, P extends unknown[]>(service: Service<R, P>, options: Options<R, P>): Instance<R, P> {
-  const { defaultParams, onBefore, onSuccess, onError, onFinally, onCancel } = options;
+  const { defaultData, defaultParams, onBefore, onSuccess, onError, onFinally, onCancel } = options;
 
-  const data = shallowRef() as Ref<R>;
+  const data = shallowRef(defaultData) as Ref<R>;
   const loading = ref(false);
   const params = ref(defaultParams) as Ref<P>;
   const pollingCount = ref(0);

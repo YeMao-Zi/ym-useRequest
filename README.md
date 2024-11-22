@@ -322,6 +322,9 @@ const { data } = useRequest(errorPromise, {
   // 是否手动发起请求
   manual?: boolean;
 
+  // 设置默认 data
+  defaultData?: R;
+
   // 当 manual 为 false 时，自动执行的默认参数
   defaultParams?: Params<P>;
 
