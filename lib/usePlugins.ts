@@ -1,4 +1,4 @@
-import { onUnmounted, unref } from 'vue';
+import { onUnmounted } from 'vue';
 import type { Service, Options, Request, Plugin } from './type';
 import { useUnrefParmsWithArray } from './utils';
 import createInstance from './createInstance';
@@ -9,10 +9,10 @@ function usePlugins<R, P extends unknown[]>(
   plugins: Plugin<R, P>[],
 ): Request<R, P> {
   const { manual = false, defaultParams = [] as unknown as P, ...rest } = options;
-  const _defaultParams=useUnrefParmsWithArray<P>(defaultParams)
+  const _defaultParams = useUnrefParmsWithArray<P>(defaultParams);
   const fetchOptions = {
     manual,
-    defaultParams:_defaultParams,
+    defaultParams: _defaultParams,
     ...rest,
   };
 

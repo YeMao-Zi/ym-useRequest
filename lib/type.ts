@@ -1,4 +1,4 @@
-import type { WatchSource, Ref } from 'vue';
+import type { WatchSource, Ref, ShallowRef } from 'vue';
 import type { CacheData } from './utils/cache';
 
 interface DebounceOptionsBase {
@@ -103,9 +103,9 @@ export type Plugin<R, P extends unknown[]> = (
 ) => Partial<PluginHooks<R, P>>;
 
 export type State<R, P> = {
-  data: Ref<R>;
+  data: ShallowRef<R>;
   loading: Ref<boolean>;
-  error: Ref<any>;
+  error: ShallowRef<any>;
   params: Ref<P>;
   pollingCount: Ref<number>;
 };
