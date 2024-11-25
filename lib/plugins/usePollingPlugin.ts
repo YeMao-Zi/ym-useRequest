@@ -1,11 +1,12 @@
 import type { Plugin } from '../type';
-import { ref, unref, watchEffect } from 'vue';
-import { useDelay } from '../utils';
+import { computed, ref, unref, watchEffect } from 'vue';
+import { useDelay, isNonZeroFalsy } from '../utils';
 
 const usePollingPlugin: Plugin<any, any[]> = (instance, { pollingInterval, pollingErrorRetryCount = -1 }) => {
   const timerRef = ref<NodeJS.Timeout>();
   const countRef = ref(0);
   const stopPollingRef = ref(false);
+  const pollingIntervalRef = computed(() => unref(pollingInterval));
 
   const stopPolling = () => {
     if (timerRef.value) {
@@ -14,7 +15,7 @@ const usePollingPlugin: Plugin<any, any[]> = (instance, { pollingInterval, polli
   };
 
   watchEffect(() => {
-    if (!unref(pollingInterval)) {
+    if (isNonZeroFalsy(pollingIntervalRef.value)) {
       stopPolling();
     }
   });
@@ -36,12 +37,12 @@ const usePollingPlugin: Plugin<any, any[]> = (instance, { pollingInterval, polli
       countRef.value++;
     },
     onFinally() {
-      if (unref(pollingInterval)) {
+      if (!isNonZeroFalsy(pollingIntervalRef.value)) {
         instance.pollingCount.value++;
       } else {
         return;
       }
-
+      // Avoid memory overflow in a node environment
       if (stopPollingRef.value) {
         stopPollingRef.value = false;
         return;
@@ -52,7 +53,7 @@ const usePollingPlugin: Plugin<any, any[]> = (instance, { pollingInterval, polli
       ) {
         timerRef.value = useDelay(() => {
           instance.functionContext.refresh();
-        }, unref(pollingInterval));
+        }, pollingIntervalRef.value);
       } else {
         countRef.value = 0;
       }

@@ -12,6 +12,10 @@ export function useDelay(fn: Function, delay?: number) {
   }
 }
 
+export const isNonZeroFalsy = (value: any) => {
+  return !isNumber(value) && !value;
+};
+
 export const useUnrefParmsWithArray = <P extends any[]>(value: Params<P>): P => {
   let _value = unref(value);
   _value = TypeChecker.isArray(_value) ? _value : [_value];

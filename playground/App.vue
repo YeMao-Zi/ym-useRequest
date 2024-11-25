@@ -7,9 +7,9 @@
   <div @click="onRefresh">refresh</div>
   <div @click="testFn">testFun</div>
   <div @click="mutate([1, 2, 3])">mutate</div>
-  <div v-for="item in 10" :key="item">
+  <!-- <div v-for="item in 10" :key="item">
     <Item />
-  </div>
+  </div> -->
 </template>
 
 <script setup lang="ts">
@@ -28,7 +28,7 @@ const somePromise = (pages: { page: number }): Promise<any[]> => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       resolve(new Array(pages.page).fill(1));
-    }, 100);
+    }, 1000);
   });
 };
 
@@ -84,7 +84,7 @@ const { data, loading, mutate, cancel, refresh, run, runAsync, pollingCount } = 
   // },
 
   onFinally() {
-    console.log(pollingInterval, 'onFinally');
+    // console.log(pollingInterval, 'onFinally');
     if (data.value.length > 5) {
       pages.loadingEnd = '已达最大数量5;';
       cancel();

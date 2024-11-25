@@ -244,7 +244,7 @@ describe.concurrent('loadingDelay', () => {
 describe('data with params', () => {
   test('default params', async () => {
     const { data } = useRequest(getDataParams, {
-      defaultData: [1,1],
+      defaultData: [1, 1],
       defaultParams: [pages],
     });
     expect(data.value.length).toBe(2);
@@ -334,10 +334,34 @@ describe('data with params', () => {
 });
 
 describe('polling and error retry', () => {
+  test('polling with ref', async () => {
+    const pollingIntervalRef = ref(null);
+    const callback = vi.fn();
+    const { run, cancel } = useRequest(getData, {
+      defaultParams: 1,
+      pollingInterval: pollingIntervalRef,
+      onFinally: callback,
+    });
+    expect(callback).toHaveBeenCalledTimes(0);
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(callback).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(callback).toHaveBeenCalledTimes(1);
+    pollingIntervalRef.value = 0;
+    run();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(callback).toHaveBeenCalledTimes(2);
+    cancel();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(callback).toHaveBeenCalledTimes(3);
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(callback).toHaveBeenCalledTimes(3);
+  });
+
   test('polling in onSuccess', async () => {
     let count = 0;
     const { loading, cancel } = useRequest(getData, {
-      defaultParams:[1],
+      defaultParams: [1],
       pollingInterval: 1000,
       onBefore() {
         count++;
@@ -427,6 +451,8 @@ describe('polling and error retry', () => {
     expect(callback).toHaveBeenCalledTimes(2);
     await vi.advanceTimersByTimeAsync(2000);
     expect(callback).toHaveBeenCalledTimes(3);
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(callback).toHaveBeenCalledTimes(4);
     await vi.advanceTimersByTimeAsync(2000);
     expect(callback).toHaveBeenCalledTimes(4);
   });
