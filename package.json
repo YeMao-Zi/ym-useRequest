@@ -1,7 +1,7 @@
 {
   "name": "ym-userequest",
   "description": "useRequest for vue3",
-  "version": "1.12.2",
+  "version": "1.12.3",
   "private": false,
   "exports": {
     ".": {
