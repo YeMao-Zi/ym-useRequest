@@ -1,33 +1,40 @@
 import type { Plugin } from '../type';
-import { computed, ref, unref, watchEffect } from 'vue';
+import { computed, ref, unref, watch } from 'vue';
 import { useDelay, isNonZeroFalsy } from '../utils';
 
 const usePollingPlugin: Plugin<any, any[]> = (instance, { pollingInterval, pollingErrorRetryCount = -1 }) => {
-  const timerRef = ref<NodeJS.Timeout>();
+  const timerRef = ref();
   const countRef = ref(0);
-  const stopPollingRef = ref(false);
   const pollingIntervalRef = computed(() => unref(pollingInterval));
 
-  const stopPolling = () => {
-    if (timerRef.value) {
-      clearTimeout(timerRef.value);
+  const polling = (callback: () => void) => {
+    let timerId: NodeJS.Timeout;
+    const canPolling = !isNonZeroFalsy(pollingIntervalRef.value) && pollingIntervalRef.value >= 0;
+    if (!canPolling) {
+      return;
     }
+    if (pollingErrorRetryCount === -1 || (pollingErrorRetryCount !== -1 && countRef.value <= pollingErrorRetryCount)) {
+      instance.pollingCount.value++;
+      timerId = useDelay(callback, pollingIntervalRef.value);
+    } else {
+      countRef.value = 0;
+    }
+    return () => timerId && clearTimeout(timerId);
   };
 
-  watchEffect(() => {
-    if (isNonZeroFalsy(pollingIntervalRef.value)) {
-      stopPolling();
+  watch(pollingIntervalRef, () => {
+    if (timerRef.value) {
+      timerRef.value();
+      timerRef.value = polling(() => instance.functionContext.refresh());
     }
   });
 
   return {
     onBefore() {
-      stopPollingRef.value = false;
-      stopPolling();
+      timerRef.value?.();
     },
     onCancel() {
-      stopPolling();
-      stopPollingRef.value = true;
+      timerRef.value?.();
       instance.pollingCount.value = 0;
     },
     onSuccess() {
@@ -37,26 +44,7 @@ const usePollingPlugin: Plugin<any, any[]> = (instance, { pollingInterval, polli
       countRef.value++;
     },
     onFinally() {
-      if (!isNonZeroFalsy(pollingIntervalRef.value)) {
-        instance.pollingCount.value++;
-      } else {
-        return;
-      }
-      // Avoid memory overflow in a node environment
-      if (stopPollingRef.value) {
-        stopPollingRef.value = false;
-        return;
-      }
-      if (
-        pollingErrorRetryCount === -1 ||
-        (pollingErrorRetryCount !== -1 && countRef.value <= pollingErrorRetryCount)
-      ) {
-        timerRef.value = useDelay(() => {
-          instance.functionContext.refresh();
-        }, pollingIntervalRef.value);
-      } else {
-        countRef.value = 0;
-      }
+      timerRef.value = polling(() => instance.functionContext.refresh());
     },
   };
 };

@@ -79,6 +79,9 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
       .finally(() => {
         loading.value = false;
         status.value = 'settled';
+        if (currentCount !== count.value) {
+          return;
+        }
         callPlugin('onFinally', args);
         onFinally?.();
       });

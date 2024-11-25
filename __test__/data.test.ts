@@ -353,9 +353,9 @@ describe('polling and error retry', () => {
     expect(callback).toHaveBeenCalledTimes(2);
     cancel();
     await vi.advanceTimersByTimeAsync(1000);
-    expect(callback).toHaveBeenCalledTimes(3);
+    expect(callback).toHaveBeenCalledTimes(2);
     await vi.advanceTimersByTimeAsync(1000);
-    expect(callback).toHaveBeenCalledTimes(3);
+    expect(callback).toHaveBeenCalledTimes(2);
   });
 
   test('polling in onSuccess', async () => {
@@ -481,7 +481,7 @@ describe('polling and error retry', () => {
 describe.concurrent('ready', () => {
   test('ready with manual=false', async () => {
     const ready = ref(false);
-    const { data } = useRequest(getData, {
+    const { data, run } = useRequest(getData, {
       defaultParams: [1],
       ready,
     });
@@ -489,6 +489,7 @@ describe.concurrent('ready', () => {
     await vi.runAllTimersAsync();
     expect(data.value).toBeUndefined();
     ready.value = true;
+    run();
     await vi.runAllTimersAsync();
     expect(data.value).toBe(1);
   });

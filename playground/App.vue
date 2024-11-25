@@ -58,7 +58,7 @@ const ready = ref(false);
 const { data, loading, mutate, cancel, refresh, run, runAsync, pollingCount } = useRequest(somePromise, {
   // manual: true,
   defaultParams: { page: 1 },
-  // ready,
+  ready,
   // refreshDeps: () => pages.page,
   // refreshDepsParams: () => refreshDepsParams,
   pollingInterval: pollingInterval,
@@ -84,7 +84,7 @@ const { data, loading, mutate, cancel, refresh, run, runAsync, pollingCount } = 
   // },
 
   onFinally() {
-    // console.log(pollingInterval, 'onFinally');
+    console.log(pollingInterval, 'onFinally',data.value);
     if (data.value.length > 5) {
       pages.loadingEnd = '已达最大数量5;';
       cancel();
@@ -100,13 +100,14 @@ const { data, loading, mutate, cancel, refresh, run, runAsync, pollingCount } = 
 
 const gorun = () => {
   pollingInterval.value=1000
+  ready.value = true;
   pages.page++;
   runAsync({
     page: pages.page,
   });
 };
 const onRun1 = () => {
-  // ready.value = true;
+  ready.value = true;
   run({
     page: 10,
   });
@@ -114,7 +115,7 @@ const onRun1 = () => {
 const onRun2 = () => {
   // ready.value = true;
   run({
-    page: 20,
+    page: 1,
   });
 };
 
@@ -124,6 +125,7 @@ const onRefresh = () => {
 
 const onCancel = () => {
   pollingInterval.value = null;
+  ready.value = false;
   cancel();
 };
 

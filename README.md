@@ -196,11 +196,12 @@ const somePromise = () => {
 };
 
 const ready = ref(false);
-const { data } = useRequest(somePromise, {
+const { data, run } = useRequest(somePromise, {
   ready,
 });
 console.log(data.value); // null
 ready.value = true;
+run();
 console.log(data.value); // 1
 ```
 
@@ -350,8 +351,8 @@ const { data } = useRequest(errorPromise, {
   // 也就是第一次重试等待 2s，第二次重试等待 4s，以此类推，如果大于 30s，则取 30s
   retryInterval?:number;
 
-  // 是否允许请求
-  ready?: Ref<boolean>;
+  // 是否允许请求（不会自动请求）
+  ready?: Ref<boolean> | boolean;
 
   // 防抖等待时间
   debounceWait?: number;

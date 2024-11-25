@@ -43,12 +43,12 @@ export interface Options<R, P extends any[]> {
   loadingDelay?: number;
 
   // 轮询
-  pollingInterval?:  Ref<number> | number;
+  pollingInterval?: Ref<number> | number;
   // 轮询错误重试
   pollingErrorRetryCount?: number;
 
   // 是否允许请求
-  ready?: Ref<boolean>;
+  ready?: Ref<boolean> | boolean;
 
   // 防抖等待时间
   debounceWait?: Ref<number> | number;
