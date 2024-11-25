@@ -1,8 +1,8 @@
 import type { Plugin } from '../type';
-import { ref } from 'vue';
+import { ref, unref, watchEffect } from 'vue';
 import { useDelay } from '../utils';
 
-const usePollingIntervalPlugin: Plugin<any, any[]> = (instance, { pollingInterval, pollingErrorRetryCount = 0 }) => {
+const usePollingPlugin: Plugin<any, any[]> = (instance, { pollingInterval, pollingErrorRetryCount = -1 }) => {
   const timerRef = ref<NodeJS.Timeout>();
   const countRef = ref(0);
   const stopPollingRef = ref(false);
@@ -13,10 +13,15 @@ const usePollingIntervalPlugin: Plugin<any, any[]> = (instance, { pollingInterva
     }
   };
 
-  if (!pollingInterval) return {};
+  watchEffect(() => {
+    if (!unref(pollingInterval)) {
+      stopPolling();
+    }
+  });
 
   return {
     onBefore() {
+      stopPollingRef.value = false;
       stopPolling();
     },
     onCancel() {
@@ -31,15 +36,23 @@ const usePollingIntervalPlugin: Plugin<any, any[]> = (instance, { pollingInterva
       countRef.value++;
     },
     onFinally() {
-      instance.pollingCount.value++;
+      if (unref(pollingInterval)) {
+        instance.pollingCount.value++;
+      } else {
+        return;
+      }
+
       if (stopPollingRef.value) {
         stopPollingRef.value = false;
         return;
       }
-      if (pollingErrorRetryCount === 0 || (pollingErrorRetryCount !== 0 && countRef.value < pollingErrorRetryCount)) {
+      if (
+        pollingErrorRetryCount === -1 ||
+        (pollingErrorRetryCount !== -1 && countRef.value <= pollingErrorRetryCount)
+      ) {
         timerRef.value = useDelay(() => {
           instance.functionContext.refresh();
-        }, pollingInterval);
+        }, unref(pollingInterval));
       } else {
         countRef.value = 0;
       }
@@ -47,4 +60,4 @@ const usePollingIntervalPlugin: Plugin<any, any[]> = (instance, { pollingInterva
   };
 };
 
-export default usePollingIntervalPlugin;
+export default usePollingPlugin;

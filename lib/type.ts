@@ -43,7 +43,7 @@ export interface Options<R, P extends any[]> {
   loadingDelay?: number;
 
   // 轮询
-  pollingInterval?: number;
+  pollingInterval?:  Ref<number> | number;
   // 轮询错误重试
   pollingErrorRetryCount?: number;
 

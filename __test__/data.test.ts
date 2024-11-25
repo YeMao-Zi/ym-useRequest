@@ -337,6 +337,7 @@ describe('polling and error retry', () => {
   test('polling in onSuccess', async () => {
     let count = 0;
     const { loading, cancel } = useRequest(getData, {
+      defaultParams:[1],
       pollingInterval: 1000,
       onBefore() {
         count++;
@@ -427,7 +428,7 @@ describe('polling and error retry', () => {
     await vi.advanceTimersByTimeAsync(2000);
     expect(callback).toHaveBeenCalledTimes(3);
     await vi.advanceTimersByTimeAsync(2000);
-    expect(callback).toHaveBeenCalledTimes(3);
+    expect(callback).toHaveBeenCalledTimes(4);
   });
 
   test('pollingCount', async () => {

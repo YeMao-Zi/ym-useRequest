@@ -116,6 +116,7 @@ const somePromise = () => {
 const { data, loading, mutate } = useRequest(somePromise);
 
 mutate(5555);
+console.log(data.value); // 5555
 
 const onChange = () => {
   mutate((res) => {
@@ -123,7 +124,8 @@ const onChange = () => {
   });
 };
 
-// 最终 data 结果为 2
+onChange();
+console.log(data.value); // 2
 ```
 
 ### 6.轮询
@@ -287,7 +289,7 @@ setTimeOut(() => {
 }, 5000); // 2
 ```
 
-## 11.错误重试
+### 11.错误重试
 
 当请求失败后重新请求次数
 
@@ -337,7 +339,7 @@ const { data } = useRequest(errorPromise, {
   loadingDelay?: number;
 
   // 轮询
-  pollingInterval?: number;
+  pollingInterval?: Ref<number> | number;
   // 轮询错误重试
   pollingErrorRetryCount?: number;
 

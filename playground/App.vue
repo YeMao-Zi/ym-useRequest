@@ -4,6 +4,7 @@
   <div @click="onRun1">run1</div>
   <div @click="onRun2">run2</div>
   <div @click="onCancel">cancel</div>
+  <div @click="onRefresh">refresh</div>
   <div @click="testFn">testFun</div>
   <div @click="mutate([1, 2, 3])">mutate</div>
   <div v-for="item in 10" :key="item">
@@ -45,22 +46,22 @@ const refreshDepsParams = computed(() => [
   },
 ]);
 
-useRequest(errorPromise, {
-  retryCount: 3,
-  retryInterval: 1000,
-  onError() {
-    console.log('error');
-  },
-});
-
+// useRequest(errorPromise, {
+//   retryCount: 3,
+//   retryInterval: 1000,
+//   onError() {
+//     console.log('error');
+//   },
+// });
+let pollingInterval = ref(null);
 const ready = ref(false);
-const { data, loading, mutate, cancel, run, runAsync, pollingCount } = useRequest(somePromise, {
-  manual: true,
+const { data, loading, mutate, cancel, refresh, run, runAsync, pollingCount } = useRequest(somePromise, {
+  // manual: true,
   defaultParams: { page: 1 },
   // ready,
-  refreshDeps: () => pages.page,
-  refreshDepsParams: () => refreshDepsParams,
-  // pollingInterval: 1000,
+  // refreshDeps: () => pages.page,
+  // refreshDepsParams: () => refreshDepsParams,
+  pollingInterval: pollingInterval,
   // pollingErrorRetryCount: 3,
   // debounceWait: 2000,
   // debounceOptions: {
@@ -72,9 +73,9 @@ const { data, loading, mutate, cancel, run, runAsync, pollingCount } = useReques
   //   leading: true,
   //   trailing: false,
   // },
-  cacheKey: 'test',
-  cacheTime: 10000,
-  staleTime: -1,
+  // cacheKey: 'test',
+  // cacheTime: 10000,
+  // staleTime: -1,
   // setCache(cacheKey, data) {
   //   localStorage.setItem(cacheKey, JSON.stringify(data));
   // },
@@ -83,6 +84,7 @@ const { data, loading, mutate, cancel, run, runAsync, pollingCount } = useReques
   // },
 
   onFinally() {
+    console.log(pollingInterval, 'onFinally');
     if (data.value.length > 5) {
       pages.loadingEnd = '已达最大数量5;';
       cancel();
@@ -97,6 +99,7 @@ const { data, loading, mutate, cancel, run, runAsync, pollingCount } = useReques
 });
 
 const gorun = () => {
+  pollingInterval.value=1000
   pages.page++;
   runAsync({
     page: pages.page,
@@ -115,7 +118,12 @@ const onRun2 = () => {
   });
 };
 
+const onRefresh = () => {
+  refresh();
+};
+
 const onCancel = () => {
+  pollingInterval.value = null;
   cancel();
 };
 
