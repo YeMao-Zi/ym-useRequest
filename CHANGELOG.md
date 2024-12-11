@@ -1,5 +1,15 @@
 
 
+## [1.12.4](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.12.3...v1.12.4) (2024-12-11)
+
+### ✨ Features | 新功能
+
+* change data onSuccess return ([3eecd6f](https://github.com/YeMao-Zi/ym-useRequest/commit/3eecd6f758478eeeda54bf34df8a34df43d78e40))
+
+### 🔨 CONFIG | 配置
+
+* release-it ([cd50a1e](https://github.com/YeMao-Zi/ym-useRequest/commit/cd50a1ed226f7bdc63cc7bfa05b4bdfeaba6ee89))
+
 ## [1.12.3](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.12.2...v1.12.3) (2024-11-25)
 
 ## [1.12.2](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.12.1...v1.12.2) (2024-11-20)
