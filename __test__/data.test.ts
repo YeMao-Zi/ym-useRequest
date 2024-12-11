@@ -181,6 +181,17 @@ describe.concurrent('life cycle', () => {
     expect(data).toBe(3);
   });
 
+  test('onSuccessReturn', async () => {
+    const { data } = useRequest(getData, {
+      onSuccess(data) {
+        return data;
+      },
+      defaultParams: [1],
+    });
+    await vi.runAllTimersAsync();
+    expect(data.value).toBe(1);
+  });
+
   test('onError', async () => {
     const callback = vi.fn();
     useRequest(getError, {

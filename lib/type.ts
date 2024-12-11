@@ -19,6 +19,8 @@ interface ThrottleOptionsBase {
 
 export type Params<P extends any[]> = Ref<P> | P | P[0] | Ref<P[0]>;
 
+export type MaybePromise<T> = T | Promise<T>;
+
 export interface Options<R, P extends any[]> {
   // 是否手动发起请求
   manual?: boolean;
@@ -72,7 +74,7 @@ export interface Options<R, P extends any[]> {
   // 请求前回调
   onBefore?: (params: P) => void;
   // 成功回调
-  onSuccess?: (response: R, params: P) => void;
+  onSuccess?: (response: R, params: P) => MaybePromise<void | R>;
   // 失败回调
   onError?: (err: any, params: P) => void;
   // 接口完成回调

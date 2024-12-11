@@ -58,14 +58,17 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
       serverWrapper = () => servicePromise;
     }
     await serverWrapper()
-      .then((res) => {
+      .then(async (res) => {
         if (currentCount !== count.value) {
           return;
         }
         data.value = res;
         error.value = undefined;
         callPlugin('onSuccess', data.value, args);
-        onSuccess?.(res, args);
+        const result = await onSuccess?.(res, args);
+        if (result) {
+          data.value = result;
+        }
       })
       .catch((err: any) => {
         if (currentCount !== count.value) {

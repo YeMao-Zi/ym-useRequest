@@ -393,7 +393,7 @@ const { data } = useRequest(errorPromise, {
   // 请求前回调
   onBefore?: (params: P) => void;
   // 成功回调
-  onSuccess?: (response: R, params: P) => void;
+  onSuccess?: (response: R, params: P) => MaybePromise<void | R>;
   // 失败回调
   onError?: (err: any, params: P) => void;
   // 接口完成回调
