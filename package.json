@@ -34,7 +34,7 @@
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "publishing": "release-it",
-    "release": "yarn build && yarn publishing"
+    "release": "tsup && release-it"
   },
   "repository": {
     "type": "git",
