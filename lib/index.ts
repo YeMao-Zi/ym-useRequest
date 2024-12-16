@@ -2,7 +2,7 @@ import type { Service, Options, Request } from './type';
 import debounce from './utils/debounce';
 import throttle from './utils/throttle';
 import { TypeChecker } from './utils/index';
-import { clearCache } from './utils/cache';
+import { clearCache, setCache, getCache } from './utils/cache';
 import usePlugins from './usePlugins';
 import useLoadingDelayPlugins from './plugins/useLoadingDelayPlugin';
 import usePollingPlugin from './plugins/usePollingPlugin';
@@ -25,4 +25,4 @@ function useRequest<R, P extends unknown[] = any>(service: Service<R, P>, option
     useRetryPlugin,
   ]);
 }
-export { useRequest, clearCache, debounce, throttle, TypeChecker };
+export { useRequest, clearCache, setCache, getCache, debounce, throttle, TypeChecker };
