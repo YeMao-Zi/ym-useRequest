@@ -1,5 +1,12 @@
 
 
+## [1.12.5](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.12.4...v1.12.5) (2024-12-16)
+
+### ✨ Features | 新功能
+
+* 导出Cache控制工具 ([0ecbd78](https://github.com/YeMao-Zi/ym-useRequest/commit/0ecbd78a707b9257073558bc7f0f0996fe4ba08e))
+* defaultData 允许类型控制 ([ed81366](https://github.com/YeMao-Zi/ym-useRequest/commit/ed813661b283c41b7ddcc0ae68fcc8abe5ce5a63))
+
 ## [1.12.4](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.12.3...v1.12.4) (2024-12-11)
 
 ### ✨ Features | 新功能
