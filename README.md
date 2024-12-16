@@ -327,7 +327,7 @@ const { data } = useRequest(errorPromise, {
 
   // 设置默认 data，默认情况下 data 返回的是 ShallowRef 类型的浅层数据
   // 同时可通过该属性指定 data 为 ShallowRef or Ref
-  defaultData?: defaultData?: R | Ref<R>;
+  defaultData?: R | Ref<R>;
 
   // 当 manual 为 false 时，自动执行的默认参数
   defaultParams?: Params<P>;
