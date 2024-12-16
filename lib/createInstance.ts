@@ -1,4 +1,4 @@
-import { ref, shallowRef } from 'vue';
+import { ref, shallowRef, isRef } from 'vue';
 import type { Ref } from 'vue';
 import type { Service, Options, FunctionContext, Instance, PluginHooks, CallPlugin } from './type';
 import { composeMiddleware } from './utils';
@@ -6,7 +6,7 @@ import { composeMiddleware } from './utils';
 function createInstance<R, P extends unknown[]>(service: Service<R, P>, options: Options<R, P>): Instance<R, P> {
   const { defaultData, defaultParams, onBefore, onSuccess, onError, onFinally, onCancel } = options;
 
-  const data = shallowRef(defaultData);
+  const data = isRef(defaultData) ? defaultData : shallowRef(defaultData);
   const loading = ref(false);
   const params = ref(defaultParams) as Ref<P>;
   const pollingCount = ref(0);

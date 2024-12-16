@@ -6,6 +6,7 @@
   <div @click="onCancel">cancel</div>
   <div @click="onRefresh">refresh</div>
   <div @click="testFn">testFun</div>
+  <div @click="testChange">testChange</div>
   <div @click="mutate([1, 2, 3])">mutate</div>
   <!-- <div v-for="item in 10" :key="item">
     <Item />
@@ -56,7 +57,8 @@ const refreshDepsParams = computed(() => [
 let pollingInterval = ref(null);
 const ready = ref(false);
 const { data, loading, mutate, cancel, refresh, run, runAsync, pollingCount } = useRequest(somePromise, {
-  // manual: true,
+  manual: true,
+  defaultData: [1, 2, 3],
   defaultParams: { page: 1 },
   ready,
   // refreshDeps: () => pages.page,
@@ -84,7 +86,7 @@ const { data, loading, mutate, cancel, refresh, run, runAsync, pollingCount } = 
   // },
 
   onFinally() {
-    console.log(pollingInterval, 'onFinally',data.value);
+    console.log(pollingInterval, 'onFinally', data.value);
     if (data.value.length > 5) {
       pages.loadingEnd = '已达最大数量5;';
       cancel();
@@ -99,7 +101,7 @@ const { data, loading, mutate, cancel, refresh, run, runAsync, pollingCount } = 
 });
 
 const gorun = () => {
-  pollingInterval.value=1000
+  pollingInterval.value = 1000;
   ready.value = true;
   pages.page++;
   runAsync({
@@ -141,6 +143,10 @@ const testFn = debounce(
     leading: true,
   },
 );
+
+const testChange = () => {
+  data.value.push(222);
+};
 </script>
 
 <style></style>

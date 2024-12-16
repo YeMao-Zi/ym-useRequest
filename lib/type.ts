@@ -26,7 +26,7 @@ export interface Options<R, P extends any[]> {
   manual?: boolean;
 
   // 设置默认 data
-  defaultData?: R;
+  defaultData?: R | Ref<R>;
 
   // 当 manual 为 false 时，自动执行的默认参数
   defaultParams?: Params<P>;
@@ -105,7 +105,7 @@ export type Plugin<R, P extends unknown[]> = (
 ) => Partial<PluginHooks<R, P>>;
 
 export type State<R, P> = {
-  data: ShallowRef<R>;
+  data:  Ref<R> | ShallowRef<R>;
   loading: Ref<boolean>;
   error: ShallowRef<any>;
   params: Ref<P>;
