@@ -15,7 +15,7 @@ import { useRequest } from 'ym-userequest';
 const { data, loading, run, runAsync, refresh, refreshAsync, cancel } = useRequest(somePromise, { manual: true });
 const somePromise = () => {
   return new Promise((resolve, reject) => {
-    resolve('请求成功');
+    resolve('success');
   });
 };
 run(); // 手动触发一次
@@ -35,7 +35,7 @@ const somePromise1 = (params1, params2) => {
   });
 };
 const { data, loading } = useRequest(somePromise1, {
-  defaultParams: ['参数1', '参数2'],
+  defaultParams: ['params1', 'params2'],
 });
 
 // 单参数请求
@@ -45,7 +45,7 @@ const somePromise2 = (params1) => {
   });
 };
 const { data, loading } = useRequest(somePromise2, {
-  defaultParams: '参数1', // 或者 ['参数1']
+  defaultParams: 'params1', // or ['参数1']
 });
 ```
 
@@ -106,6 +106,23 @@ const { data, loading } = useRequest(somePromise, {
 
 ### 5.修改 data 数据
 
+1. defaultData
+
+```ts
+const somePromise = () => {
+  return new Promise((resolve, reject) => {
+    resolve(1);
+  });
+};
+
+const { data, loading, mutate } = useRequest(somePromise, {
+  defaultData: 3, // return data:ShallowRef<3>
+  // defaultData: ref<3>, // return data:Ref<3>
+});
+```
+
+2. mutate
+
 ```ts
 const somePromise = () => {
   return new Promise((resolve, reject) => {
@@ -126,6 +143,23 @@ const onChange = () => {
 
 onChange();
 console.log(data.value); // 2
+```
+
+3. onSuccess return
+
+```ts
+const somePromise = () => {
+  return new Promise((resolve, reject) => {
+    resolve(1);
+  });
+};
+
+const { data, loading, mutate } = useRequest(somePromise, {
+  onSuccess(data) {
+    console.log(data.value); // 1
+    return data + 1;
+  },
+});
 ```
 
 ### 6.轮询
@@ -207,7 +241,7 @@ console.log(data.value); // 1
 
 ### 8.函数防抖
 
-有一个问题：防抖内部使用的是 lodash 的 debounce 方法，但由于 debounce 不是 promise,只能在内部的 promise 中包裹 debounce，导致了防抖后的参数不是第一次的触发参数而是最后一次触发的参数
+注意：防抖内部使用的是 lodash 的 debounce 方法，但由于 debounce 不是 promise,只能在内部的 promise 中包裹 debounce，所以防抖后的参数不会是第一次的触发参数而是最后一次触发的参数
 
 ```ts
 const somePromise = () => {
@@ -269,6 +303,7 @@ const { data, run } = useRequest(somePromise, {
   manual: true,
   cacheKey: 'test',
   cacheTime: 5000,
+  staleTime: -1,
   // 自定义设置缓存
   // setCache(cacheKey, data) {
   //   localStorage.setItem(cacheKey, JSON.stringify(data));
@@ -287,7 +322,8 @@ run(2); // 1
 
 setTimeOut(() => {
   run(2);
-}, 5000); // 2
+  console.log(data.value) // 2
+}, 5000); 
 ```
 
 ### 11.错误重试
@@ -325,8 +361,8 @@ const { data } = useRequest(errorPromise, {
   // 是否手动发起请求
   manual?: boolean;
 
-  // 设置默认 data，默认情况下 data 返回的是 ShallowRef 类型的浅层数据
-  // 同时可通过该属性指定 data 为 ShallowRef or Ref
+  // 设置默认 data
+  // 如果传入值为非响应式，将被转化为 ShallowRef
   defaultData?: R | Ref<R>;
 
   // 当 manual 为 false 时，自动执行的默认参数
@@ -429,6 +465,8 @@ const { data } = useRequest(errorPromise, {
   // 手动刷新请求（返回promise）
   refreshAsync: () => Promise<R>;
   // 修改返回的data数据
-  mutate: (newData: R) => void | (arg: (oldData: R) => R) => void;;
+  mutate: (newData: R) => void | (arg: (oldData: R) => R) => void;
+  // data 处理进程，代表是否有进程(比如获取缓存)在修改 data 
+  status: Ref<'pending' | 'settled'>;
 }
 ```

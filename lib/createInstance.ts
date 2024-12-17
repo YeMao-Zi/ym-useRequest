@@ -43,14 +43,16 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
     const { returnNow = false, returnData } = callPlugin('onBefore', args);
 
     if (returnNow) {
-      status.value = 'settled';
-      data.value = returnData;
       loading.value = false;
-      return returnData;
+      data.value = returnData;
+      status.value = 'settled';
+      return Promise.resolve(returnData);
     }
+
     if (returnData) {
       data.value = returnData;
     }
+
     onBefore?.(args);
     let serverWrapper = () => new Promise<R>((resolve) => resolve(service(...params.value)));
     let { servicePromise } = callPlugin('onInit', serverWrapper);

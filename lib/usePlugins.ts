@@ -29,6 +29,7 @@ function usePlugins<R, P extends unknown[]>(
   });
 
   return {
+    status:instance.status,
     loading: instance.loading,
     data: instance.data,
     error: instance.error,

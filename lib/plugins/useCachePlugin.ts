@@ -66,12 +66,14 @@ const useCachePlugin: Plugin<any, any[]> = (
       if (!cache || !Reflect.has(cache, 'data')) {
         return {};
       }
+      // If the data is fresh, stop request
       if (staleTime === -1 || new Date().getTime() - cache.time <= staleTime) {
         return {
           returnNow: true,
           returnData: cache.data,
         };
       } else {
+        // If the data is stale, return data, and request continue
         return { returnData: cache.data };
       }
     },

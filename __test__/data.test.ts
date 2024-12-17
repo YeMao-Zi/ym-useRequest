@@ -98,11 +98,13 @@ test('when unMount request cancel', async () => {
 
 describe.concurrent('simple example with result', () => {
   test('loading and run', async () => {
-    const { loading, run } = useRequest(getData, { manual: true });
+    const { loading, run, status } = useRequest(getData, { manual: true });
     expect(loading.value).toBe(false);
+    expect(status.value).toBe('pending');
     run();
     expect(loading.value).toBe(true);
     await vi.runAllTimersAsync();
+    expect(status.value).toBe('settled');
     expect(loading.value).toBe(false);
   });
 

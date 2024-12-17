@@ -94,7 +94,6 @@ export type PluginHooks<R, P extends unknown[]> = {
 };
 
 export interface Instance<R, P extends unknown[]> extends State<R, P> {
-  status: Ref<'pending' | 'settled'>;
   functionContext: FunctionContext<R, P>;
   plugins: Ref<Partial<PluginHooks<R, P>>[]>;
 }
@@ -105,6 +104,7 @@ export type Plugin<R, P extends unknown[]> = (
 ) => Partial<PluginHooks<R, P>>;
 
 export type State<R, P> = {
+  status: Ref<'pending' | 'settled'>;
   data:  Ref<R> | ShallowRef<R>;
   loading: Ref<boolean>;
   error: ShallowRef<any>;

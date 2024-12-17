@@ -56,7 +56,7 @@ const refreshDepsParams = computed(() => [
 // });
 let pollingInterval = ref(null);
 const ready = ref(false);
-const { data, loading, mutate, cancel, refresh, run, runAsync, pollingCount } = useRequest(somePromise, {
+const { data, loading, mutate, cancel, refresh, run, runAsync, pollingCount, status } = useRequest(somePromise, {
   manual: true,
   defaultData: [1, 2, 3],
   defaultParams: { page: 1 },
