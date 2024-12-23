@@ -53,36 +53,27 @@ const { data, loading } = useRequest(somePromise2, {
 
 ```ts
 const pages = reactive({
-  page: 1,
-  loadingEnd: null,
+  size: 1,
 });
-const somePromise = (pages: { page: number }): Promise<any[]> => {
+const somePromise = (number: number): Promise<any[]> => {
   return new Promise((resolve) => {
     setTimeout(() => {
-      resolve(new Array(pages.page).fill(1));
+      resolve(new Array(number).fill(1));
     }, 1000);
   });
 };
 
-const refreshDepsParams = computed(() => ({
-  page: pages.page,
-}));
+const refreshDepsParams = computed(() => pages.size);
 
 const { data, loading } = useRequest(somePromise, {
-  defaultParams: { page: 1 }, // 默认数据
-  refreshDeps: [() => pages.page], // 监听的依赖
+  defaultParams: pages.size,
+  refreshDeps: [() => pages.size], // 监听的依赖
   // 可选，依赖变更后执行的参数,不传则在依赖变更后执行 refresh,
   // 如果不想监听后立即请求,可以传递一个没有返回值的函数 ()=>void
   refreshDepsParams: refreshDepsParams,
-  onSuccess(data, params) {
-    if (data.length > 5) {
-      pages.loadingEnd = '已达最大数量5';
-    }
-  },
 });
-mutate(() => []); // 手动设置 data 值
 const onClick = () => {
-  !pages.loadingEnd && pages.page++;
+  pages.size++;
 };
 ```
 
@@ -145,23 +136,6 @@ onChange();
 console.log(data.value); // 2
 ```
 
-3. onSuccess return
-
-```ts
-const somePromise = () => {
-  return new Promise((resolve, reject) => {
-    resolve(1);
-  });
-};
-
-const { data, loading, mutate } = useRequest(somePromise, {
-  onSuccess(data) {
-    console.log(data.value); // 1
-    return data + 1;
-  },
-});
-```
-
 ### 6.轮询
 
 ```ts
@@ -189,7 +163,7 @@ const onCancel = () => {
 ```ts
 const errPromise = () => {
   return new Promise((resolve, reject) => {
-    reject('请求出错了');
+    reject('error');
   });
 };
 const { data, run, cancel } = useRequest(errPromise, {
@@ -322,8 +296,8 @@ run(2); // 1
 
 setTimeOut(() => {
   run(2);
-  console.log(data.value) // 2
-}, 5000); 
+  console.log(data.value); // 2
+}, 5000);
 ```
 
 ### 11.错误重试
@@ -466,7 +440,7 @@ const { data } = useRequest(errorPromise, {
   refreshAsync: () => Promise<R>;
   // 修改返回的data数据
   mutate: (newData: R) => void | (arg: (oldData: R) => R) => void;
-  // data 处理进程，代表是否有进程(比如获取缓存)在修改 data 
+  // data 处理进程，代表是否有进程(比如获取缓存)在修改 data
   status: Ref<'pending' | 'settled'>;
 }
 ```

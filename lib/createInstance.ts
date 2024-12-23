@@ -64,12 +64,13 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
         if (currentCount !== count.value) {
           return;
         }
-        data.value = res;
         error.value = undefined;
-        callPlugin('onSuccess', data.value, args);
+        callPlugin('onSuccess', res, args);
         const result = await onSuccess?.(res, args);
         if (result) {
           data.value = result;
+        } else {
+          data.value = res;
         }
       })
       .catch((err: any) => {
