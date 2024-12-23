@@ -1,5 +1,12 @@
 
 
+## [1.12.6](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.12.5...v1.12.6) (2024-12-23)
+
+### ✨ Features | 新功能
+
+* 返回status ([0a43863](https://github.com/YeMao-Zi/ym-useRequest/commit/0a438638e74d3bf66755a8c0e2e805fbd92dc557))
+* change data after onSuccess ([5f07de3](https://github.com/YeMao-Zi/ym-useRequest/commit/5f07de3048209449c467e11a7d74c6adab5a24d5))
+
 ## [1.12.5](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.12.4...v1.12.5) (2024-12-16)
 
 ### ✨ Features | 新功能
