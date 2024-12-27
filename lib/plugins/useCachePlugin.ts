@@ -71,6 +71,7 @@ const useCachePlugin: Plugin<any, any[]> = (
         return {
           returnNow: true,
           returnData: cache.data,
+          returnType: 'cache',
         };
       } else {
         // If the data is stale, return data, and request continue

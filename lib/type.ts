@@ -70,7 +70,8 @@ export interface Options<R, P extends any[]> {
   getCache?: (cacheKey: string) => CacheData;
   // 自定义设置缓存
   setCache?: (cacheKey: string, cacheData: CacheData) => void;
-
+  // 获取缓存时
+  onCache?: (response: R) => MaybePromise<void | R>;
   // 请求前回调
   onBefore?: (params: P) => void;
   // 成功回调
@@ -105,7 +106,7 @@ export type Plugin<R, P extends unknown[]> = (
 
 export type State<R, P> = {
   status: Ref<'pending' | 'settled'>;
-  data:  Ref<R> | ShallowRef<R>;
+  data: Ref<R> | ShallowRef<R>;
   loading: Ref<boolean>;
   error: ShallowRef<any>;
   params: Ref<P>;
@@ -131,5 +132,6 @@ export type Service<R, P extends unknown[]> = (...args: P) => Promise<R>;
 export type CallPlugin<R> = {
   returnNow?: boolean;
   returnData?: any;
+  returnType?: 'cache';
   servicePromise?: Promise<R>;
 };

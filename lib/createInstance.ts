@@ -1,10 +1,10 @@
-import { ref, shallowRef, isRef } from 'vue';
+import { ref, shallowRef, isRef, watch } from 'vue';
 import type { Ref } from 'vue';
 import type { Service, Options, FunctionContext, Instance, PluginHooks, CallPlugin } from './type';
 import { composeMiddleware } from './utils';
 
 function createInstance<R, P extends unknown[]>(service: Service<R, P>, options: Options<R, P>): Instance<R, P> {
-  const { defaultData, defaultParams, onBefore, onSuccess, onError, onFinally, onCancel } = options;
+  const { defaultData, defaultParams, onBefore, onSuccess, onError, onFinally, onCancel, onCache } = options;
 
   const data = isRef(defaultData) ? defaultData : shallowRef(defaultData);
   const loading = ref(false);
@@ -40,12 +40,19 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
     count.value++;
     const currentCount = count.value;
 
-    const { returnNow = false, returnData } = callPlugin('onBefore', args);
+    const { returnNow = false, returnData, returnType } = callPlugin('onBefore', args);
 
     if (returnNow) {
       loading.value = false;
-      data.value = returnData;
       status.value = 'settled';
+      if (returnType === 'cache') {
+        const res = await onCache(returnData);
+        if (res) {
+          data.value = res;
+          return Promise.resolve(returnData);
+        }
+      }
+      data.value = returnData;
       return Promise.resolve(returnData);
     }
 

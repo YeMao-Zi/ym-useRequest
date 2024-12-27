@@ -911,6 +911,57 @@ describe('cache', () => {
     await vi.advanceTimersByTimeAsync(1000);
     expect(data2.value).toBe(4);
   });
+
+  test('cache with onCache', async () => {
+    const getData1 = (): Promise<number> => {
+      return new Promise<number>((resolve, reject) => {
+        resolve(1);
+      });
+    };
+    const getData2 = (): Promise<number> => {
+      return new Promise<number>((resolve, reject) => {
+        resolve(4);
+      });
+    };
+    const callback = vi.fn();
+    const { data, run } = useRequest(getData1, {
+      manual: true,
+      onCache(data) {
+        callback();
+      },
+    });
+    const { data: data1, run: run1 } = useRequest(getData1, {
+      manual: true,
+      cacheTime: 10000,
+      staleTime: -1,
+      cacheKey: 'test7',
+      onCache(data) {
+        callback();
+      },
+    });
+    let key = 'test8';
+    const { data: data2, run: run2 } = useRequest(getData2, {
+      manual: true,
+      cacheTime: 10000,
+      staleTime: -1,
+      cacheKey: key,
+      onCache(data) {
+        callback();
+        return 5
+      },
+    });
+    run();
+    await vi.advanceTimersByTimeAsync(10);
+    expect(callback).toHaveBeenCalledTimes(0);
+    run1();
+    await vi.advanceTimersByTimeAsync(10);
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(data1.value).toBe(1);
+    run2()
+    await vi.advanceTimersByTimeAsync(10);
+    expect(callback).toHaveBeenCalledTimes(2);
+    expect(data2.value).toBe(5);
+  });
 });
 
 describe('retry', () => {

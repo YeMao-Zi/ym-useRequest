@@ -400,7 +400,8 @@ const { data } = useRequest(errorPromise, {
   getCache?: (cacheKey: string) => CacheData;
   // 自定义设置缓存
   setCache?: (cacheKey: string, cacheData: CacheData) => void;
-
+  // 即将获取缓存时回调
+  onCache?: (response: R) => MaybePromise<void | R>;
   // 请求前回调
   onBefore?: (params: P) => void;
   // 成功回调
