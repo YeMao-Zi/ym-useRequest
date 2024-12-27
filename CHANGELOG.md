@@ -1,5 +1,11 @@
 
 
+## [1.12.7](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.12.6...v1.12.7) (2024-12-27)
+
+### ✨ Features | 新功能
+
+* add onCache ([00c0876](https://github.com/YeMao-Zi/ym-useRequest/commit/00c087600f0de83b5b26c64232e3aecebd7c6213))
+
 ## [1.12.6](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.12.5...v1.12.6) (2024-12-23)
 
 ### ✨ Features | 新功能
