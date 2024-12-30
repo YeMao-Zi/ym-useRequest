@@ -1,6 +1,6 @@
 <template>
   <div>{{ data?.length }} {{ loading }}{{ pages.loadingEnd }}{{ pollingCount }}</div>
-  <div @click="gorun">run</div>
+  <div @click="goRunAsync">goRunAsync</div>
   <div @click="onRun1">run1</div>
   <div @click="onRun2">run2</div>
   <div @click="onCancel">cancel</div>
@@ -100,13 +100,13 @@ const { data, loading, mutate, cancel, refresh, run, runAsync, pollingCount, sta
   },
 });
 
-const gorun = () => {
-  pollingInterval.value = 1000;
+const goRunAsync = async () => {
+  // pollingInterval.value = 1000;
   ready.value = true;
-  pages.page++;
-  runAsync({
-    page: pages.page,
+  const res = await runAsync({
+    page: 1,
   });
+  console.log(res, 'res');
 };
 const onRun1 = () => {
   ready.value = true;

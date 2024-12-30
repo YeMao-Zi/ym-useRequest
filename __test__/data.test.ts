@@ -98,7 +98,7 @@ test('when unMount request cancel', async () => {
 
 describe.concurrent('simple example with result', () => {
   test('loading and run', async () => {
-    const { loading, run, status } = useRequest(getData, { manual: true });
+    const { loading, run, runAsync, status } = useRequest(getData, { manual: true });
     expect(loading.value).toBe(false);
     expect(status.value).toBe('pending');
     run();
@@ -106,6 +106,8 @@ describe.concurrent('simple example with result', () => {
     await vi.runAllTimersAsync();
     expect(status.value).toBe('settled');
     expect(loading.value).toBe(false);
+    const res = await runAsync(5);
+    expect(res).toBe(5);
   });
 
   test('data', async () => {
@@ -947,7 +949,7 @@ describe('cache', () => {
       cacheKey: key,
       onCache(data) {
         callback();
-        return 5
+        return 5;
       },
     });
     run();
@@ -957,7 +959,7 @@ describe('cache', () => {
     await vi.advanceTimersByTimeAsync(10);
     expect(callback).toHaveBeenCalledTimes(1);
     expect(data1.value).toBe(1);
-    run2()
+    run2();
     await vi.advanceTimersByTimeAsync(10);
     expect(callback).toHaveBeenCalledTimes(2);
     expect(data2.value).toBe(5);

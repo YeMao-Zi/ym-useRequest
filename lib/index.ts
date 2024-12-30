@@ -1,4 +1,4 @@
-import type { Service, Options, Request } from './type';
+import type { Service, Options, Request, Plugin } from './type';
 import debounce from './utils/debounce';
 import throttle from './utils/throttle';
 import { TypeChecker } from './utils/index';
@@ -13,8 +13,22 @@ import useThrottlePlugin from './plugins/useThrottlePlugin';
 import useCachePlugin from './plugins/useCachePlugin';
 import useRetryPlugin from './plugins/useRetryPlugin';
 
+let plugins = [
+  useLoadingDelayPlugins,
+  usePollingPlugin,
+  useRefreshDepsPlugin,
+  useReadyPlugin,
+  useDebouncePlugin,
+  useThrottlePlugin,
+  useCachePlugin,
+  useRetryPlugin,
+];
 function useRequest<R, P extends unknown[] = any>(service: Service<R, P>, options?: Options<R, P>): Request<R, P> {
-  return usePlugins<R, P>(service, options, [
+  return usePlugins<R, P>(service, options, plugins);
+}
+
+function definePlugins(Plugins: Plugin<any, any[]>[]) {
+  plugins = [
     useLoadingDelayPlugins,
     usePollingPlugin,
     useRefreshDepsPlugin,
@@ -23,6 +37,7 @@ function useRequest<R, P extends unknown[] = any>(service: Service<R, P>, option
     useThrottlePlugin,
     useCachePlugin,
     useRetryPlugin,
-  ]);
+    ...Plugins,
+  ];
 }
-export { useRequest, clearCache, setCache, getCache, debounce, throttle, TypeChecker };
+export { useRequest, clearCache, setCache, getCache, debounce, throttle, definePlugins, TypeChecker };

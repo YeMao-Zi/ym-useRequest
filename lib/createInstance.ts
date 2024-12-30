@@ -59,17 +59,16 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
     if (returnData) {
       data.value = returnData;
     }
-
     onBefore?.(args);
     let serverWrapper = () => new Promise<R>((resolve) => resolve(service(...params.value)));
     let { servicePromise } = callPlugin('onInit', serverWrapper);
     if (servicePromise) {
       serverWrapper = () => servicePromise;
     }
-    await serverWrapper()
+    return await serverWrapper()
       .then(async (res) => {
         if (currentCount !== count.value) {
-          return;
+          return new Promise(() => {});
         }
         error.value = undefined;
         callPlugin('onSuccess', res, args);
@@ -79,10 +78,11 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
         } else {
           data.value = res;
         }
+        return data.value;
       })
       .catch((err: any) => {
         if (currentCount !== count.value) {
-          return;
+          return new Promise(() => {});
         }
         error.value = err;
         callPlugin('onError', err, args);
@@ -93,7 +93,7 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
         loading.value = false;
         status.value = 'settled';
         if (currentCount !== count.value) {
-          return;
+          return new Promise(() => {});
         }
         callPlugin('onFinally', args);
         onFinally?.();
