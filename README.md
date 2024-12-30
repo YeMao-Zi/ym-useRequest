@@ -48,6 +48,7 @@ const { data, loading } = useRequest(somePromise2, {
   defaultParams: 'params1', // or ['参数1']
 });
 ```
+> defaultParams传入为数组时表示函数的多个参数，所以如果想要传入单个参数且参数本身为数组，应该使用 [array] 这样传参
 
 ### 3.监听响应式数据并自动执行更新数据
 

@@ -46,7 +46,7 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
       loading.value = false;
       status.value = 'settled';
       if (returnType === 'cache') {
-        const res = await onCache(returnData);
+        const res = await onCache?.(returnData);
         if (res) {
           data.value = res;
           return Promise.resolve(returnData);
@@ -68,7 +68,7 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
     return await serverWrapper()
       .then(async (res) => {
         if (currentCount !== count.value) {
-          return new Promise(() => {});
+          return
         }
         error.value = undefined;
         callPlugin('onSuccess', res, args);
@@ -82,7 +82,7 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
       })
       .catch((err: any) => {
         if (currentCount !== count.value) {
-          return new Promise(() => {});
+          return
         }
         error.value = err;
         callPlugin('onError', err, args);
@@ -93,7 +93,7 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
         loading.value = false;
         status.value = 'settled';
         if (currentCount !== count.value) {
-          return new Promise(() => {});
+          return
         }
         callPlugin('onFinally', args);
         onFinally?.();
