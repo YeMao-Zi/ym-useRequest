@@ -1,5 +1,12 @@
 
 
+## [1.12.8](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.12.7...v1.12.8) (2024-12-30)
+
+### 🐛 Bug Fixes | Bug 修复
+
+* onCache error catch ([fd13718](https://github.com/YeMao-Zi/ym-useRequest/commit/fd13718e4df916849a0c61d541a6194053f09ce0))
+* runAsync return async data ([c5aada8](https://github.com/YeMao-Zi/ym-useRequest/commit/c5aada87ce8ba4523194c8a17ae1f9c3109092aa))
+
 ## [1.12.7](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.12.6...v1.12.7) (2024-12-27)
 
 ### ✨ Features | 新功能
