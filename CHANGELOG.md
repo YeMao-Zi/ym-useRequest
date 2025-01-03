@@ -1,5 +1,11 @@
 
 
+## [1.12.9](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.12.8...v1.12.9) (2025-01-03)
+
+### ✨ Features | 新功能
+
+* cache request  trigger with mutate ([3e1c61b](https://github.com/YeMao-Zi/ym-useRequest/commit/3e1c61bbbd1c10e6004c64c73ca26183036ff7a3))
+
 ## [1.12.8](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.12.7...v1.12.8) (2024-12-30)
 
 ### 🐛 Bug Fixes | Bug 修复
