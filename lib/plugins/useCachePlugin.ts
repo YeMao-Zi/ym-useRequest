@@ -2,7 +2,7 @@ import { onBeforeUnmount } from 'vue';
 import type { Plugin } from '../type';
 import { isFunction } from '../utils';
 import { setCache, getCache, type CacheData } from '../utils/cache';
-import { subscribe } from '../utils/cacheSubscribe';
+import { subscribe, trigger } from '../utils/cacheSubscribe';
 import { getCachePromise, setCachePromise } from '../utils/cachePromise';
 
 const useCachePlugin: Plugin<any, any[]> = (
@@ -13,6 +13,7 @@ const useCachePlugin: Plugin<any, any[]> = (
     staleTime = 0,
     getCache: customSetCache,
     setCache: customGetCache,
+    onCache,
   },
 ) => {
   if (!customCacheKey) {
@@ -30,6 +31,7 @@ const useCachePlugin: Plugin<any, any[]> = (
     } else {
       setCache(key, cacheData, time);
     }
+    trigger(key, cacheData.data);
   };
 
   const _getCache = (key: string) => {
@@ -51,6 +53,7 @@ const useCachePlugin: Plugin<any, any[]> = (
   const setUnSubscribe = (params?: any) => {
     unSubscribe = subscribe(cacheKey(params), (data) => {
       instance.data.value = data;
+      onCache?.(data);
     });
   };
   setUnSubscribe();
@@ -75,7 +78,7 @@ const useCachePlugin: Plugin<any, any[]> = (
         };
       } else {
         // If the data is stale, return data, and request continue
-        return { returnData: cache.data };
+        return { returnData: cache.data, returnType: 'cache' };
       }
     },
     onInit(service) {

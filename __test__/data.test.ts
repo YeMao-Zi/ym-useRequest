@@ -941,15 +941,19 @@ describe('cache', () => {
         callback();
       },
     });
-    let key = 'test8';
-    const { data: data2, run: run2 } = useRequest(getData2, {
+
+    const {
+      data: data2,
+      run: run2,
+      mutate,
+    } = useRequest(getData2, {
       manual: true,
       cacheTime: 10000,
       staleTime: -1,
-      cacheKey: key,
+      cacheKey: 'test7',
       onCache(data) {
         callback();
-        return 5;
+        mutate(5)
       },
     });
     run();
@@ -961,8 +965,9 @@ describe('cache', () => {
     expect(data1.value).toBe(1);
     run2();
     await vi.advanceTimersByTimeAsync(10);
-    expect(callback).toHaveBeenCalledTimes(2);
+    expect(callback).toHaveBeenCalledTimes(3);
     expect(data2.value).toBe(5);
+    expect(data1.value).toBe(5);
   });
 });
 

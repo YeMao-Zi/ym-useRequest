@@ -71,7 +71,7 @@ export interface Options<R, P extends any[]> {
   // 自定义设置缓存
   setCache?: (cacheKey: string, cacheData: CacheData) => void;
   // 获取缓存时
-  onCache?: (response: R) => MaybePromise<void | R>;
+  onCache?: (response: R) => void;
   // 请求前回调
   onBefore?: (params: P) => void;
   // 成功回调

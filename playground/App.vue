@@ -11,10 +11,12 @@
   <!-- <div v-for="item in 10" :key="item">
     <Item />
   </div> -->
+  <cacheTest />
 </template>
 
 <script setup lang="ts">
 import Item from './item.vue';
+import cacheTest from './cacheTest.vue';
 import { computed, reactive, ref } from 'vue';
 import { useRequest } from 'ym-userequest';
 // import { useRequest } from '../dist';

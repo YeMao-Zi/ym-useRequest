@@ -45,19 +45,18 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
     if (returnNow) {
       loading.value = false;
       status.value = 'settled';
-      if (returnType === 'cache') {
-        const res = await onCache?.(returnData);
-        if (res) {
-          data.value = res;
-          return Promise.resolve(returnData);
-        }
-      }
       data.value = returnData;
+      if (returnType === 'cache') {
+        onCache?.(returnData);
+      }
       return Promise.resolve(returnData);
     }
 
     if (returnData) {
       data.value = returnData;
+      if (returnType === 'cache') {
+        onCache?.(returnData);
+      }
     }
     onBefore?.(args);
     let serverWrapper = () => new Promise<R>((resolve) => resolve(service(...params.value)));
@@ -68,7 +67,7 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
     return await serverWrapper()
       .then(async (res) => {
         if (currentCount !== count.value) {
-          return
+          return;
         }
         error.value = undefined;
         callPlugin('onSuccess', res, args);
@@ -82,7 +81,7 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
       })
       .catch((err: any) => {
         if (currentCount !== count.value) {
-          return
+          return;
         }
         error.value = err;
         callPlugin('onError', err, args);
@@ -93,7 +92,7 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
         loading.value = false;
         status.value = 'settled';
         if (currentCount !== count.value) {
-          return
+          return;
         }
         callPlugin('onFinally', args);
         onFinally?.();

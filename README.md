@@ -48,7 +48,8 @@ const { data, loading } = useRequest(somePromise2, {
   defaultParams: 'params1', // or ['参数1']
 });
 ```
-> defaultParams传入为数组时表示函数的多个参数，所以如果想要传入单个参数且参数本身为数组，应该使用 [array] 这样传参
+
+> defaultParams 传入为数组时表示函数的多个参数，所以如果想要传入单个参数且参数本身为数组，应该使用 [array] 这样传参
 
 ### 3.监听响应式数据并自动执行更新数据
 
@@ -401,8 +402,8 @@ const { data } = useRequest(errorPromise, {
   getCache?: (cacheKey: string) => CacheData;
   // 自定义设置缓存
   setCache?: (cacheKey: string, cacheData: CacheData) => void;
-  // 即将获取缓存时回调
-  onCache?: (response: R) => MaybePromise<void | R>;
+  // 获取缓存时回调
+  onCache?: (response: R) => void;
   // 请求前回调
   onBefore?: (params: P) => void;
   // 成功回调
