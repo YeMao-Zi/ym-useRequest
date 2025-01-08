@@ -443,7 +443,7 @@ const { data } = useRequest(errorPromise, {
   refreshAsync: () => Promise<R>;
   // 修改返回的data数据
   mutate: (newData: R) => void | (arg: (oldData: R) => R) => void;
-  // data 处理进程，代表是否有进程(比如获取缓存)在修改 data
+  // data 处理进程
   status: Ref<'pending' | 'settled'>;
 }
 ```

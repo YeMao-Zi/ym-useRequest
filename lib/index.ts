@@ -3,6 +3,7 @@ import debounce from './utils/debounce';
 import throttle from './utils/throttle';
 import { TypeChecker } from './utils/index';
 import { clearCache, setCache, getCache } from './utils/cache';
+import { trigger } from './utils/cacheSubscribe';
 import usePlugins from './usePlugins';
 import useLoadingDelayPlugins from './plugins/useLoadingDelayPlugin';
 import usePollingPlugin from './plugins/usePollingPlugin';
@@ -40,4 +41,4 @@ function definePlugins(Plugins: Plugin<any, any[]>[]) {
     ...Plugins,
   ];
 }
-export { useRequest, clearCache, setCache, getCache, debounce, throttle, definePlugins, TypeChecker };
+export { useRequest, clearCache, setCache, getCache, trigger, debounce, throttle, definePlugins, TypeChecker };

@@ -1,4 +1,4 @@
-import { ref, shallowRef, isRef, watch } from 'vue';
+import { ref, shallowRef, isRef } from 'vue';
 import type { Ref } from 'vue';
 import type { Service, Options, FunctionContext, Instance, PluginHooks, CallPlugin } from './type';
 import { composeMiddleware } from './utils';
@@ -117,7 +117,7 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
   functionContext.refreshAsync = () => functionContext.runAsync(...params.value);
 
   functionContext.mutate = (v: any) => {
-    data.value = v.constructor === Function ? v(data.value) : v;
+    data.value = v && v.constructor === Function ? v(data.value) : v;
     callPlugin('onMutate', data.value);
   };
 

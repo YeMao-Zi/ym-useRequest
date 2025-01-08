@@ -11,8 +11,8 @@ const useCachePlugin: Plugin<any, any[]> = (
     cacheKey: customCacheKey,
     cacheTime = 5 * 60 * 1000,
     staleTime = 0,
-    getCache: customSetCache,
-    setCache: customGetCache,
+    getCache: customGetCache,
+    setCache: customSetCache,
     onCache,
   },
 ) => {
@@ -26,8 +26,8 @@ const useCachePlugin: Plugin<any, any[]> = (
   const cacheKey = (isFunction(customCacheKey) ? customCacheKey : () => customCacheKey) as (params?: any) => string;
 
   const _setCache = (key: string, cacheData: CacheData, time: number) => {
-    if (customGetCache) {
-      customGetCache(key, cacheData);
+    if (customSetCache) {
+      customSetCache(key, cacheData);
     } else {
       setCache(key, cacheData, time);
     }
@@ -35,8 +35,8 @@ const useCachePlugin: Plugin<any, any[]> = (
   };
 
   const _getCache = (key: string) => {
-    if (customSetCache) {
-      return customSetCache(key);
+    if (customGetCache) {
+      return customGetCache(key);
     } else {
       return getCache(key);
     }
