@@ -147,7 +147,7 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { onUnmounted, unref } from 'vue';
 import type { Service, Options, Request, Plugin } from './type';
-import { useUnrefParmsWithArray } from './utils';
+import { unrefParms } from './utils';
 import createInstance from './createInstance';
 &nbsp;
 function usePlugins&lt;R, P extends unknown[]&gt;(
@@ -156,7 +156,7 @@ function usePlugins&lt;R, P extends unknown[]&gt;(
   plugins: Plugin&lt;R, P&gt;[],
 ): Request&lt;R, P&gt; {
   const { manual = false, defaultParams = [] as unknown as P, ...rest } = options;
-  const _defaultParams=useUnrefParmsWithArray&lt;P&gt;(defaultParams)
+  const _defaultParams=unrefParms&lt;P&gt;(defaultParams)
   const fetchOptions = {
     manual,
     defaultParams:_defaultParams,

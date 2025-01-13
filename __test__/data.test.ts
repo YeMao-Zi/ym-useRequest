@@ -1,6 +1,6 @@
 import { ref, reactive, computed, defineComponent } from 'vue';
 import type { ComputedRef } from 'vue';
-import { expect, test, describe, vi, beforeAll } from 'vitest';
+import { expect, test, describe, vi, beforeAll, beforeEach, afterEach } from 'vitest';
 import { useRequest, clearCache } from '../lib';
 import { mount } from './utils';
 
@@ -953,7 +953,7 @@ describe('cache', () => {
       cacheKey: 'test7',
       onCache(data) {
         callback();
-        mutate(5)
+        mutate(5);
       },
     });
     run();
@@ -1042,3 +1042,49 @@ describe('retry', () => {
     expect(callback).toHaveBeenCalledTimes(1);
   });
 });
+
+// describe('windowVisivibilityChange', () => {
+//   test('refresh', async () => {
+//     const callback = vi.fn();
+//     useRequest(getData, {
+//       // manual: true,
+//       refreshOnWindowFocus: true,
+//       focusTimespan: 100,
+//       onSuccess: callback,
+//     });
+//     await vi.advanceTimersByTimeAsync(1000);
+//     expect(callback).toHaveBeenCalledTimes(1);
+//     window.dispatchEvent(new Event('visibilitychange'));
+//     // await vi.advanceTimersByTimeAsync(1000);
+//     expect(callback).toHaveBeenCalledTimes(1);
+//     expect(document.visibilityState).toBe('visible');
+//     await vi.advanceTimersByTimeAsync(1000);
+//     window.dispatchEvent(new Event('visibilitychange'));
+//     await vi.advanceTimersByTimeAsync(1000);
+//     expect(document.visibilityState).toBe('hidden');
+//     await vi.advanceTimersByTimeAsync(1000);
+//     expect(callback).toHaveBeenCalledTimes(2);
+//   });
+
+//   test('cancel', async () => {
+//     const callback = vi.fn();
+//     const { pollingCount, cancel } = useRequest(() => getData(1, 0), {
+//       cancelOnWindowBlur: true,
+//       pollingInterval: 1000,
+//       onSuccess: callback,
+//       onFinally() {
+//         if (pollingCount.value === 5) {
+//           cancel();
+//         }
+//       },
+//     });
+//     await vi.advanceTimersByTimeAsync(1000);
+//     expect(callback).toHaveBeenCalledTimes(1);
+//     window.dispatchEvent(new Event('visibilitychange'));
+//     await vi.advanceTimersByTimeAsync(1000);
+//     expect(callback).toHaveBeenCalledTimes(2);
+//     // window.dispatchEvent(new Event('visibilitychange'));
+//     await vi.advanceTimersByTimeAsync(1000);
+//     expect(callback).toHaveBeenCalledTimes(3);
+//   });
+// });

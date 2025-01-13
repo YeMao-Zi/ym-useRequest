@@ -117,7 +117,7 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { watch } from 'vue';
 import type { Plugin } from '../type';
-import { useUnrefParmsWithArray } from '../utils';
+import { unrefParms } from '../utils';
 &nbsp;
 const useRefreshDepsPlugin: Plugin&lt;any, any[]&gt; = (
   instance,
@@ -129,7 +129,7 @@ const useRefreshDepsPlugin: Plugin&lt;any, any[]&gt; = (
       refreshDeps,
       () =&gt; {
         if (refreshDepsParams) {
-          instance.functionContext.run(...useUnrefParmsWithArray(refreshDepsParams));
+          instance.functionContext.run(...unrefParms(refreshDepsParams));
         } else {
           !manual &amp;&amp; instance.functionContext.refresh();
         }

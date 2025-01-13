@@ -70,6 +70,12 @@ export interface Options<R, P extends any[]> {
   getCache?: (cacheKey: string) => CacheData;
   // 自定义设置缓存
   setCache?: (cacheKey: string, cacheData: CacheData) => void;
+  // 在浏览器页面重新显示时，重新发起请求
+  refreshOnWindowFocus?: Ref<boolean> | boolean;
+  // 离开浏览器页面时，取消请求
+  cancelOnWindowBlur?: Ref<boolean> | boolean;
+  // 重新请求间隔，单位为毫秒
+  focusTimespan?: Ref<number> | number;
   // 获取缓存时
   onCache?: (response: R) => void;
   // 请求前回调

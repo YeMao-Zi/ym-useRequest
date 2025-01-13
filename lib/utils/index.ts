@@ -16,7 +16,7 @@ export const isNonZeroFalsy = (value: any) => {
   return !isNumber(value) && !value;
 };
 
-export const useUnrefParmsWithArray = <P extends any[]>(value: Params<P>): P => {
+export const unrefParms = <P extends any[]>(value: Params<P>): P => {
   let _value = unref(value);
   _value = TypeChecker.isArray(_value) ? _value : [_value];
   return _value;
@@ -61,3 +61,15 @@ export const TypeChecker: Type = {
   isRegExp,
   isPromise,
 };
+
+export function limit(fn: any, timespan: number) {
+  let pending = false;
+  return (...args: any[]) => {
+    if (pending) return;
+    pending = true;
+    fn(...args);
+    setTimeout(() => {
+      pending = false;
+    }, timespan);
+  };
+}

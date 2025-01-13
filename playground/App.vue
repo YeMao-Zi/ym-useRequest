@@ -60,9 +60,12 @@ let pollingInterval = ref(null);
 const ready = ref(false);
 const { data, loading, mutate, cancel, refresh, run, runAsync, pollingCount, status } = useRequest(somePromise, {
   manual: true,
+  // cancelOnWindowBlur:true,
+  refreshOnWindowFocus: true,
+  focusTimespan: 10000,
   defaultData: [1, 2, 3],
   defaultParams: { page: 1 },
-  ready,
+  // ready,
   // refreshDeps: () => pages.page,
   // refreshDepsParams: () => refreshDepsParams,
   pollingInterval: pollingInterval,

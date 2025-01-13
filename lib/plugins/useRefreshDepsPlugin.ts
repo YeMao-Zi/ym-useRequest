@@ -1,12 +1,11 @@
 import { watch } from 'vue';
 import type { Plugin } from '../type';
-import { useUnrefParmsWithArray, isFunction } from '../utils';
+import { unrefParms, isFunction } from '../utils';
 
 const useRefreshDepsPlugin: Plugin<any, any[]> = (
   instance,
   { manual, refreshDeps = null, refreshDepsParams = null },
 ) => {
-  // 依赖更新
   if (refreshDeps) {
     watch(
       refreshDeps,
@@ -15,10 +14,10 @@ const useRefreshDepsPlugin: Plugin<any, any[]> = (
           if (isFunction(refreshDepsParams)) {
             const res = await refreshDepsParams();
             if (res) {
-              instance.functionContext.run(...useUnrefParmsWithArray(res));
+              instance.functionContext.run(...unrefParms(res));
             }
           } else {
-            instance.functionContext.run(...useUnrefParmsWithArray(refreshDepsParams));
+            instance.functionContext.run(...unrefParms(refreshDepsParams));
           }
         } else {
           !manual && instance.functionContext.refresh();

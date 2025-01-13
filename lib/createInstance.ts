@@ -16,11 +16,10 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
 
   const count = ref(0);
 
-  // 执行所有插件勾子
   const callPlugin = (type: keyof PluginHooks<R, P>, ...args: any[]): CallPlugin<R> => {
     if (type == 'onInit') {
       const InstanceFn = plugins.value.map((i) => i.onInit).filter(Boolean);
-      // 为所有 plugins 执行一次 onInit，并层层传递 service 最终重新将 处理包装后的 service 返回
+      // onInit is executed once for all plugins，return finally service
       return { servicePromise: composeMiddleware(InstanceFn, args[0])() };
     } else {
       // @ts-ignore
@@ -117,7 +116,7 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
   functionContext.refreshAsync = () => functionContext.runAsync(...params.value);
 
   functionContext.mutate = (v: any) => {
-    data.value = v && v.constructor === Function ? v(data.value) : v;
+    data.value = v?.constructor === Function ? v(data.value) : v;
     callPlugin('onMutate', data.value);
   };
 

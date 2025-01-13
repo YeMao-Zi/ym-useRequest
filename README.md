@@ -71,7 +71,7 @@ const { data, loading } = useRequest(somePromise, {
   defaultParams: pages.size,
   refreshDeps: [() => pages.size], // 监听的依赖
   // 可选，依赖变更后执行的参数,不传则在依赖变更后执行 refresh,
-  // 如果不想监听后立即请求,可以传递一个没有返回值的函数 ()=>void
+  // 如果为函数会执行该函数并将返回值作为参数，不想监听后立即请求,可以传递一个没有返回值的函数 ()=>void
   refreshDepsParams: refreshDepsParams,
 });
 const onClick = () => {
@@ -217,8 +217,6 @@ console.log(data.value); // 1
 
 ### 8.函数防抖
 
-注意：防抖内部使用的是 lodash 的 debounce 方法，但由于 debounce 不是 promise,只能在内部的 promise 中包裹 debounce，所以防抖后的参数不会是第一次的触发参数而是最后一次触发的参数
-
 ```ts
 const somePromise = () => {
   return new Promise((resolve, reject) => {
@@ -266,6 +264,8 @@ const onRun = () => {
 ```
 
 ### 10.缓存
+
+> 设置了 cacheKey，组件在第二次加载时，会优先返回缓存的内容，然后在背后重新发起请求
 
 ```ts
 import { useRequest, clearCache } from 'ym-userequest';
@@ -337,7 +337,7 @@ const { data } = useRequest(errorPromise, {
   // 是否手动发起请求
   manual?: boolean;
 
-  // 设置默认 data
+  // 设置默认 data，也可用于指定 data 为 ShallowRef 或 Ref
   // 如果传入值为非响应式，将被转化为 ShallowRef
   defaultData?: R | Ref<R>;
 
@@ -402,6 +402,12 @@ const { data } = useRequest(errorPromise, {
   getCache?: (cacheKey: string) => CacheData;
   // 自定义设置缓存
   setCache?: (cacheKey: string, cacheData: CacheData) => void;
+  // 在浏览器页面重新显示时，重新发起请求
+  refreshOnWindowFocus?: Ref<boolean> | boolean;
+  // 重新请求间隔，单位为毫秒
+  focusTimespan?: Ref<number> | number;
+  // 离开浏览器页面时，取消请求
+  cancelOnWindowBlur?: Ref<boolean> | boolean;
   // 获取缓存时回调
   onCache?: (response: R) => void;
   // 请求前回调
