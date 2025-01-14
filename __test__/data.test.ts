@@ -116,6 +116,16 @@ describe.concurrent('simple example with result', () => {
     expect(data.value).toBe(1);
   });
 
+  test('data with race cancel', async () => {
+    const { data, run } = useRequest(getData, {
+      manual: true,
+    });
+    run(2, 3000);
+    run(3, 1000);
+    await vi.runAllTimersAsync();
+    expect(data.value).toBe(3);
+  });
+
   test('defaultParams', async () => {
     const { data } = useRequest(getData, { defaultParams: 5 });
     await vi.runAllTimersAsync();

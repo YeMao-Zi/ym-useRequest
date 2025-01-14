@@ -27,14 +27,19 @@ const BasePlugins = [
   useWindowVisibilityChangePlugin,
 ];
 
-let plugins = [...BasePlugins];
+let Plugins = [...BasePlugins];
 
-function definePlugins(Plugins: Plugin<any, any[]>[]) {
-  plugins = [...BasePlugins, ...Plugins];
+function definePlugins(plugins: Plugin<any, any[]>[]) {
+  Plugins = [...BasePlugins, ...(plugins || [])];
 }
 
-function useRequest<R, P extends unknown[] = any>(service: Service<R, P>, options?: Options<R, P>): Request<R, P> {
-  return usePlugins<R, P>(service, options, plugins);
+function useRequest<R, P extends unknown[] = any>(
+  service: Service<R, P>,
+  options?: Options<R, P>,
+  plugins?: Plugin<R, P>[],
+): Request<R, P> {
+  const _plugins = [...Plugins, ...(plugins || [])];
+  return usePlugins<R, P>(service, options, _plugins);
 }
 
 export { useRequest, clearCache, setCache, getCache, trigger, debounce, throttle, definePlugins, TypeChecker };

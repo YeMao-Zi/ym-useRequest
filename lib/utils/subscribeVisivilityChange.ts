@@ -1,4 +1,3 @@
-// from swr
 type Listener = () => void;
 
 const refreshListeners: Listener[] = [];

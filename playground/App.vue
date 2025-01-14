@@ -1,5 +1,5 @@
 <template>
-  <div>{{ data?.length }} {{ loading }}{{ pages.loadingEnd }}{{ pollingCount }}</div>
+  <div>{{ data?.length }} {{ loading }}{{ pages.loadingEnd }}{{ pollingCount }}--{{ data }}</div>
   <div @click="goRunAsync">goRunAsync</div>
   <div @click="onRun1">run1</div>
   <div @click="onRun2">run2</div>
@@ -11,7 +11,7 @@
   <!-- <div v-for="item in 10" :key="item">
     <Item />
   </div> -->
-  <cacheTest />
+  <!-- <cacheTest /> -->
 </template>
 
 <script setup lang="ts">
@@ -26,12 +26,12 @@ const pages = reactive({
   loadingEnd: null,
   count: 0,
 });
-const somePromise = (pages: { page: number }): Promise<any[]> => {
+const somePromise = (pages: { page: number }, time = 1000): Promise<any[]> => {
   console.log(pages.page, 'pages.page');
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       resolve(new Array(pages.page).fill(1));
-    }, 1000);
+    }, time);
   });
 };
 
@@ -61,14 +61,14 @@ const ready = ref(false);
 const { data, loading, mutate, cancel, refresh, run, runAsync, pollingCount, status } = useRequest(somePromise, {
   manual: true,
   // cancelOnWindowBlur:true,
-  refreshOnWindowFocus: true,
-  focusTimespan: 10000,
+  // refreshOnWindowFocus: true,
+  // focusTimespan: 10000,
   defaultData: [1, 2, 3],
   defaultParams: { page: 1 },
   // ready,
   // refreshDeps: () => pages.page,
   // refreshDepsParams: () => refreshDepsParams,
-  pollingInterval: pollingInterval,
+  // pollingInterval: pollingInterval,
   // pollingErrorRetryCount: 3,
   // debounceWait: 2000,
   // debounceOptions: {
@@ -89,7 +89,9 @@ const { data, loading, mutate, cancel, refresh, run, runAsync, pollingCount, sta
   // getCache(cacheKey) {
   //   return JSON.parse(localStorage.getItem(cacheKey) || '[]');
   // },
-
+  onSuccess() {
+    console.log('onSuccess');
+  },
   onFinally() {
     console.log(pollingInterval, 'onFinally', data.value);
     if (data.value.length > 5) {
@@ -104,6 +106,21 @@ const { data, loading, mutate, cancel, refresh, run, runAsync, pollingCount, sta
     // cancel();
   },
 });
+
+const data1 = runAsync(
+  {
+    page: 1,
+  },
+  3000,
+);
+const data2 = runAsync(
+  {
+    page: 2,
+  },
+  1000,
+);
+
+console.log(data1,data2)
 
 const goRunAsync = async () => {
   // pollingInterval.value = 1000;

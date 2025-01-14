@@ -38,24 +38,17 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
     status.value = 'pending';
     count.value++;
     const currentCount = count.value;
-
     const { returnNow = false, returnData, returnType } = callPlugin('onBefore', args);
-
-    if (returnNow) {
-      loading.value = false;
-      status.value = 'settled';
-      data.value = returnData;
-      if (returnType === 'cache') {
-        onCache?.(returnData);
-      }
-      return Promise.resolve(returnData);
-    }
-
     if (returnData) {
       data.value = returnData;
       if (returnType === 'cache') {
         onCache?.(returnData);
       }
+    }
+    if (returnNow) {
+      loading.value = false;
+      status.value = 'settled';
+      return Promise.resolve(returnData);
     }
     onBefore?.(args);
     let serverWrapper = () => new Promise<R>((resolve) => resolve(service(...params.value)));
@@ -65,17 +58,19 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
     }
     return await serverWrapper()
       .then(async (res) => {
+        // if currentCount < count.value with race cancelled
+        // if currentCount > count.value with cancel function
         if (currentCount !== count.value) {
           return;
         }
         error.value = undefined;
-        callPlugin('onSuccess', res, args);
         const result = await onSuccess?.(res, args);
         if (result) {
           data.value = result;
         } else {
           data.value = res;
         }
+        callPlugin('onSuccess', data.value, args);
         return data.value;
       })
       .catch((err: any) => {
