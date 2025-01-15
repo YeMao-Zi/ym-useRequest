@@ -1,5 +1,16 @@
 
 
+## [1.12.10](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.12.9...v1.12.10) (2025-01-15)
+
+### ✨ Features | 新功能
+
+* add windowVisivibilityChange plugin ([998caf4](https://github.com/YeMao-Zi/ym-useRequest/commit/998caf450f6c054ccf33bd0b8f40d4cc1e29e189))
+* export trigger ([a5edbd7](https://github.com/YeMao-Zi/ym-useRequest/commit/a5edbd7981792850b1f67880b1d371077df5f7e8))
+
+### ✅ Tests | 测试
+
+* race cancelled ([98be062](https://github.com/YeMao-Zi/ym-useRequest/commit/98be062477a2ee2f12aeb30567fec90e110eca6d))
+
 ## [1.12.9](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.12.8...v1.12.9) (2025-01-03)
 
 ### ✨ Features | 新功能
