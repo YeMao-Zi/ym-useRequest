@@ -4,7 +4,7 @@ import type { Service, Options, FunctionContext, Instance, PluginHooks, CallPlug
 import { composeMiddleware } from './utils';
 
 function createInstance<R, P extends unknown[]>(service: Service<R, P>, options: Options<R, P>): Instance<R, P> {
-  const { defaultData, defaultParams, onBefore, onSuccess, onError, onFinally, onCancel, onCache } = options;
+  const { defaultData, defaultParams, onBefore, onRequest, onSuccess, onError, onFinally, onCancel, onCache } = options;
 
   const data = isRef(defaultData) ? defaultData : shallowRef(defaultData);
   const loading = ref(false);
@@ -58,6 +58,12 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
     }
     return await serverWrapper()
       .then(async (res) => {
+        onRequest?.({
+          params: args,
+          response: res,
+          error: undefined,
+          abort: currentCount !== count.value,
+        });
         // if currentCount < count.value with race cancelled
         // if currentCount > count.value with cancel function
         if (currentCount !== count.value) {
@@ -74,6 +80,12 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
         return data.value;
       })
       .catch((err: any) => {
+        onRequest?.({
+          params: args,
+          response: undefined,
+          error: err,
+          abort: currentCount !== count.value,
+        });
         if (currentCount !== count.value) {
           return;
         }

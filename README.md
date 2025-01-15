@@ -412,6 +412,8 @@ const { data } = useRequest(errorPromise, {
   onCache?: (response: R) => void;
   // 请求前回调
   onBefore?: (params: P) => void;
+  // 每次请求被执行时回调，可以在该回调中获取每次请求的响应
+  onRequest?: ({ params, response, error, abort }: { params: P; response: R; error: any; abort: boolean }) => void;
   // 成功回调
   onSuccess?: (response: R, params: P) => MaybePromise<void | R>;
   // 失败回调

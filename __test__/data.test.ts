@@ -181,6 +181,20 @@ describe.concurrent('life cycle', () => {
     await vi.runAllTimersAsync();
     expect(callback).toHaveBeenCalledWith([2]);
   });
+  test('onRequest', async () => {
+    const callbackRequest = vi.fn();
+    const callbackSuccess = vi.fn();
+    const { run } = useRequest(getData, {
+      manual: true,
+      onRequest: callbackRequest,
+      onSuccess: callbackSuccess,
+    });
+    run(1);
+    run(2);
+    await vi.runAllTimersAsync();
+    expect(callbackRequest).toHaveBeenCalledTimes(2);
+    expect(callbackSuccess).toHaveBeenCalledTimes(1);
+  });
   test('onSuccess', async () => {
     let data: any;
     const callback = vi.fn((v, p) => {
