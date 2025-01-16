@@ -1067,48 +1067,38 @@ describe('retry', () => {
   });
 });
 
-// describe('windowVisivibilityChange', () => {
-//   test('refresh', async () => {
-//     const callback = vi.fn();
-//     useRequest(getData, {
-//       // manual: true,
-//       refreshOnWindowFocus: true,
-//       focusTimespan: 100,
-//       onSuccess: callback,
-//     });
-//     await vi.advanceTimersByTimeAsync(1000);
-//     expect(callback).toHaveBeenCalledTimes(1);
-//     window.dispatchEvent(new Event('visibilitychange'));
-//     // await vi.advanceTimersByTimeAsync(1000);
-//     expect(callback).toHaveBeenCalledTimes(1);
-//     expect(document.visibilityState).toBe('visible');
-//     await vi.advanceTimersByTimeAsync(1000);
-//     window.dispatchEvent(new Event('visibilitychange'));
-//     await vi.advanceTimersByTimeAsync(1000);
-//     expect(document.visibilityState).toBe('hidden');
-//     await vi.advanceTimersByTimeAsync(1000);
-//     expect(callback).toHaveBeenCalledTimes(2);
-//   });
+describe('windowVisivibilityChange', () => {
+  test('refresh', async () => {
+    const callback = vi.fn();
+    useRequest(() => getData(1, 1000), {
+      refreshOnWindowFocus: true,
+      focusTimespan: 500,
+      onSuccess: callback,
+    });
+    window.dispatchEvent(new Event('visibilitychange'));
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(callback).toHaveBeenCalledTimes(1);
+  });
 
-//   test('cancel', async () => {
-//     const callback = vi.fn();
-//     const { pollingCount, cancel } = useRequest(() => getData(1, 0), {
-//       cancelOnWindowBlur: true,
-//       pollingInterval: 1000,
-//       onSuccess: callback,
-//       onFinally() {
-//         if (pollingCount.value === 5) {
-//           cancel();
-//         }
-//       },
-//     });
-//     await vi.advanceTimersByTimeAsync(1000);
-//     expect(callback).toHaveBeenCalledTimes(1);
-//     window.dispatchEvent(new Event('visibilitychange'));
-//     await vi.advanceTimersByTimeAsync(1000);
-//     expect(callback).toHaveBeenCalledTimes(2);
-//     // window.dispatchEvent(new Event('visibilitychange'));
-//     await vi.advanceTimersByTimeAsync(1000);
-//     expect(callback).toHaveBeenCalledTimes(3);
-//   });
-// });
+  test('cancel', async () => {
+    const callback = vi.fn();
+    const { pollingCount, cancel } = useRequest(() => getData(1, 1000), {
+      cancelOnWindowBlur: true,
+      pollingInterval: 1000,
+      onSuccess: callback,
+      onFinally() {
+        if (pollingCount.value === 5) {
+          cancel();
+        }
+      },
+    });
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(callback).toHaveBeenCalledTimes(1);
+    window.open();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(callback).toHaveBeenCalledTimes(1);
+    window.dispatchEvent(new Event('visibilitychange'));
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(callback).toHaveBeenCalledTimes(2);
+  });
+});

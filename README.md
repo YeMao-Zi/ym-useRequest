@@ -404,7 +404,7 @@ const { data } = useRequest(errorPromise, {
   setCache?: (cacheKey: string, cacheData: CacheData) => void;
   // 在浏览器页面重新显示时，重新发起请求
   refreshOnWindowFocus?: Ref<boolean> | boolean;
-  // 重新请求间隔，单位为毫秒
+  // 重新请求间隔，单位为毫秒,默认5000
   focusTimespan?: Ref<number> | number;
   // 离开浏览器页面时，取消请求
   cancelOnWindowBlur?: Ref<boolean> | boolean;
