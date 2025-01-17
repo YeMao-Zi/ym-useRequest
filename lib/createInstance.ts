@@ -30,9 +30,9 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
 
   const functionContext = {} as FunctionContext<R, P>;
 
-  let requseTick: (value?: unknown) => void;
+  let resolveTick: (value?: unknown) => void;
   const tickPromise = new Promise((resolve) => {
-    requseTick = resolve;
+    resolveTick = resolve;
   });
 
   functionContext.runAsync = async (...args: P) => {
@@ -103,7 +103,7 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
       .finally(() => {
         loading.value = false;
         status.value = 'settled';
-        requseTick();
+        resolveTick();
         if (currentCount !== count.value) {
           return;
         }
@@ -138,7 +138,6 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
     if (status.value === 'pending') {
       await tickPromise;
     }
-
     callback?.();
   };
 
