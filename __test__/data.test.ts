@@ -96,14 +96,14 @@ test('when unMount request cancel', async () => {
   expect(demo.data).toBe(1);
 });
 
-describe.concurrent('simple example with result', () => {
+describe.concurrent('simple example with result', async () => {
   test('loading and run', async () => {
     const { loading, run, runAsync, status } = useRequest(getData, { manual: true });
     expect(loading.value).toBe(false);
     expect(status.value).toBe('pending');
     run();
     expect(loading.value).toBe(true);
-    await vi.runAllTimersAsync();
+    await vi.advanceTimersByTimeAsync(1000);
     expect(status.value).toBe('settled');
     expect(loading.value).toBe(false);
     const res = await runAsync(5);
@@ -168,6 +168,28 @@ describe.concurrent('simple example with result', () => {
     refresh();
     await vi.runAllTimersAsync();
     expect(data.value).toBe(2);
+  });
+
+  test('requestTick', async () => {
+    const { data, run: run1, requestTick } = useRequest(() => getData(3, 1000), { manual: true });
+    const { run: run2 } = useRequest(getData, { manual: true });
+    const runAll = async () => {
+      run1();
+      run2();
+      await requestTick(() => {
+        expect(data.value).toBe(3);
+      });
+      expect(data.value).toBe(3);
+    };
+
+    const runEmpty = async () => {
+      let value = 1;
+      await requestTick();
+      value = 2;
+      expect(value).toBe(2);
+    };
+    runAll();
+    runEmpty();
   });
 });
 

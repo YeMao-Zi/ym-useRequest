@@ -119,6 +119,7 @@ export type State<R, P> = {
   error: ShallowRef<any>;
   params: Ref<P>;
   pollingCount: Ref<number>;
+  requestTick: (callback?: () => void) => Promise<unknown>;
 };
 
 type MutateData<R> = (newData: R) => void;

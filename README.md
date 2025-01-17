@@ -8,7 +8,7 @@ npm install ym-userequest
 
 ## 使用
 
-### 1.手动执行
+### 手动执行
 
 ```ts
 import { useRequest } from 'ym-userequest';
@@ -25,7 +25,7 @@ run(); // 手动触发一次
 // cancel(); // 取消请求
 ```
 
-### 2.自动执行一次并带默认参数
+### 自动执行一次并带默认参数
 
 ```ts
 // 多参数请求
@@ -51,7 +51,7 @@ const { data, loading } = useRequest(somePromise2, {
 
 > defaultParams 传入为数组时表示函数的多个参数，所以如果想要传入单个参数且参数本身为数组，应该使用 [array] 这样传参
 
-### 3.监听响应式数据并自动执行更新数据
+### 监听响应式数据并自动执行更新数据
 
 ```ts
 const pages = reactive({
@@ -79,7 +79,7 @@ const onClick = () => {
 };
 ```
 
-### 4.延时 loading
+### 延时 loading
 
 使用 loadingDelay 定义一个 loading 的延时时间，避免请求时间较短时出现 loading 闪烁
 
@@ -97,7 +97,7 @@ const { data, loading } = useRequest(somePromise, {
 });
 ```
 
-### 5.修改 data 数据
+### 修改 data 数据
 
 1. defaultData
 
@@ -138,7 +138,7 @@ onChange();
 console.log(data.value); // 2
 ```
 
-### 6.轮询
+### 轮询
 
 ```ts
 const somePromise = () => {
@@ -194,7 +194,7 @@ const { cancel, pollingCount } = useRequest(somePromise, {
 });
 ```
 
-### 7.允许请求
+### 允许请求
 
 ready 参数控制本次请求是否被允许，若 ready 为 false ，该请求始终不会被允许
 
@@ -215,7 +215,7 @@ run();
 console.log(data.value); // 1
 ```
 
-### 8.函数防抖
+### 函数防抖
 
 ```ts
 const somePromise = () => {
@@ -239,7 +239,7 @@ const onRun = () => {
 };
 ```
 
-### 9.函数节流
+### 函数节流
 
 ```ts
 const somePromise = () => {
@@ -263,7 +263,7 @@ const onRun = () => {
 };
 ```
 
-### 10.缓存
+### 缓存
 
 > 设置了 cacheKey，组件在第二次加载时，会优先返回缓存的内容，然后在背后重新发起请求
 
@@ -302,7 +302,7 @@ setTimeOut(() => {
 }, 5000);
 ```
 
-### 11.错误重试
+### 错误重试
 
 当请求失败后重新请求次数
 
@@ -328,6 +328,46 @@ const { data } = useRequest(errorPromise, {
 // count：2
 // count：3
 // count：4
+```
+
+### requestTick
+
+等待请求完成后的操作回调
+
+```ts
+const getData = (value = 1, time = 1000): Promise<number> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(value);
+    }, time);
+  });
+};
+
+const { data, run: run1, requestTick } = useRequest(() => getData(3), { manual: true });
+const { run: run2 } = useRequest(getData, { manual: true });
+const runAll = async () => {
+  run1();
+  run2();
+  console.log(data.value); // undefined
+  await requestTick(() => {
+    console.log(data.value); // 3
+  });
+  console.log(data.value); // 3
+};
+runAll();
+```
+
+### 监听浏览器页面切换
+
+```ts
+useRequest(getData, {
+  // 在浏览器页面重新显示时，重新发起请求
+  refreshOnWindowFocus: true,
+  // 间隔1000ms内不重新请求
+  focusTimespan: 1000,
+  // 离开浏览器页面时，取消请求
+  cancelOnWindowBlur: true,
+});
 ```
 
 ## 所有配置项
@@ -453,5 +493,7 @@ const { data } = useRequest(errorPromise, {
   mutate: (newData: R) => void | (arg: (oldData: R) => R) => void;
   // data 处理进程
   status: Ref<'pending' | 'settled'>;
+  // 等待接口完成
+  requestTick: (callback?: () => void) => Promise<unknown>;
 }
 ```

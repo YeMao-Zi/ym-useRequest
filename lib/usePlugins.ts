@@ -35,6 +35,7 @@ function usePlugins<R, P extends unknown[]>(
     error: instance.error,
     params: instance.params,
     pollingCount: instance.pollingCount,
+    requestTick: instance.requestTick,
     ...instance.functionContext,
   };
 }

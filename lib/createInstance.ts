@@ -30,6 +30,11 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
 
   const functionContext = {} as FunctionContext<R, P>;
 
+  let requseTick: (value?: unknown) => void;
+  const tickPromise = new Promise((resolve) => {
+    requseTick = resolve;
+  });
+
   functionContext.runAsync = async (...args: P) => {
     loading.value = true;
     if (args?.length) {
@@ -56,6 +61,7 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
     if (servicePromise) {
       serverWrapper = () => servicePromise;
     }
+
     return await serverWrapper()
       .then(async (res) => {
         onRequest?.({
@@ -97,6 +103,7 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
       .finally(() => {
         loading.value = false;
         status.value = 'settled';
+        requseTick();
         if (currentCount !== count.value) {
           return;
         }
@@ -127,6 +134,14 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
     callPlugin('onMutate', data.value);
   };
 
+  const requestTick = async (callback?: () => void) => {
+    if (status.value === 'pending') {
+      await tickPromise;
+    }
+
+    callback?.();
+  };
+
   return {
     status,
     data,
@@ -135,6 +150,7 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
     loading,
     error,
     plugins,
+    requestTick,
     functionContext,
   };
 }
