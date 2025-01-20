@@ -1,5 +1,6 @@
 import { expect, test, describe, vi, beforeAll } from 'vitest';
 import { useRequest } from '../lib';
+import { componentVue } from './utils';
 
 const getData = (value = 1, time = 1000): Promise<number> => {
   return new Promise((resolve) => {
@@ -25,10 +26,14 @@ describe('useRetryPlugin', () => {
   test('retry base', async () => {
     // 2s 4s 30s
     const callback = vi.fn();
-    useRequest(getError, {
-      retryCount: 3,
-      onError: callback,
+
+    const demo = componentVue(() => {
+      return useRequest(getError, {
+        retryCount: 3,
+        onError: callback,
+      });
     });
+
     // call time: 1 1+2+1 1+2+1+4+1 1+2+1+4+1+8+1
     expect(callback).toHaveBeenCalledTimes(0);
     await vi.advanceTimersByTimeAsync(2000);
@@ -45,11 +50,15 @@ describe('useRetryPlugin', () => {
 
   test('retryInterval', async () => {
     const callback = vi.fn();
-    useRequest(getError, {
-      retryCount: 3,
-      retryInterval: 1000,
-      onError: callback,
+
+    const demo = componentVue(() => {
+      return useRequest(getError, {
+        retryCount: 3,
+        retryInterval: 1000,
+        onError: callback,
+      });
     });
+
     expect(callback).toHaveBeenCalledTimes(0);
     await vi.advanceTimersByTimeAsync(2000);
     expect(callback).toHaveBeenCalledTimes(1);
@@ -65,10 +74,14 @@ describe('useRetryPlugin', () => {
 
   test('retry success', async () => {
     const callback = vi.fn();
-    useRequest(getData, {
-      retryCount: 3,
-      onFinally: callback,
+
+    const demo = componentVue(() => {
+      return useRequest(getData, {
+        retryCount: 3,
+        onFinally: callback,
+      });
     });
+
     expect(callback).toHaveBeenCalledTimes(0);
     await vi.advanceTimersByTimeAsync(2000);
     expect(callback).toHaveBeenCalledTimes(1);
@@ -78,14 +91,18 @@ describe('useRetryPlugin', () => {
 
   test('retry cancel', async () => {
     const callback = vi.fn();
-    const { cancel } = useRequest(getError, {
-      retryCount: 3,
-      onError: callback,
+
+    const demo = componentVue(() => {
+      return useRequest(getError, {
+        retryCount: 3,
+        onError: callback,
+      });
     });
+
     expect(callback).toHaveBeenCalledTimes(0);
     await vi.advanceTimersByTimeAsync(2000);
     expect(callback).toHaveBeenCalledTimes(1);
-    cancel();
+    demo.cancel();
     await vi.advanceTimersByTimeAsync(2000);
     expect(callback).toHaveBeenCalledTimes(1);
     await vi.advanceTimersByTimeAsync(10000);

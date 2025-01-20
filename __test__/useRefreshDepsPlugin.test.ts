@@ -2,6 +2,7 @@ import { expect, test, describe, vi, beforeAll } from 'vitest';
 import { useRequest } from '../lib';
 import { reactive, computed } from 'vue';
 import type { ComputedRef } from 'vue';
+import { componentVue } from './utils';
 
 const pages = reactive({
   page: 1,
@@ -32,92 +33,113 @@ beforeAll(() => {
 
 describe('data with params', () => {
   test('default params', async () => {
-    const { data } = useRequest(getDataParams, {
-      defaultData: [1, 1],
-      defaultParams: [pages],
+    const demo = componentVue(() => {
+      return useRequest(getDataParams, {
+        defaultData: [1, 1],
+        defaultParams: [pages],
+      });
     });
-    expect(data.value.length).toBe(2);
+
+    expect(demo.data.length).toBe(2);
     await vi.runAllTimersAsync();
-    expect(data.value.length).toBe(1);
+    expect(demo.data.length).toBe(1);
   });
 
   test('depend params and refresh', async () => {
-    const { data, refresh } = useRequest(getDataParams, {
-      defaultParams: [pages],
-      refreshDeps: [() => pages.page],
-      refreshDepsParams: params,
+    const demo = componentVue(() => {
+      return useRequest(getDataParams, {
+        defaultParams: [pages],
+        refreshDeps: [() => pages.page],
+        refreshDepsParams: params,
+      });
     });
+
     await vi.runAllTimersAsync();
-    expect(data.value.length).toBe(1);
+    expect(demo.data.length).toBe(1);
     pages.page = 0;
     await vi.runAllTimersAsync();
-    expect(data.value.length).toBe(1);
-    refresh();
+    expect(demo.data.length).toBe(1);
+    demo.refresh();
     await vi.runAllTimersAsync();
-    expect(data.value.length).toBe(1);
+    expect(demo.data.length).toBe(1);
   });
 
   test('depend paramsWithArray and refresh', async () => {
     pages.page = 1;
-    const { data, refresh } = useRequest(getDataParams, {
-      defaultParams: pages,
-      refreshDeps: [() => pages.page],
-      refreshDepsParams: paramsArray,
+
+    const demo = componentVue(() => {
+      return useRequest(getDataParams, {
+        defaultParams: pages,
+        refreshDeps: [() => pages.page],
+        refreshDepsParams: paramsArray,
+      });
     });
+
     await vi.runAllTimersAsync();
-    expect(data.value.length).toBe(1);
+    expect(demo.data.length).toBe(1);
     pages.page = 0;
     await vi.runAllTimersAsync();
-    expect(data.value.length).toBe(1);
-    refresh();
+    expect(demo.data.length).toBe(1);
+    demo.refresh();
     await vi.runAllTimersAsync();
-    expect(data.value.length).toBe(1);
+    expect(demo.data.length).toBe(1);
   });
 
   test('depend params with function return', async () => {
     pages.page = 1;
-    const { data, refresh } = useRequest(getDataParams, {
-      defaultParams: pages,
-      refreshDeps: () => pages.page,
-      refreshDepsParams: () => {
-        return {
-          page: 2,
-        };
-      },
+
+    const demo = componentVue(() => {
+      return useRequest(getDataParams, {
+        defaultParams: pages,
+        refreshDeps: () => pages.page,
+        refreshDepsParams: () => {
+          return {
+            page: 2,
+          };
+        },
+      });
     });
+
     await vi.runAllTimersAsync();
-    expect(data.value.length).toBe(1);
+    expect(demo.data.length).toBe(1);
     pages.page = 0;
     await vi.runAllTimersAsync();
-    expect(data.value.length).toBe(2);
+    expect(demo.data.length).toBe(2);
   });
 
   test('depend params with function void', async () => {
     pages.page = 1;
-    const { data, refresh } = useRequest(getDataParams, {
-      defaultParams: pages,
-      refreshDeps: () => pages.page,
-      refreshDepsParams: () => {},
+
+    const demo = componentVue(() => {
+      return useRequest(getDataParams, {
+        defaultParams: pages,
+        refreshDeps: () => pages.page,
+        refreshDepsParams: () => {},
+      });
     });
+
     await vi.runAllTimersAsync();
-    expect(data.value.length).toBe(1);
+    expect(demo.data.length).toBe(1);
     pages.page = 0;
     await vi.runAllTimersAsync();
-    expect(data.value.length).toBe(1);
-    refresh();
+    expect(demo.data.length).toBe(1);
+    demo.refresh();
     await vi.runAllTimersAsync();
-    expect(data.value.length).toBe(0);
+    expect(demo.data.length).toBe(0);
   });
 
   test('depend params without refreshDepsParams', async () => {
-    const { data, run } = useRequest(getDataParams, {
-      refreshDeps: [() => pages.page],
+    const demo = componentVue(() => {
+      return useRequest(getDataParams, {
+        refreshDeps: [() => pages.page],
+      });
     });
-    run({ page: 2 });
+
+    demo.run({ page: 2 });
     await vi.runAllTimersAsync();
-    expect(data.value.length).toBe(2);
+    expect(demo.data.length).toBe(2);
     pages.page = 1;
     await vi.runAllTimersAsync();
-    expect(data.value.length).toBe(2);
+    expect(demo.data.length).toBe(2);
   });
 });

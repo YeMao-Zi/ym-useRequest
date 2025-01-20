@@ -1,4 +1,4 @@
-import { createApp } from 'vue';
+import { createApp, defineComponent } from 'vue';
 
 export function mount<C>(Comp: C) {
   const el = document.createElement('div');
@@ -8,3 +8,14 @@ export function mount<C>(Comp: C) {
   comp.unmount = unmount;
   return comp;
 }
+
+export const componentVue = (setup: any) => {
+  const demo = mount(
+    defineComponent({
+      template: '<div/>',
+      setup,
+    }),
+  );
+
+  return demo;
+};

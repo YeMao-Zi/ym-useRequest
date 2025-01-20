@@ -1,5 +1,6 @@
 import { expect, test, describe, vi, beforeAll } from 'vitest';
 import { useRequest } from '../lib';
+import { componentVue } from './utils';
 
 const getData = (value = 1, time = 1000): Promise<number> => {
   return new Promise((resolve) => {
@@ -23,25 +24,29 @@ beforeAll(() => {
 
 describe.concurrent('useLoadingDelayPlugin', () => {
   test('loadingDelay normal', async () => {
-    const { loading } = useRequest(getData, {
-      loadingDelay: 600,
+    const demo = componentVue(() => {
+      return useRequest(getData, {
+        loadingDelay: 600,
+      });
     });
-    expect(loading.value).toBe(false);
+    expect(demo.loading).toBe(false);
     await vi.advanceTimersByTimeAsync(500);
-    expect(loading.value).toBe(false);
+    expect(demo.loading).toBe(false);
     await vi.advanceTimersByTimeAsync(200);
-    expect(loading.value).toBe(true);
+    expect(demo.loading).toBe(true);
     await vi.advanceTimersByTimeAsync(400);
-    expect(loading.value).toBe(false);
+    expect(demo.loading).toBe(false);
   });
 
   test('loadingDelay and delay out request time', async () => {
-    const { loading } = useRequest(getData, {
-      loadingDelay: 1200,
+    const demo = componentVue(() => {
+      return useRequest(getData, {
+        loadingDelay: 1200,
+      });
     });
     await vi.advanceTimersByTimeAsync(1100);
-    expect(loading.value).toBe(false);
+    expect(demo.loading).toBe(false);
     await vi.advanceTimersByTimeAsync(200);
-    expect(loading.value).toBe(false);
+    expect(demo.loading).toBe(false);
   });
 });

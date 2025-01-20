@@ -1,7 +1,7 @@
-import { ref, defineComponent } from 'vue';
+import { ref } from 'vue';
 import { expect, test, describe, vi, beforeAll } from 'vitest';
 import { useRequest } from '../lib';
-import { mount } from './utils';
+import { componentVue } from './utils';
 
 const getData = (value = 1, time = 1000): Promise<number> => {
   return new Promise((resolve) => {
@@ -28,19 +28,14 @@ test('should be defined', () => {
 });
 
 test('shoud mount', async () => {
-  const demo = mount(
-    defineComponent({
-      template: '<div/>',
-      setup() {
-        const { data } = useRequest(getData);
-        const test = ref(0);
-        return {
-          data,
-          test,
-        };
-      },
-    }),
-  );
+  const demo = componentVue(() => {
+    const { data } = useRequest(getData);
+    const test = ref(0);
+    return {
+      data,
+      test,
+    };
+  });
   expect(demo.test).toBe(0);
   expect(demo.data).toBeUndefined();
   await vi.runAllTimersAsync();
@@ -48,20 +43,14 @@ test('shoud mount', async () => {
 });
 
 test('when unMount request cancel', async () => {
-  const demo = mount(
-    defineComponent({
-      template: '<div/>',
-      setup() {
-        const { data, run } = useRequest(getData);
-        const test = ref(0);
-        return {
-          data,
-          test,
-          run,
-        };
-      },
-    }),
-  );
+  const demo = componentVue(() => {
+    const { data, run } = useRequest(getData);
+    return {
+      data,
+      run,
+    };
+  });
+
   setTimeout(() => {
     demo.unmount();
   }, 3000);
@@ -74,94 +63,121 @@ test('when unMount request cancel', async () => {
 
 describe.concurrent('simple example with result', async () => {
   test('loading and run', async () => {
-    const { loading, run, runAsync, status } = useRequest(getData, { manual: true });
-    expect(loading.value).toBe(false);
-    expect(status.value).toBe('pending');
-    run();
-    expect(loading.value).toBe(true);
+    const demo = componentVue(() => {
+      return useRequest(getData, { manual: true });
+    });
+
+    expect(demo.loading).toBe(false);
+    expect(demo.status).toBe('pending');
+    demo.run();
+    expect(demo.loading).toBe(true);
     await vi.advanceTimersByTimeAsync(1000);
-    expect(status.value).toBe('settled');
-    expect(loading.value).toBe(false);
-    const res = await runAsync(5);
+    expect(demo.status).toBe('settled');
+    expect(demo.loading).toBe(false);
+    const res = await demo.runAsync(5);
     expect(res).toBe(5);
   });
 
   test('data', async () => {
-    const { data, mutate } = useRequest(getData);
+    const demo = componentVue(() => {
+      return useRequest(getData);
+    });
+
     await vi.runAllTimersAsync();
-    expect(data.value).toBe(1);
+    expect(demo.data).toBe(1);
   });
 
   test('data with race cancel', async () => {
-    const { data, run } = useRequest(getData, {
-      manual: true,
+    const demo = componentVue(() => {
+      return useRequest(getData, {
+        manual: true,
+      });
     });
-    run(2, 3000);
-    run(3, 1000);
+    demo.run(2, 3000);
+    demo.run(3, 1000);
     await vi.runAllTimersAsync();
-    expect(data.value).toBe(3);
+    expect(demo.data).toBe(3);
   });
 
   test('defaultParams', async () => {
-    const { data } = useRequest(getData, { defaultParams: 5 });
+    const demo = componentVue(() => {
+      return useRequest(getData, { defaultParams: 5 });
+    });
     await vi.runAllTimersAsync();
-    expect(data.value).toBe(5);
+    expect(demo.data).toBe(5);
   });
 
   test('defaultParamsWithArray', async () => {
-    const { data } = useRequest(getData, { defaultParams: [5] });
+    const demo = componentVue(() => {
+      return useRequest(getData, { defaultParams: [5] });
+    });
     await vi.runAllTimersAsync();
-    expect(data.value).toBe(5);
+    expect(demo.data).toBe(5);
   });
 
   test('cancel', async () => {
-    const { data, run, cancel } = useRequest(getData, { manual: true, defaultParams: [5] });
+    const demo = componentVue(() => {
+      return useRequest(getData, { manual: true, defaultParams: [5] });
+    });
     await vi.runAllTimersAsync();
-    expect(data.value).toBe(undefined);
-    run();
+    expect(demo.data).toBe(undefined);
+    demo.run();
     await vi.runAllTimersAsync();
-    expect(data.value).toBe(5);
-    run(1);
-    cancel();
+    expect(demo.data).toBe(5);
+    demo.run(1);
+    demo.cancel();
     await vi.runAllTimersAsync();
-    expect(data.value).toBe(5);
+    expect(demo.data).toBe(5);
   });
 
   test('mutate', async () => {
-    const { data, mutate } = useRequest(getData, { defaultParams: [5] });
+    const demo = componentVue(() => {
+      return useRequest(getData, { defaultParams: [5] });
+    });
     await vi.runAllTimersAsync();
-    mutate(5);
-    expect(data.value).toBe(5);
-    mutate((v) => v + 1);
-    expect(data.value).toBe(6);
+    demo.mutate(5);
+    expect(demo.data).toBe(5);
+    demo.mutate((v: number) => v + 1);
+    expect(demo.data).toBe(6);
   });
 
   test('refresh', async () => {
-    const { data, run, refresh } = useRequest(getData, { manual: true });
-    run(2);
+    const demo = componentVue(() => {
+      return useRequest(getData, { manual: true });
+    });
+    demo.run(2);
     await vi.runAllTimersAsync();
-    expect(data.value).toBe(2);
-    refresh();
+    expect(demo.data).toBe(2);
+    demo.refresh();
     await vi.runAllTimersAsync();
-    expect(data.value).toBe(2);
+    expect(demo.data).toBe(2);
   });
 
   test('requestTick', async () => {
-    const { data, run: run1, requestTick } = useRequest(() => getData(3, 1000), { manual: true });
-    const { run: run2 } = useRequest(getData, { manual: true });
+    const demo = componentVue(() => {
+      const { data, run: run1, requestTick } = useRequest(() => getData(3, 1000), { manual: true });
+      const { run: run2 } = useRequest(getData, { manual: true });
+      return {
+        data,
+        run1,
+        requestTick,
+        run2,
+      };
+    });
+
     const runAll = async () => {
-      run1();
-      run2();
-      expect(data.value).toBe(undefined);
-      await requestTick(() => {
-        expect(data.value).toBe(3);
+      demo.run1();
+      demo.run2();
+      expect(demo.data).toBe(undefined);
+      await demo.requestTick(() => {
+        expect(demo.data).toBe(3);
       });
-      expect(data.value).toBe(3);
+      expect(demo.data).toBe(3);
     };
 
     const runEmpty = async () => {
       let value = 1;
-      await requestTick();
+      await demo.requestTick();
       value = 2;
       expect(value).toBe(2);
     };
@@ -173,21 +189,29 @@ describe.concurrent('simple example with result', async () => {
 describe.concurrent('life cycle', () => {
   test('onBefore', async () => {
     const callback = vi.fn();
-    useRequest(getData, {
-      onBefore: callback,
-      defaultParams: [2],
+    componentVue(() => {
+      useRequest(getData, {
+        onBefore: callback,
+        defaultParams: [2],
+      });
+      return {};
     });
     await vi.runAllTimersAsync();
     expect(callback).toHaveBeenCalledWith([2]);
   });
+
   test('onRequest', async () => {
     const callbackRequest = vi.fn();
     const callbackSuccess = vi.fn();
-    const { run } = useRequest(getData, {
-      manual: true,
-      onRequest: callbackRequest,
-      onSuccess: callbackSuccess,
+
+    const { run } = componentVue(() => {
+      return useRequest(getData, {
+        manual: true,
+        onRequest: callbackRequest,
+        onSuccess: callbackSuccess,
+      });
     });
+
     run(1);
     run(2);
     await vi.runAllTimersAsync();
@@ -199,9 +223,11 @@ describe.concurrent('life cycle', () => {
     const callback = vi.fn((v, p) => {
       data = v + 1;
     });
-    useRequest(getData, {
-      onSuccess: callback,
-      defaultParams: [2],
+    componentVue(() => {
+      return useRequest(getData, {
+        onSuccess: callback,
+        defaultParams: [2],
+      });
     });
     await vi.runAllTimersAsync();
     expect(callback).toHaveBeenCalledWith(2, [2]);
@@ -209,20 +235,24 @@ describe.concurrent('life cycle', () => {
   });
 
   test('onSuccessReturn', async () => {
-    const { data } = useRequest(getData, {
-      onSuccess(data) {
-        return data;
-      },
-      defaultParams: [1],
+    const demo = componentVue(() => {
+      return useRequest(getData, {
+        onSuccess(data) {
+          return data;
+        },
+        defaultParams: [1],
+      });
     });
     await vi.runAllTimersAsync();
-    expect(data.value).toBe(1);
+    expect(demo.data).toBe(1);
   });
 
   test('onError', async () => {
     const callback = vi.fn();
-    useRequest(getError, {
-      onError: callback,
+    componentVue(() => {
+      return useRequest(getError, {
+        onError: callback,
+      });
     });
     await vi.runAllTimersAsync();
     expect(callback).toHaveBeenCalledWith(new Error('Err'), []);
@@ -230,9 +260,14 @@ describe.concurrent('life cycle', () => {
 
   test('onFinally', async () => {
     const callback = vi.fn();
-    useRequest(getError, {
-      onFinally: callback,
+
+    componentVue(() => {
+      return useRequest(getError, {
+        onFinally: callback,
+        onError() {},
+      });
     });
+
     expect(callback).toHaveBeenCalledTimes(0);
     await vi.runAllTimersAsync();
     expect(callback).toHaveBeenCalledTimes(1);
@@ -243,9 +278,11 @@ describe.concurrent('life cycle', () => {
     const callback = vi.fn(() => {
       data = 1;
     });
-    const { cancel } = useRequest(getData, {
-      onCancel: callback,
-      defaultParams: [2],
+    const { cancel } = componentVue(() => {
+      return useRequest(getData, {
+        onCancel: callback,
+        defaultParams: [2],
+      });
     });
     await vi.advanceTimersByTimeAsync(100);
     cancel();

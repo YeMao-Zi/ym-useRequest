@@ -1,6 +1,7 @@
 import { expect, test, describe, vi, beforeAll } from 'vitest';
 import { ref } from 'vue';
 import { useRequest } from '../lib';
+import { componentVue } from './utils';
 
 const getData = (value = 1, time = 1000): Promise<number> => {
   return new Promise((resolve) => {
@@ -25,18 +26,22 @@ beforeAll(() => {
 describe('useDebouncePlugin', () => {
   test('debounce with debounceInterval', async () => {
     const callback = vi.fn();
-    const { run, cancel } = useRequest(
-      () => {
-        callback();
-        return getData();
-      },
-      {
-        manual: true,
-        debounceWait: 100,
-      },
-    );
+
+    const demo = componentVue(() => {
+      return useRequest(
+        () => {
+          callback();
+          return getData();
+        },
+        {
+          manual: true,
+          debounceWait: 100,
+        },
+      );
+    });
+
     for (let index = 0; index < 100; index++) {
-      run();
+      demo.run();
       await vi.advanceTimersByTimeAsync(50);
     }
     expect(callback).toHaveBeenCalledTimes(0);
@@ -44,10 +49,10 @@ describe('useDebouncePlugin', () => {
     expect(callback).toHaveBeenCalledTimes(1);
 
     for (let index = 0; index < 100; index++) {
-      run();
+      demo.run();
       await vi.advanceTimersByTimeAsync(50);
     }
-    cancel();
+    demo.cancel();
     expect(callback).toHaveBeenCalledTimes(1);
     await vi.advanceTimersByTimeAsync(50);
     expect(callback).toHaveBeenCalledTimes(1);
@@ -55,23 +60,26 @@ describe('useDebouncePlugin', () => {
 
   test('debounce with debounceOptions', async () => {
     const callback = vi.fn();
-    const { run } = useRequest(
-      () => {
-        callback();
-        return getData();
-      },
-      {
-        manual: true,
-        debounceWait: 100,
-        debounceOptions: {
-          leading: true,
-          trailing: false,
+
+    const demo = componentVue(() => {
+      return useRequest(
+        () => {
+          callback();
+          return getData();
         },
-      },
-    );
+        {
+          manual: true,
+          debounceWait: 100,
+          debounceOptions: {
+            leading: true,
+            trailing: false,
+          },
+        },
+      );
+    });
 
     for (let index = 0; index < 100; index++) {
-      run();
+      demo.run();
       await vi.advanceTimersByTimeAsync(50);
     }
     expect(callback).toHaveBeenCalledTimes(1);
@@ -79,7 +87,7 @@ describe('useDebouncePlugin', () => {
     expect(callback).toHaveBeenCalledTimes(1);
 
     for (let index = 0; index < 100; index++) {
-      run();
+      demo.run();
       await vi.advanceTimersByTimeAsync(50);
     }
     expect(callback).toHaveBeenCalledTimes(2);
@@ -90,24 +98,28 @@ describe('useDebouncePlugin', () => {
   test('debounce with debounceInterval change', async () => {
     const callback = vi.fn();
     const debounceWaitRef = ref(100);
-    const { run } = useRequest(
-      () => {
-        callback();
-        return getData();
-      },
-      {
-        manual: true,
-        debounceWait: debounceWaitRef,
-      },
-    );
-    run();
+
+    const demo = componentVue(() => {
+      return useRequest(
+        () => {
+          callback();
+          return getData();
+        },
+        {
+          manual: true,
+          debounceWait: debounceWaitRef,
+        },
+      );
+    });
+
+    demo.run();
     expect(callback).toHaveBeenCalledTimes(0);
     await vi.advanceTimersByTimeAsync(50);
     expect(callback).toHaveBeenCalledTimes(0);
     debounceWaitRef.value = 150;
     await vi.advanceTimersByTimeAsync(50);
     expect(callback).toHaveBeenCalledTimes(0);
-    run();
+    demo.run();
     await vi.advanceTimersByTimeAsync(150);
     expect(callback).toHaveBeenCalledTimes(1);
   });

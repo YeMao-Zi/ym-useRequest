@@ -1,6 +1,7 @@
 import { expect, test, describe, vi, beforeAll } from 'vitest';
 import { ref } from 'vue';
 import { useRequest } from '../lib';
+import { componentVue } from './utils';
 
 const getData = (value = 1, time = 1000): Promise<number> => {
   return new Promise((resolve) => {
@@ -25,32 +26,40 @@ beforeAll(() => {
 describe.concurrent('useReadyPlugin', () => {
   test('ready with manual=false', async () => {
     const ready = ref(false);
-    const { data, run } = useRequest(getData, {
-      defaultParams: [1],
-      ready,
+
+    const demo = componentVue(() => {
+      return useRequest(getData, {
+        defaultParams: [1],
+        ready,
+      });
     });
-    expect(data.value).toBeUndefined();
+
+    expect(demo.data).toBeUndefined();
     await vi.runAllTimersAsync();
-    expect(data.value).toBeUndefined();
+    expect(demo.data).toBeUndefined();
     ready.value = true;
-    run();
+    demo.run();
     await vi.runAllTimersAsync();
-    expect(data.value).toBe(1);
+    expect(demo.data).toBe(1);
   });
 
   test('ready with manual=true', async () => {
     const ready = ref(false);
-    const { data, run } = useRequest(getData, {
-      manual: true,
-      defaultParams: [1],
-      ready,
+
+    const demo = componentVue(() => {
+      return useRequest(getData, {
+        manual: true,
+        defaultParams: [1],
+        ready,
+      });
     });
-    run();
+
+    demo.run();
     await vi.runAllTimersAsync();
-    expect(data.value).toBeUndefined();
+    expect(demo.data).toBeUndefined();
     ready.value = true;
-    run();
+    demo.run();
     await vi.runAllTimersAsync();
-    expect(data.value).toBe(1);
+    expect(demo.data).toBe(1);
   });
 });
