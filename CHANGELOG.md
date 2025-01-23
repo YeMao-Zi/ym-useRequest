@@ -1,5 +1,19 @@
 
 
+## [1.13.0](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.12.10...v1.13.0) (2025-01-23)
+
+### ✨ Features | 新功能
+
+* 命名调整 ([60273d6](https://github.com/YeMao-Zi/ym-useRequest/commit/60273d6289cf9b42e63f2da6fb161fdfe9eda32d))
+* 添加 onRequest 回调 ([4b4d485](https://github.com/YeMao-Zi/ym-useRequest/commit/4b4d48587e1c0cff538f05befa5758adab4f1ac8))
+* 添加requestTick回调 ([a66a64b](https://github.com/YeMao-Zi/ym-useRequest/commit/a66a64ba769a068753785976cb4e505fcc7b8451))
+
+### ✅ Tests | 测试
+
+* test结构调整 ([7879fcd](https://github.com/YeMao-Zi/ym-useRequest/commit/7879fcdd0ac5b0e86f7f14a76d93b98ad4f419da))
+* useRequest测试添加vue环境 ([99a91c3](https://github.com/YeMao-Zi/ym-useRequest/commit/99a91c3ef65a442d1d22213d1270a9a2f9baac38))
+* windowVisivibilityChange ([f33438e](https://github.com/YeMao-Zi/ym-useRequest/commit/f33438e7ec2cd85ee3176503f4ddd32b76df1356))
+
 ## [1.12.10](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.12.9...v1.12.10) (2025-01-15)
 
 ### ✨ Features | 新功能
