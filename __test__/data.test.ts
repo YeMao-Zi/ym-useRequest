@@ -155,10 +155,11 @@ describe.concurrent('simple example with result', async () => {
 
   test('requestTick', async () => {
     const demo = componentVue(() => {
-      const { data, run: run1, requestTick } = useRequest(() => getData(3, 1000), { manual: true });
-      const { run: run2 } = useRequest(getData, { manual: true });
+      const { data: data1, run: run1, requestTick } = useRequest(() => getData(3, 1000), { manual: true });
+      const { data: data2, run: run2 } = useRequest(() => getData(1, 2000), { manual: true });
       return {
-        data,
+        data1,
+        data2,
         run1,
         requestTick,
         run2,
@@ -168,11 +169,12 @@ describe.concurrent('simple example with result', async () => {
     const runAll = async () => {
       demo.run1();
       demo.run2();
-      expect(demo.data).toBe(undefined);
+      expect(demo.data1).toBe(undefined);
       await demo.requestTick(() => {
-        expect(demo.data).toBe(3);
+        expect(demo.data1).toBe(3);
+        expect(demo.data2).toBe(undefined);
       });
-      expect(demo.data).toBe(3);
+      expect(demo.data1).toBe(3);
     };
 
     const runEmpty = async () => {

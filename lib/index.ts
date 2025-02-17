@@ -38,8 +38,8 @@ function useRequest<R, P extends unknown[] = any>(
   options?: Options<R, P>,
   plugins?: Plugin<R, P>[],
 ): Request<R, P> {
-  const _plugins = [...Plugins, ...(plugins || [])];
-  return usePlugins<R, P>(service, options, _plugins);
+  definePlugins(plugins);
+  return usePlugins<R, P>(service, options, Plugins);
 }
 
 export { useRequest, clearCache, setCache, getCache, trigger, debounce, throttle, definePlugins, TypeChecker };
