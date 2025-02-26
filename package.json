@@ -26,7 +26,7 @@
     "dist"
   ],
   "author": {
-    "name": "zhushengjie"
+    "name": "yemao-zi"
   },
   "scripts": {
     "dev": "vite --config ./playground/vite.config.ts ./playground",
@@ -41,7 +41,9 @@
     "url": "https://github.com/YeMao-Zi/ym-useRequest"
   },
   "keywords": [
+    "request",
     "useRequest",
+    "vue",
     "vue3",
     "hooks"
   ],

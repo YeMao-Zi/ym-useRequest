@@ -17,7 +17,7 @@
 <script setup lang="ts">
 import Item from './item.vue';
 import cacheTest from './cacheTest.vue';
-import { computed, reactive, ref } from 'vue';
+import { computed, reactive, ref, shallowRef } from 'vue';
 import { useRequest } from 'ym-userequest';
 // import { useRequest } from '../dist';
 import debounce from '../lib/utils/debounce';
@@ -120,7 +120,7 @@ const data2 = runAsync(
   1000,
 );
 
-console.log(data1,data2)
+console.log(data1, data2);
 
 const goRunAsync = async () => {
   // pollingInterval.value = 1000;

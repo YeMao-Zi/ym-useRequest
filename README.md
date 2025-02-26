@@ -109,8 +109,8 @@ const somePromise = () => {
 };
 
 const { data, loading, mutate } = useRequest(somePromise, {
-  defaultData: 3, // return data:ShallowRef<3>
-  // defaultData: ref<3>, // return data:Ref<3>
+  defaultData: 3, // return data:Ref<3>
+  // defaultData: shallowRef<3>, // return data:ShallowRef<3>
 });
 ```
 
@@ -378,7 +378,7 @@ useRequest(getData, {
   manual?: boolean;
 
   // 设置默认 data，也可用于指定 data 为 ShallowRef 或 Ref
-  // 如果传入值为非响应式，将被转化为 ShallowRef
+  // 如果传入值为非响应式，将被转化为 ref
   defaultData?: R | Ref<R>;
 
   // 当 manual 为 false 时，自动执行的默认参数

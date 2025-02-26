@@ -114,7 +114,7 @@ export type Plugin<R, P extends unknown[]> = (
 
 export type State<R, P> = {
   status: Ref<'pending' | 'settled'>;
-  data: Ref<R> | ShallowRef<R>;
+  data: Ref<R>;
   loading: Ref<boolean>;
   error: ShallowRef<any>;
   params: Ref<P>;

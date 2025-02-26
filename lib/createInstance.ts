@@ -6,7 +6,7 @@ import { composeMiddleware } from './utils';
 function createInstance<R, P extends unknown[]>(service: Service<R, P>, options: Options<R, P>): Instance<R, P> {
   const { defaultData, defaultParams, onBefore, onRequest, onSuccess, onError, onFinally, onCancel, onCache } = options;
 
-  const data = isRef(defaultData) ? defaultData : shallowRef(defaultData);
+  const data = isRef(defaultData) ? defaultData : (ref(defaultData) as Ref<R>);
   const loading = ref(false);
   const params = ref(defaultParams) as Ref<P>;
   const pollingCount = ref(0);
