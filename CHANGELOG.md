@@ -1,5 +1,15 @@
 
 
+## [1.13.1](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.13.0...v1.13.1) (2025-02-26)
+
+### ✨ Features | 新功能
+
+* 调整默认data类型为Ref ([b36f655](https://github.com/YeMao-Zi/ym-useRequest/commit/b36f655b9b431baeeffd7c580456e47b32c24227))
+
+### ✅ Tests | 测试
+
+* 测试 visibilitychange ([3d48fd1](https://github.com/YeMao-Zi/ym-useRequest/commit/3d48fd12dd6b70654e9154c7654e7491e50ed704))
+
 ## [1.13.0](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.12.10...v1.13.0) (2025-01-23)
 
 ### ✨ Features | 新功能
