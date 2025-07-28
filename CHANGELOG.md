@@ -1,5 +1,11 @@
 
 
+## [1.13.2](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.13.1...v1.13.2) (2025-07-28)
+
+### ✨ Features | 新功能
+
+* ready允许函数类型 ([4d0d9d8](https://github.com/YeMao-Zi/ym-useRequest/commit/4d0d9d8f0d051b2f2edad8e545ecd5ffc285604f))
+
 ## [1.13.1](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.13.0...v1.13.1) (2025-02-26)
 
 ### ✨ Features | 新功能
