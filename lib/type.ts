@@ -50,7 +50,7 @@ export interface Options<R, P extends any[]> {
   pollingErrorRetryCount?: number;
 
   // 是否允许请求
-  ready?: Ref<boolean> | boolean;
+  ready?: (() => Ref<boolean> | boolean) | (Ref<boolean> | boolean);
 
   // 防抖等待时间
   debounceWait?: Ref<number> | number;

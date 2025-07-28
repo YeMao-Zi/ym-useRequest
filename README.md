@@ -1,6 +1,6 @@
 ## 介绍
 
-接口的手动管理，包括请求状态，请求数据，手动更新，自动更新，回调，监听数据并更新
+接口的手动管理工具
 
 ## 安装
 
@@ -12,7 +12,9 @@ npm install ym-userequest
 
 ```ts
 import { useRequest } from 'ym-userequest';
-const { data, loading, run, runAsync, refresh, refreshAsync, cancel } = useRequest(somePromise, { manual: true });
+const { data, params, loading, run, runAsync, refresh, refreshAsync, cancel } = useRequest(somePromise, {
+  manual: true,
+});
 const somePromise = () => {
   return new Promise((resolve, reject) => {
     resolve('success');
@@ -45,7 +47,7 @@ const somePromise2 = (params1) => {
   });
 };
 const { data, loading } = useRequest(somePromise2, {
-  defaultParams: 'params1', // or ['参数1']
+  defaultParams: 'params1', // or ['params1']
 });
 ```
 
@@ -67,12 +69,14 @@ const somePromise = (number: number): Promise<any[]> => {
 
 const refreshDepsParams = computed(() => pages.size);
 
-const { data, loading } = useRequest(somePromise, {
+const { data, refresh, loading } = useRequest(somePromise, {
   defaultParams: pages.size,
   refreshDeps: [() => pages.size], // 监听的依赖
   // 可选，依赖变更后执行的参数,不传则在依赖变更后执行 refresh,
-  // 如果为函数会执行该函数并将返回值作为参数，不想监听后立即请求,可以传递一个没有返回值的函数 ()=>void
+  // 如果为函数会执行该函数并将返回值作为参数
   refreshDepsParams: refreshDepsParams,
+  // 不想监听后立即请求,可以传递一个没有返回值的函数,该函数会被调用
+  // refreshDepsParams: () => {},
 });
 const onClick = () => {
   pages.size++;
@@ -92,7 +96,7 @@ const somePromise = (params) => {
   });
 };
 const { data, loading } = useRequest(somePromise, {
-  defaultParams: ['参数1'],
+  defaultParams: ['params1'],
   loadingDelay: 1000, // 1s 内loading状态都不会改变
 });
 ```
@@ -100,6 +104,8 @@ const { data, loading } = useRequest(somePromise, {
 ### 修改 data 数据
 
 1. defaultData
+
+因为 data 为 ref ，无法进行解构赋默认值，可通过 defaultData 设置默认值
 
 ```ts
 const somePromise = () => {
@@ -404,7 +410,7 @@ useRequest(getData, {
   // 也就是第一次重试等待 2s，第二次重试等待 4s，以此类推，如果大于 30s，则取 30s
   retryInterval?:number;
 
-  // 是否允许请求（不会自动请求）
+  // 是否允许请求（变更时不会触发自动请求）
   ready?: Ref<boolean> | boolean;
 
   // 防抖等待时间
@@ -454,7 +460,7 @@ useRequest(getData, {
   onBefore?: (params: P) => void;
   // 每次请求被执行时回调，可以在该回调中获取每次请求的响应
   onRequest?: ({ params, response, error, abort }: { params: P; response: R; error: any; abort: boolean }) => void;
-  // 成功回调
+  // 成功回调（在该回调之后 data 被重新赋值）
   onSuccess?: (response: R, params: P) => MaybePromise<void | R>;
   // 失败回调
   onError?: (err: any, params: P) => void;
