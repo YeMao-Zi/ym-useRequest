@@ -1,5 +1,11 @@
 
 
+## [1.13.4](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.13.3...v1.13.4) (2025-08-14)
+
+### ✨ Features | 新功能
+
+* 添加 getRequest 功能 ([28fc314](https://github.com/YeMao-Zi/ym-useRequest/commit/28fc314f7c912a983b54f9dd7eb1ba1d845ad04f))
+
 ## [1.13.3](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.13.2...v1.13.3) (2025-08-14)
 
 ### ✨ Features | 新功能
