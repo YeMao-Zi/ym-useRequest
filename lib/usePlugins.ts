@@ -2,13 +2,14 @@ import { onUnmounted } from 'vue';
 import type { Service, Options, Request, Plugin } from './type';
 import { unrefParms } from './utils';
 import createInstance from './createInstance';
+import { removeRequest } from './requestMap';
 
 function usePlugins<R, P extends unknown[]>(
   service: Service<R, P>,
   options: Options<R, P> = {},
   plugins: Plugin<R, P>[],
 ): Request<R, P> {
-  const { manual = false, defaultParams = [] as unknown as P, ...rest } = options;
+  const { id, manual = false, defaultParams = [] as unknown as P, ...rest } = options;
   const _defaultParams = unrefParms(defaultParams);
   const fetchOptions = {
     manual,
@@ -26,6 +27,7 @@ function usePlugins<R, P extends unknown[]>(
 
   onUnmounted(() => {
     instance.functionContext.cancel();
+    id && removeRequest(id);
   });
 
   return {

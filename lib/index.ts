@@ -1,4 +1,5 @@
 import type { Service, Options, Request, Plugin } from './type';
+import { setRequest, getRequest } from './requestMap';
 import debounce from './utils/debounce';
 import throttle from './utils/throttle';
 import { TypeChecker } from './utils/index';
@@ -39,7 +40,23 @@ function useRequest<R, P extends unknown[] = any>(
   plugins?: Plugin<R, P>[],
 ): Request<R, P> {
   definePlugins(plugins);
-  return usePlugins<R, P>(service, options, Plugins);
+  const requestInstance = usePlugins<R, P>(service, options, Plugins);
+  // 如果提供了 id，则将实例存储起来
+  if (options?.id) {
+    setRequest(options.id, requestInstance);
+  }
+  return requestInstance;
 }
 
-export { useRequest, clearCache, setCache, getCache, trigger, debounce, throttle, definePlugins, TypeChecker };
+export {
+  useRequest,
+  getRequest,
+  clearCache,
+  setCache,
+  getCache,
+  trigger,
+  debounce,
+  throttle,
+  definePlugins,
+  TypeChecker,
+};

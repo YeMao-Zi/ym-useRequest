@@ -8,6 +8,30 @@ npm install ym-userequest
 
 ## 使用
 
+<!-- TOC -->
+
+- [手动执行](#手动执行)
+- [自动执行一次并带默认参数](#自动执行一次并带默认参数)
+- [监听响应式数据并自动执行更新数据](#监听响应式数据并自动执行更新数据)
+- [延时 loading](#延时-loading)
+- [修改data数据](#修改data数据)
+  - [defaultData](#defaultdata)
+  - [mutate](#mutate)
+- [轮询](#轮询)
+  - [错误重试](#错误重试)
+  - [轮询次数](#轮询次数)
+- [允许请求](#允许请求)
+- [函数防抖](#函数防抖)
+- [函数节流](#函数节流)
+- [缓存](#缓存)
+- [错误重试](#错误重试-1)
+- [requestTick](#requesttick)
+- [监听浏览器页面切换](#监听浏览器页面切换)
+- [获取指定的 useRequest 实例](#获取指定的-userequest-实例)
+- [所有配置项](#所有配置项)
+- [所有返回项](#所有返回项)
+<!-- /TOC -->
+
 ### 手动执行
 
 ```ts
@@ -101,7 +125,7 @@ const { data, loading } = useRequest(somePromise, {
 });
 ```
 
-### 修改 data 数据
+### 修改data数据
 
 1. defaultData
 
@@ -374,6 +398,24 @@ useRequest(getData, {
   // 离开浏览器页面时，取消请求
   cancelOnWindowBlur: true,
 });
+```
+
+### 获取指定的 useRequest 实例
+
+```ts
+import { useRequest, getRequest } from 'ym-request';
+const instance1 = useRequest(getData, {
+  id: 'getData',
+  manual: true,
+});
+instance1.run(2);
+
+const instance2 = getRequest('getData');
+
+console.log(instance1.data, instance1.data); // 2,2
+instance2.run(3);
+
+console.log(instance1.data, instance1.data); // 3,3
 ```
 
 ## 所有配置项

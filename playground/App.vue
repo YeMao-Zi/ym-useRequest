@@ -12,6 +12,7 @@
     <Item />
   </div> -->
   <!-- <cacheTest /> -->
+  <GetRequestVue />
 </template>
 
 <script setup lang="ts">
@@ -19,6 +20,7 @@ import Item from './item.vue';
 import cacheTest from './cacheTest.vue';
 import { computed, reactive, ref, shallowRef } from 'vue';
 import { useRequest } from 'ym-userequest';
+import GetRequestVue from './getRequest.vue';
 // import { useRequest } from '../dist';
 import debounce from '../lib/utils/debounce';
 const pages = reactive({
@@ -59,6 +61,7 @@ const refreshDepsParams = computed(() => [
 let pollingInterval = ref(null);
 const ready = ref(false);
 const { data, loading, mutate, cancel, refresh, run, runAsync, pollingCount, status } = useRequest(somePromise, {
+  id: 'somePromise',
   manual: true,
   // cancelOnWindowBlur:true,
   // refreshOnWindowFocus: true,

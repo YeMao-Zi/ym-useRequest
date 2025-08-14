@@ -22,6 +22,8 @@ export type Params<P extends any[]> = Ref<P> | P | P[0] | Ref<P[0]>;
 export type MaybePromise<T> = T | Promise<T>;
 
 export interface Options<R, P extends any[]> {
+  // 请求标识
+  id?: string;
   // 是否手动发起请求
   manual?: boolean;
 
@@ -60,7 +62,7 @@ export interface Options<R, P extends any[]> {
   throttleWait?: Ref<number> | number;
   // 节流函数属性
   throttleOptions?: Ref<ThrottleOptionsBase> | ThrottleOptionsBase;
-  // 请求的唯一标识
+  // 缓存的唯一标识
   cacheKey?: string | ((params?: P) => string);
   // 缓存时间
   cacheTime?: number;
