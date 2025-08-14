@@ -1,5 +1,11 @@
 
 
+## [1.13.3](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.13.2...v1.13.3) (2025-08-14)
+
+### ✨ Features | 新功能
+
+* status 调整默认undfined ([337b01f](https://github.com/YeMao-Zi/ym-useRequest/commit/337b01fece827ebe3e34a98610b0cb56b1b30958))
+
 ## [1.13.2](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.13.1...v1.13.2) (2025-07-28)
 
 ### ✨ Features | 新功能
