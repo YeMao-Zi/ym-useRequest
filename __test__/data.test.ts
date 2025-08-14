@@ -68,9 +68,10 @@ describe.concurrent('simple example with result', async () => {
     });
 
     expect(demo.loading).toBe(false);
-    expect(demo.status).toBe('pending');
+    expect(demo.status).toBe(undefined);
     demo.run();
     expect(demo.loading).toBe(true);
+    expect(demo.status).toBe('pending');
     await vi.advanceTimersByTimeAsync(1000);
     expect(demo.status).toBe('settled');
     expect(demo.loading).toBe(false);
@@ -116,17 +117,27 @@ describe.concurrent('simple example with result', async () => {
   });
 
   test('cancel', async () => {
+    let count = 0;
     const demo = componentVue(() => {
-      return useRequest(getData, { manual: true, defaultParams: [5] });
+      return useRequest(
+        (...args) => {
+          count += 1;
+          return getData(...args);
+        },
+        { manual: true, defaultParams: [5] },
+      );
     });
     await vi.runAllTimersAsync();
     expect(demo.data).toBe(undefined);
+    expect(count).toBe(0);
     demo.run();
     await vi.runAllTimersAsync();
+    expect(count).toBe(1);
     expect(demo.data).toBe(5);
     demo.run(1);
     demo.cancel();
     await vi.runAllTimersAsync();
+    expect(count).toBe(2);
     expect(demo.data).toBe(5);
   });
 

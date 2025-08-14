@@ -11,7 +11,7 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
   const params = ref(defaultParams) as Ref<P>;
   const pollingCount = ref(0);
   const error = shallowRef();
-  const status = ref('pending') as Instance<R, P>['status'];
+  const status = ref() as Instance<R, P>['status'];
   const plugins = ref([]) as Instance<R, P>['plugins'];
 
   const count = ref(0);

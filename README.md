@@ -411,7 +411,7 @@ useRequest(getData, {
   retryInterval?:number;
 
   // 是否允许请求（变更时不会触发自动请求）
-  ready?: Ref<boolean> | boolean;
+  ready?: (() => Ref<boolean> | boolean) | (Ref<boolean> | boolean);
 
   // 防抖等待时间
   debounceWait?: number;
@@ -448,11 +448,11 @@ useRequest(getData, {
   getCache?: (cacheKey: string) => CacheData;
   // 自定义设置缓存
   setCache?: (cacheKey: string, cacheData: CacheData) => void;
-  // 在浏览器页面重新显示时，重新发起请求
+  // 在浏览器页面重新显示时，是否重新发起请求
   refreshOnWindowFocus?: Ref<boolean> | boolean;
   // 重新请求间隔，单位为毫秒,默认5000
   focusTimespan?: Ref<number> | number;
-  // 离开浏览器页面时，取消请求
+  // 离开浏览器页面时，是否取消请求
   cancelOnWindowBlur?: Ref<boolean> | boolean;
   // 获取缓存时回调
   onCache?: (response: R) => void;
@@ -466,7 +466,7 @@ useRequest(getData, {
   onError?: (err: any, params: P) => void;
   // 接口完成回调
   onFinally?: () => void;
-   // 取消接口回调
+  // 忽略当前 Promise 时执行回调
   onCancel?:()=>void;
 }
 ```
@@ -489,7 +489,7 @@ useRequest(getData, {
   runAsync: (...arg: P) => Promise<R>;
   // 手动执行请求
   run: (...arg: P) => void;
-  // 手动取消请求
+  // 忽略当前 Promise 的响应
   cancel: () => void;
   // 手动刷新请求
   refresh: () => void;
@@ -497,7 +497,7 @@ useRequest(getData, {
   refreshAsync: () => Promise<R>;
   // 修改返回的data数据
   mutate: (newData: R) => void | (arg: (oldData: R) => R) => void;
-  // data 处理进程
+  // data 处理进程,默认undfined,表示为被请求过
   status: Ref<'pending' | 'settled'>;
   // 等待接口完成
   requestTick: (callback?: () => void) => Promise<unknown>;
