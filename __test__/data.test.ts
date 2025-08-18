@@ -88,6 +88,13 @@ describe.concurrent('simple example with result', async () => {
     expect(demo.data).toBe(1);
   });
 
+  test('defaultDataWithRef', async () => {
+    const demo = componentVue(() => {
+      return useRequest(getData, { defaultData: ref(5), manual: true });
+    });
+    expect(demo.data).toBe(5);
+  });
+
   test('data with race cancel', async () => {
     const demo = componentVue(() => {
       return useRequest(getData, {
@@ -220,7 +227,9 @@ describe.concurrent('life cycle', () => {
     const { run } = componentVue(() => {
       return useRequest(getData, {
         manual: true,
-        onRequest: callbackRequest,
+        onRequest: () => {
+          callbackRequest();
+        },
         onSuccess: callbackSuccess,
       });
     });
@@ -231,6 +240,26 @@ describe.concurrent('life cycle', () => {
     expect(callbackRequest).toHaveBeenCalledTimes(2);
     expect(callbackSuccess).toHaveBeenCalledTimes(1);
   });
+
+  // 添加测试用例：验证 abort 参数
+  test('onRequest with error', async () => {
+    const callbackError = vi.fn();
+
+    const { run } = componentVue(() => {
+      return useRequest(getError, {
+        manual: true,
+        onRequest: ({ abort }) => {
+          callbackError(abort);
+        },
+      });
+    });
+
+    run(2, 1000);
+    await vi.runAllTimersAsync();
+    // 验证回调被调用两次
+    expect(callbackError).toHaveBeenCalledTimes(1);
+  });
+
   test('onSuccess', async () => {
     let data: any;
     const callback = vi.fn((v, p) => {

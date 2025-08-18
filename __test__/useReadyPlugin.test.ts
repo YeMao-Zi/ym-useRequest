@@ -62,4 +62,25 @@ describe.concurrent('useReadyPlugin', () => {
     await vi.runAllTimersAsync();
     expect(demo.data).toBe(1);
   });
+
+  // 测试 ready 参数为函数的情况
+  test('ready as function returning boolean', async () => {
+    let flag = false;
+    const readyFn = () => flag;
+
+    const demo = componentVue(() => {
+      return useRequest(getData, {
+        defaultParams: [1],
+        ready: readyFn,
+      });
+    });
+
+    expect(demo.data).toBeUndefined();
+    await vi.runAllTimersAsync();
+    expect(demo.data).toBeUndefined();
+    flag = true;
+    demo.run();
+    await vi.runAllTimersAsync();
+    expect(demo.data).toBe(1);
+  });
 });

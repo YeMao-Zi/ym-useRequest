@@ -46,6 +46,7 @@ describe('useCachePlugin', () => {
     demo.run(2);
     await vi.advanceTimersByTimeAsync(1000);
     expect(demo.data).toBe(2);
+    demo.unmount();
   });
 
   test('staleTime', async () => {
@@ -320,5 +321,45 @@ describe('useCachePlugin', () => {
     expect(callback).toHaveBeenCalledTimes(3);
     expect(demo.data2).toBe(5);
     expect(demo.data1).toBe(5);
+  });
+
+  // 添加测试用例：验证 servicePromise 与 currentPromise 比较逻辑
+  test('should reuse existing promise when servicePromise is not currentPromise', async () => {
+   let callCount = 0;
+    const getDataWithCounter = (value: number): Promise<number> => {
+      callCount++;
+      return Promise.resolve(value);
+    };
+
+    // 创建两个使用相同 cacheKey 的实例
+    const demo1 = componentVue(() => {
+      return useRequest(() => getDataWithCounter(100), {
+        manual: true,
+        cacheKey: 'shared-cache-key',
+      });
+    });
+
+    const demo2 = componentVue(() => {
+      return useRequest(() => getDataWithCounter(200), {
+        manual: true,
+        cacheKey: 'shared-cache-key',
+      });
+    });
+
+    // demo1 先发起请求
+    const promise1 = demo1.runAsync();
+    
+    // demo2 后发起请求，应该复用 demo1 的 Promise
+    const promise2 = demo2.runAsync();
+
+    // 等待请求完成
+    const [result1, result2] = await Promise.all([promise1, promise2]);
+
+    // 验证结果相同（因为复用了第一个 Promise）
+    expect(result1).toBe(100);
+    expect(result2).toBe(100);
+    
+    // 验证服务函数只被调用了一次
+    expect(callCount).toBe(1);
   });
 });

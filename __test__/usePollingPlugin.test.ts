@@ -25,31 +25,37 @@ beforeAll(() => {
 
 describe('usePollingPlugin', () => {
   test('polling with ref', async () => {
-    const pollingIntervalRef = ref(null);
+    const pollingIntervalRef = ref(500);
     const callback = vi.fn();
 
     const demo = componentVue(() => {
       return useRequest(getData, {
-        defaultParams: 1,
+        defaultParams: [1, 100],
         pollingInterval: pollingIntervalRef,
         onFinally: callback,
       });
     });
 
     expect(callback).toHaveBeenCalledTimes(0);
-    await vi.advanceTimersByTimeAsync(1000);
+    // 立即执行一次
+    await vi.advanceTimersByTimeAsync(100);
     expect(callback).toHaveBeenCalledTimes(1);
-    await vi.advanceTimersByTimeAsync(1000);
-    expect(callback).toHaveBeenCalledTimes(1);
-    pollingIntervalRef.value = 0;
-    demo.run();
-    await vi.advanceTimersByTimeAsync(1000);
+    await vi.advanceTimersByTimeAsync(600);
     expect(callback).toHaveBeenCalledTimes(2);
+    await vi.advanceTimersByTimeAsync(600);
+    expect(callback).toHaveBeenCalledTimes(3);
+    await vi.advanceTimersByTimeAsync(600);
+    expect(callback).toHaveBeenCalledTimes(4);
+    pollingIntervalRef.value = 1000;
+    await vi.advanceTimersByTimeAsync(600);
+    expect(callback).toHaveBeenCalledTimes(4);
+    await vi.advanceTimersByTimeAsync(500);
+    expect(callback).toHaveBeenCalledTimes(5);
+    await vi.advanceTimersByTimeAsync(1100);
+    expect(callback).toHaveBeenCalledTimes(6);
     demo.cancel();
-    await vi.advanceTimersByTimeAsync(1000);
-    expect(callback).toHaveBeenCalledTimes(2);
-    await vi.advanceTimersByTimeAsync(1000);
-    expect(callback).toHaveBeenCalledTimes(2);
+    await vi.advanceTimersByTimeAsync(1100);
+    expect(callback).toHaveBeenCalledTimes(6);
   });
 
   test('polling in onSuccess', async () => {

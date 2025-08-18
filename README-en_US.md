@@ -1,41 +1,41 @@
-[English](./README-en_US.md) | 简体中文
+English | [简体中文](README.md)
 
-## 介绍
+## Introduction
 
-接口的手动管理工具
+A manual management tool for interfaces.
 
-## 安装
+## Installation
 
 npm install ym-userequest
 
-## 使用
+## Usage
 
 <!-- TOC -->
 
-- [手动执行](#手动执行)
-- [自动执行一次并带默认参数](#自动执行一次并带默认参数)
-- [监听响应式数据并自动执行更新数据](#监听响应式数据并自动执行更新数据)
-- [延时 loading](#延时-loading)
-- [修改 data 数据](#修改data数据)
+- [Manual Execution](#manual-execution)
+- [Automatic Execution with Default Parameters](#automatic-execution-with-default-parameters)
+- [Reactive Data Monitoring and Automatic Updates](#reactive-data-monitoring-and-automatic-updates)
+- [Delayed Loading](#delayed-loading)
+- [Modify Data](#modify-data)
   - [defaultData](#defaultdata)
   - [mutate](#mutate)
-- [轮询](#轮询)
-  - [错误重试](#错误重试)
-  - [轮询次数](#轮询次数)
-- [允许请求](#允许请求)
-- [函数防抖](#函数防抖)
-- [函数节流](#函数节流)
-- [缓存](#缓存)
-- [错误重试](#错误重试-1)
+- [Polling](#polling)
+  - [Error Retry](#error-retry)
+  - [Polling Count](#polling-count)
+- [Allow Request](#allow-request)
+- [Debounce](#debounce)
+- [Throttle](#throttle)
+- [Cache](#cache)
+- [Error Retry](#error-retry-1)
 - [requestTick](#requesttick)
-- [监听浏览器页面切换](#监听浏览器页面切换)
-- [获取指定的 useRequest 实例](#获取指定的-userequest-实例)
-- [自定义插件](#自定义插件)
-- [所有配置项](#所有配置项)
-- [所有返回项](#所有返回项)
+- [Monitor Browser Page Switching](#monitor-browser-page-switching)
+- [Get Specified useRequest Instance](#get-specified-userequest-instance)
+- [Custom Plugins](#custom-plugins)
+- [All Configuration Options](#all-configuration-options)
+- [All Returned Properties](#all-returned-properties)
 <!-- /TOC -->
 
-### 手动执行
+### Manual Execution
 
 ```ts
 import { useRequest } from 'ym-userequest';
@@ -47,17 +47,17 @@ const somePromise = () => {
     resolve('success');
   });
 };
-run(); // 手动触发一次
-// runAsync(); // 同 run , 但返回的是一个 promise
-// refresh(); // 使用上次的参数重新请求
-// refreshAsync(); // 同 refresh , 但返回的是一个 promise
-// cancel(); // 取消请求
+run(); // Manually trigger once
+// runAsync(); // Same as run, but returns a promise
+// refresh(); // Re-request with previous parameters
+// refreshAsync(); // Same as refresh, but returns a promise
+// cancel(); // Cancel the request
 ```
 
-### 自动执行一次并带默认参数
+### Automatic Execution with Default Parameters
 
 ```ts
-// 多参数请求
+// Multi-parameter request
 const somePromise1 = (params1, params2) => {
   return new Promise((resolve, reject) => {
     resolve({ params1, params2 });
@@ -67,7 +67,7 @@ const { data, loading } = useRequest(somePromise1, {
   defaultParams: ['params1', 'params2'],
 });
 
-// 单参数请求
+// Single-parameter request
 const somePromise2 = (params1) => {
   return new Promise((resolve, reject) => {
     resolve({ params1 });
@@ -78,9 +78,9 @@ const { data, loading } = useRequest(somePromise2, {
 });
 ```
 
-> defaultParams 传入为数组时表示函数的多个参数，所以如果想要传入单个参数且参数本身为数组，应该使用 [array] 这样传参
+> When defaultParams is passed as an array, it represents multiple parameters of the function. If you want to pass a single parameter that is itself an array, use [array].
 
-### 监听响应式数据并自动执行更新数据
+### Reactive Data Monitoring and Automatic Updates
 
 ```ts
 const pages = reactive({
@@ -98,11 +98,11 @@ const refreshDepsParams = computed(() => pages.size);
 
 const { data, refresh, loading } = useRequest(somePromise, {
   defaultParams: pages.size,
-  refreshDeps: [() => pages.size], // 监听的依赖
-  // 可选，依赖变更后执行的参数,不传则在依赖变更后执行 refresh,
-  // 如果为函数会执行该函数并将返回值作为参数
+  refreshDeps: [() => pages.size], // Dependencies to monitor
+  // Optional: Parameters to execute after dependency changes. If not provided, `refresh` is executed after dependency changes.
+  // If it's a function, the function will be executed and its return value will be used as the parameter.
   refreshDepsParams: refreshDepsParams,
-  // 不想监听后立即请求,可以传递一个没有返回值的函数,该函数会被调用
+  // To avoid immediate requests after monitoring, pass a function with no return value.
   // refreshDepsParams: () => {},
 });
 const onClick = () => {
@@ -110,9 +110,9 @@ const onClick = () => {
 };
 ```
 
-### 延时 loading
+### Delayed Loading
 
-使用 loadingDelay 定义一个 loading 的延时时间，避免请求时间较短时出现 loading 闪烁
+Use loadingDelay to define a delay time for loading to avoid flickering when requests are short.
 
 ```ts
 const somePromise = (params) => {
@@ -124,15 +124,15 @@ const somePromise = (params) => {
 };
 const { data, loading } = useRequest(somePromise, {
   defaultParams: ['params1'],
-  loadingDelay: 1000, // 1s 内loading状态都不会改变
+  loadingDelay: 1000, // Loading state won't change within 1s
 });
 ```
 
-### 修改 data 数据
+### Modify Data
 
 1. defaultData
 
-因为 data 为 ref ，无法进行解构赋默认值，可通过 defaultData 设置默认值
+Since data is a ref, it cannot be destructured with a default value. Use defaultData to set the default value.
 
 ```ts
 const somePromise = () => {
@@ -142,8 +142,8 @@ const somePromise = () => {
 };
 
 const { data, loading, mutate } = useRequest(somePromise, {
-  defaultData: 3, // return data:Ref<3>
-  // defaultData: shallowRef<3>, // return data:ShallowRef<3>
+  defaultData: 3, // Returns data: Ref<3>
+  // defaultData: shallowRef<3>, // Returns data: ShallowRef<3>
 });
 ```
 
@@ -171,7 +171,7 @@ onChange();
 console.log(data.value); // 2
 ```
 
-### 轮询
+### Polling
 
 ```ts
 const somePromise = () => {
@@ -179,21 +179,21 @@ const somePromise = () => {
     resolve(1);
   });
 };
-// 每 3000 ms 进行一次请求
+// Request every 3000 ms
 const { data, run, cancel } = useRequest(somePromise, {
   pollingInterval: 3000,
 });
 
 const onRun = () => {
-  run(); // 继续轮询
+  run(); // Continue polling
 };
 
 const onCancel = () => {
-  cancel(); // 停止轮询
+  cancel(); // Stop polling
 };
 ```
 
-错误重试
+Error Retry
 
 ```ts
 const errPromise = () => {
@@ -203,13 +203,13 @@ const errPromise = () => {
 };
 const { data, run, cancel } = useRequest(errPromise, {
   pollingInterval: 3000,
-  pollingErrorRetryCount: 3, // 请求错误重试，将在三次轮询后不再轮询
+  pollingErrorRetryCount: 3, // Retry on error. Polling will stop after 3 attempts.
 });
 ```
 
-轮询次数
+Polling Count
 
-在进行一次 cancel 后，轮询次数会被清空
+After a cancel, the polling count is reset.
 
 ```ts
 const somePromise = () => {
@@ -227,9 +227,9 @@ const { cancel, pollingCount } = useRequest(somePromise, {
 });
 ```
 
-### 允许请求
+### Allow Request
 
-ready 参数控制本次请求是否被允许，若 ready 为 false ，该请求始终不会被允许
+The ready parameter controls whether the request is allowed. If ready is false, the request will never be allowed.
 
 ```ts
 const somePromise = () => {
@@ -248,7 +248,7 @@ run();
 console.log(data.value); // 1
 ```
 
-### 函数防抖
+### Debounce
 
 ```ts
 const somePromise = () => {
@@ -261,7 +261,7 @@ const { data, run } = useRequest(somePromise, {
   manual: true,
   debounceWait: 2000,
   debounceOptions: {
-    // 参数同 loadsh 的 debounce
+    // Parameters are the same as lodash's debounce
     leading: true,
     trailing: false,
   },
@@ -272,7 +272,7 @@ const onRun = () => {
 };
 ```
 
-### 函数节流
+### Throttle
 
 ```ts
 const somePromise = () => {
@@ -285,7 +285,7 @@ const { data, run } = useRequest(somePromise, {
   manual: true,
   throttleWait: 2000,
   throttleOptions: {
-    // 参数同 loadsh 的 debounce
+    // Parameters are the same as lodash's throttle
     leading: true,
     trailing: false,
   },
@@ -296,9 +296,9 @@ const onRun = () => {
 };
 ```
 
-### 缓存
+### Cache
 
-> 设置了 cacheKey，组件在第二次加载时，会优先返回缓存的内容，然后在背后重新发起请求
+> When cacheKey is set, the component will first return cached content on the second load, then re-initiate the request in the background.
 
 ```ts
 import { useRequest, clearCache } from 'ym-userequest';
@@ -313,11 +313,11 @@ const { data, run } = useRequest(somePromise, {
   cacheKey: 'test',
   cacheTime: 5000,
   staleTime: -1,
-  // 自定义设置缓存
+  // Custom cache setter
   // setCache(cacheKey, data) {
   //   localStorage.setItem(cacheKey, JSON.stringify(data));
   // },
-  // 自定义获取缓存
+  // Custom cache getter
   // getCache(cacheKey) {
   //   return JSON.parse(localStorage.getItem(cacheKey) || 'null');
   // },
@@ -326,7 +326,7 @@ const { data, run } = useRequest(somePromise, {
 run(1); // 1
 run(2); // 1
 
-// 手动清除缓存 clearCache(params?:string[]|string)
+// Manually clear cache: clearCache(params?: string[] | string)
 // clearCache()
 
 setTimeOut(() => {
@@ -335,9 +335,9 @@ setTimeOut(() => {
 }, 5000);
 ```
 
-### 错误重试
+### Error Retry
 
-当请求失败后重新请求次数
+Retry the request after a failure.
 
 ```ts
 const errorPromise = () => {
@@ -350,22 +350,22 @@ const errorPromise = () => {
 let count = 0;
 const { data } = useRequest(errorPromise, {
   retryCount: 3,
-  // retryInterval:1000,
+  // retryInterval: 1000,
   onError() {
     count += 1;
     console.log(count);
   },
 });
 
-// count：1
-// count：2
-// count：3
-// count：4
+// count: 1
+// count: 2
+// count: 3
+// count: 4
 ```
 
 ### requestTick
 
-等待请求完成后的操作回调
+Execute a callback after the request completes.
 
 ```ts
 const getData = (value = 1, time = 1000): Promise<number> => {
@@ -390,20 +390,20 @@ const runAll = async () => {
 runAll();
 ```
 
-### 监听浏览器页面切换
+### Monitor Browser Page Switching
 
 ```ts
 useRequest(getData, {
-  // 在浏览器页面重新显示时，重新发起请求
+  // Re-initiate the request when the browser page is re-displayed
   refreshOnWindowFocus: true,
-  // 间隔1000ms内不重新请求
+  // Do not re-request within 1000ms
   focusTimespan: 1000,
-  // 离开浏览器页面时，取消请求
+  // Cancel the request when leaving the browser page
   cancelOnWindowBlur: true,
 });
 ```
 
-### 获取指定的 useRequest 实例
+### Get Specified useRequest Instance
 
 ```ts
 import { useRequest, getRequest } from 'ym-request';
@@ -415,21 +415,21 @@ instance1.run(2);
 
 const instance2 = getRequest('getData');
 
-console.log(instance1.data, instance2.data); // 2,2
+console.log(instance1.data, instance2.data); // 2, 2
 instance2.run(3);
 
-console.log(instance1.data, instance2.data); // 3,3
+console.log(instance1.data, instance2.data); // 3, 3
 ```
 
-### 自定义插件
+### Custom Plugins
 
-以延时 loading 插件为例
-在 instance 中可以获取所有返回项
-在 options 中可以获取所有配置项
-插件返回对象中，onBefore 中返回 returnNow 为 true 时，将不再发起请求，返回 returnData 将作为 data 数据返回
+Example: Delayed Loading Plugin
+In instance, you can access all returned properties.
+In options, you can access all configuration options.
+In the plugin's returned object, if onBefore returns returnNow: true, the request will not be initiated. returnData will be returned as the data.
 
-onInit 可以用来改写请求
-onSuccess 等代表请求的各个时机，
+onInit can be used to modify the request.
+onSuccess and others represent various stages of the request.
 
 ```ts
 import { definePlugins, TypeChecker, Plugin } from 'ym-userequest';
@@ -449,7 +449,7 @@ const useReadyPlugin: Plugin<any, any[]> = (instance, options) => {
         };
       }
     },
-    // 所有回调签名,对应 useRequest 回调
+    // All callback signatures, corresponding to useRequest callbacks
     // onBefore: (params: P) => onBeforePlugin | void;
     // onInit: (service: () => Promise<R>) => () => Promise<R>,
     // onSuccess(data: R, params: P): void,
@@ -460,134 +460,133 @@ const useReadyPlugin: Plugin<any, any[]> = (instance, options) => {
   };
 };
 
-// 注册
+// Register
 definePlugins([useReadyPlugin]);
 ```
 
-## 所有配置项
+## All Configuration Options
 
 ```ts
 {
-  // 是否手动发起请求
+  // Whether to manually initiate the request
   manual?: boolean;
 
-  // 设置默认 data，也可用于指定 data 为 ShallowRef 或 Ref
-  // 如果传入值为非响应式，将被转化为 ref
+  // Set default data, can also be used to specify data as ShallowRef or Ref
+  // If the passed value is non-reactive, it will be converted to a ref
   defaultData?: R | Ref<R>;
 
-  // 当 manual 为 false 时，自动执行的默认参数
+  // Default parameters for automatic execution when manual is false
   defaultParams?: Params<P>;
 
-  // 监听依赖
+  // Dependencies to monitor
   refreshDeps?: WatchSource<any>[] | WatchSource<any>;
-  // 依赖变更后的执行参数，若为函数会执行该函数，有返回值则会将返回值作为参数发起一次请求
+  // Parameters to execute after dependency changes. If it's a function, it will be executed, and its return value will be used as the parameter for the request.
   refreshDepsParams?: Params<P> | (() => void | Params<P>);
 
-  // 请求延时
+  // Request delay
   loadingDelay?: number;
 
-  // 轮询
+  // Polling
   pollingInterval?: Ref<number> | number;
-  // 轮询错误重试
+  // Polling error retry
   pollingErrorRetryCount?: number;
 
-  // 错误重试次数
-  retryCount?:number;
-  // 重试时间间隔
-  // 如果不设置，默认采用简易的指数退避算法，取 1000 * 2 ** retryCount，
-  // 也就是第一次重试等待 2s，第二次重试等待 4s，以此类推，如果大于 30s，则取 30s
-  retryInterval?:number;
+  // Error retry count
+  retryCount?: number;
+  // Retry interval
+  // If not set, a simple exponential backoff algorithm is used: 1000 * 2 ** retryCount,
+  // e.g., first retry waits 2s, second waits 4s, etc., capped at 30s.
+  retryInterval?: number;
 
-  // 是否允许请求（变更时不会触发自动请求）
+  // Whether to allow the request (changes do not trigger automatic requests)
   ready?: (() => Ref<boolean> | boolean) | (Ref<boolean> | boolean);
 
-  // 防抖等待时间
+  // Debounce wait time
   debounceWait?: number;
-  // 防抖函数属性
+  // Debounce function properties
   debounceOptions?: {
-    // 是否在延迟开始前执行
+    // Whether to execute before the delay starts
     leading?: boolean;
-    // 是否在延迟开始后执行
+    // Whether to execute after the delay starts
     trailing?: boolean;
-    // 允许被延迟的最大值
+    // Maximum allowed delay
     maxWait?: number;
   };
 
-  // 节流等待时间
+  // Throttle wait time
   throttleWait?: number;
-  // 节流函数属性
+  // Throttle function properties
   throttleOptions?: {
-    // 是否在延迟开始前执行
+    // Whether to execute before the delay starts
     leading?: boolean;
-    // 是否在延迟开始后执行
+    // Whether to execute after the delay starts
     trailing?: boolean;
   };
 
-  // 请求的唯一标识
+  // Unique identifier for the request
   cacheKey?: string | ((params?: P) => string);
-  // 缓存时间,默认: 5 * 60 * 1000
-  // 超出缓存时间会清除对应缓存
-  // 另外需要注意的是，当缓存失效时，无论 staleTime 是否存在都会重新请求
+  // Cache time, default: 5 * 60 * 1000
+  // Cache will be cleared after this time
+  // Note: When cache expires, a new request will be made regardless of staleTime
   cacheTime?: number;
-  // 缓存数据保持新鲜时间(什么时候会重新发送请求更新缓存),默认 0,若为-1表示始终不再发送请求
-  // 即在新鲜时间内都直接获取缓存中的数据
+  // Freshness time for cached data (when to re-request to update cache), default: 0, -1 means never re-request
   staleTime?: number;
-  // 自定义获取缓存
+  // Custom cache getter
   getCache?: (cacheKey: string) => CacheData;
-  // 自定义设置缓存
+  // Custom cache setter
   setCache?: (cacheKey: string, cacheData: CacheData) => void;
-  // 在浏览器页面重新显示时，是否重新发起请求
+  // Whether to re-initiate the request when the browser page is re-displayed
   refreshOnWindowFocus?: Ref<boolean> | boolean;
-  // 重新请求间隔，单位为毫秒,默认5000
+  // Re-request interval in milliseconds, default: 5000
   focusTimespan?: Ref<number> | number;
-  // 离开浏览器页面时，是否取消请求
+  // Whether to cancel the request when leaving the browser page
   cancelOnWindowBlur?: Ref<boolean> | boolean;
-  // 获取缓存时回调
+  // Callback when cache is retrieved
   onCache?: (response: R) => void;
-  // 请求前回调
+  // Pre-request callback
   onBefore?: (params: P) => void;
-  // 每次请求被执行时回调，可以在该回调中获取每次请求的响应
+  // Callback executed when each request is made, can access the response of each request
   onRequest?: ({ params, response, error, abort }: { params: P; response: R; error: any; abort: boolean }) => void;
-  // 成功回调（在该回调之后 data 被重新赋值）
+  // Success callback (data is updated after this callback)
   onSuccess?: (response: R, params: P) => MaybePromise<void | R>;
-  // 失败回调
+  // Error callback
   onError?: (err: any, params: P) => void;
-  // 接口完成回调
+  // Request completion callback
   onFinally?: () => void;
-  // 忽略当前 Promise 时执行回调
-  onCancel?:()=>void;
+  // Callback when the current Promise is ignored
+  onCancel?: () => void;
 }
 ```
 
-## 所有返回项
+## All Returned Properties
 
 ```ts
 {
-  // 返回请求执行成功后的返回的数据
+  // Data returned after the request succeeds
   data: Ref<R>;
-  // 返回请求的执行状态
+  // Request execution status
   loading: Ref<boolean>;
-  // 返回请求失败的错误信息
+  // Error information if the request fails
   error?: Ref<any>;
-  // 返回本次请求的参数
+  // Parameters of the current request
   params?: Ref<P>;
-  // 进行轮询时累计轮询次数
-  pollingCount:Ref<number>
-  // 手动执行请求（返回promise）
+  // Cumulative polling count during polling
+  pollingCount: Ref<number>;
+  // Manually execute the request (returns a promise)
   runAsync: (...arg: P) => Promise<R>;
-  // 手动执行请求
+  // Manually execute the request
   run: (...arg: P) => void;
-  // 忽略当前 Promise 的响应
+  // Ignore the current Promise's response
   cancel: () => void;
-  // 手动刷新请求
+  // Manually refresh the request
   refresh: () => void;
-  // 手动刷新请求（返回promise）
+  // Manually refresh the request (returns a promise)
   refreshAsync: () => Promise<R>;
-  // 修改返回的data数据
+  // Modify the returned data
   mutate: (newData: R) => void | (arg: (oldData: R) => R) => void;
-  // data 处理进程,默认undfined,表示未被请求过
+  // Data processing status, default: undefined (not requested yet)
   status: Ref<'pending' | 'settled'>;
-  // 等待接口完成
+  // Wait for the request to complete
   requestTick: (callback?: () => void) => Promise<unknown>;
 }
 ```

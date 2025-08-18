@@ -92,10 +92,12 @@ export interface Options<R, P extends any[]> {
   onFinally?: () => void;
   // 取消响应回调
   onCancel?: () => void;
+
+  [key: string]: any;
 }
 
 export type PluginHooks<R, P extends unknown[]> = {
-  onBefore: (params: P) => CallPlugin<R>['returnData'] | void;
+  onBefore: (params: P) => CallPlugin<R> | void;
   onInit: (service: () => Promise<R>) => () => Promise<R>;
   onSuccess(data: R, params: P): void;
   onError(error: Error, params: P): void;
@@ -140,9 +142,12 @@ export interface Request<R, P extends unknown[]> extends State<R, P>, FunctionCo
 
 export type Service<R, P extends unknown[]> = (...args: P) => Promise<R>;
 
-export type CallPlugin<R> = {
+export type onBeforePlugin = {
   returnNow?: boolean;
   returnData?: any;
   returnType?: 'cache';
-  servicePromise?: Promise<R>;
 };
+
+export type CallPlugin<R> = {
+  servicePromise?: Promise<R>;
+} & onBeforePlugin

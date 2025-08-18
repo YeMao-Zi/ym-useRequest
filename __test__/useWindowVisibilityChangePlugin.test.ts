@@ -60,6 +60,7 @@ describe('useWindowVisibilityChangePlugin', () => {
     const demo = componentVue(() => {
       const instance = useRequest(() => getData(1, 0), {
         cancelOnWindowBlur: true,
+        refreshOnWindowFocus: true,
         pollingInterval: 1000,
         onSuccess: callback,
         onFinally() {
@@ -84,5 +85,7 @@ describe('useWindowVisibilityChangePlugin', () => {
     expect(document.visibilityState).toBe('hidden');
     await vi.advanceTimersByTimeAsync(1000);
     expect(callback).toHaveBeenCalledTimes(2);
+    // 卸载组件
+    demo.unmount();
   });
 });

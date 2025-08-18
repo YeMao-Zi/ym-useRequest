@@ -189,4 +189,25 @@ describe('getRequest', () => {
     expect(demo.data).toBe(99);
     expect(retrievedInstance?.data.value).toBe(99);
   });
+
+  // 新增测试用例：测试组件卸载时自动清理 requestMap 中的实例
+  test('should automatically remove request instance when component is unmounted', async () => {
+    const { unmount } = componentVue(() => {
+      return useRequest(getData, {
+        id: 'auto-cleanup-instance',
+        manual: true,
+      });
+    });
+
+    // 确保实例存在
+    const instanceBeforeUnmount = getRequest('auto-cleanup-instance');
+    expect(instanceBeforeUnmount).toBeDefined();
+
+    // 卸载组件
+    unmount();
+
+    // 确认实例已被自动移除
+    const instanceAfterUnmount = getRequest('auto-cleanup-instance');
+    expect(instanceAfterUnmount).toBeUndefined();
+  });
 });
