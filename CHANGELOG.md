@@ -1,5 +1,11 @@
 
 
+## [1.13.5](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.13.4...v1.13.5) (2025-08-18)
+
+### 📝 Documentation | 文档
+
+* 完善文档 ([e5dadc8](https://github.com/YeMao-Zi/ym-useRequest/commit/e5dadc8da0342c19a69950f2381182744fb58d6b))
+
 ## [1.13.4](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.13.3...v1.13.4) (2025-08-14)
 
 ### ✨ Features | 新功能
