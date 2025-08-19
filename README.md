@@ -19,17 +19,17 @@ npm install ym-userequest
 - [自动执行一次并带默认参数](#自动执行一次并带默认参数)
 - [监听响应式数据并自动执行更新数据](#监听响应式数据并自动执行更新数据)
 - [延时 loading](#延时-loading)
-- [修改 data 数据](#修改data数据)
+- [修改 data 数据](#修改-data-数据)
   - [defaultData](#defaultdata)
   - [mutate](#mutate)
 - [轮询](#轮询)
-  - [错误重试](#错误重试)
+  - [轮询错误重试](#轮询错误重试)
   - [轮询次数](#轮询次数)
 - [允许请求](#允许请求)
 - [函数防抖](#函数防抖)
 - [函数节流](#函数节流)
 - [缓存](#缓存)
-- [错误重试](#错误重试-1)
+- [错误重试](#错误重试)
 - [requestTick](#requesttick)
 - [监听浏览器页面切换](#监听浏览器页面切换)
 - [获取指定的 useRequest 实例](#获取指定的-userequest-实例)
@@ -133,7 +133,7 @@ const { data, loading } = useRequest(somePromise, {
 
 ### 修改 data 数据
 
-1. defaultData
+#### defaultData
 
 因为 data 为 ref ，无法进行解构赋默认值，可通过 defaultData 设置默认值
 
@@ -150,7 +150,7 @@ const { data, loading, mutate } = useRequest(somePromise, {
 });
 ```
 
-2. mutate
+#### mutate
 
 ```ts
 const somePromise = () => {
@@ -196,7 +196,7 @@ const onCancel = () => {
 };
 ```
 
-错误重试
+#### 轮询错误重试
 
 ```ts
 const errPromise = () => {
@@ -210,7 +210,7 @@ const { data, run, cancel } = useRequest(errPromise, {
 });
 ```
 
-轮询次数
+#### 轮询次数
 
 在进行一次 cancel 后，轮询次数会被清空
 

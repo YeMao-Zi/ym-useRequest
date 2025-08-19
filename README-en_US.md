@@ -1,3 +1,6 @@
+![NPM Version](https://img.shields.io/npm/v/ym-userequest)
+[![codecov](https://codecov.io/gh/YeMao-Zi/ym-useRequest/graph/badge.svg?token=PELX6B0U8F)](https://codecov.io/gh/YeMao-Zi/ym-useRequest)
+
 English | [简体中文](README.md)
 
 ## Introduction
@@ -20,13 +23,13 @@ npm install ym-userequest
   - [defaultData](#defaultdata)
   - [mutate](#mutate)
 - [Polling](#polling)
-  - [Error Retry](#error-retry)
+  - [Polling error retry](#polling-error-retry)
   - [Polling Count](#polling-count)
 - [Allow Request](#allow-request)
 - [Debounce](#debounce)
 - [Throttle](#throttle)
 - [Cache](#cache)
-- [Error Retry](#error-retry-1)
+- [Error Retry](#error-retry)
 - [requestTick](#requesttick)
 - [Monitor Browser Page Switching](#monitor-browser-page-switching)
 - [Get Specified useRequest Instance](#get-specified-userequest-instance)
@@ -130,7 +133,7 @@ const { data, loading } = useRequest(somePromise, {
 
 ### Modify Data
 
-1. defaultData
+#### defaultData
 
 Since data is a ref, it cannot be destructured with a default value. Use defaultData to set the default value.
 
@@ -147,7 +150,7 @@ const { data, loading, mutate } = useRequest(somePromise, {
 });
 ```
 
-2. mutate
+#### mutate
 
 ```ts
 const somePromise = () => {
@@ -193,7 +196,7 @@ const onCancel = () => {
 };
 ```
 
-Error Retry
+#### Polling error retry
 
 ```ts
 const errPromise = () => {
@@ -207,7 +210,7 @@ const { data, run, cancel } = useRequest(errPromise, {
 });
 ```
 
-Polling Count
+#### Polling Count
 
 After a cancel, the polling count is reset.
 
