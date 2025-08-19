@@ -1,4 +1,5 @@
 ![NPM Version](https://img.shields.io/npm/v/ym-userequest)
+[![codecov](https://codecov.io/gh/YeMao-Zi/ym-useRequest/graph/badge.svg?token=PELX6B0U8F)](https://codecov.io/gh/YeMao-Zi/ym-useRequest)
 
 [English](./README-en_US.md) | 简体中文
 
