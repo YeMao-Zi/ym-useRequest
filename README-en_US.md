@@ -423,13 +423,17 @@ console.log(instance1.data, instance2.data); // 3, 3
 
 ### Custom Plugins
 
-Example: Delayed Loading Plugin
+Example: ready Plugin
+
 In instance, you can access all returned properties.
+
 In options, you can access all configuration options.
+
 In the plugin's returned object, if onBefore returns returnNow: true, the request will not be initiated. returnData will be returned as the data.
 
 onInit can be used to modify the request.
-onSuccess and others represent various stages of the request.
+
+Other functions such as onSuccess correspond to various times of the request
 
 ```ts
 import { definePlugins, TypeChecker, Plugin } from 'ym-userequest';
@@ -449,7 +453,7 @@ const useReadyPlugin: Plugin<any, any[]> = (instance, options) => {
         };
       }
     },
-    // All callback signatures, corresponding to useRequest callbacks
+    // All return signatures, corresponding to useRequest callbacks
     // onBefore: (params: P) => onBeforePlugin | void;
     // onInit: (service: () => Promise<R>) => () => Promise<R>,
     // onSuccess(data: R, params: P): void,

@@ -1,3 +1,5 @@
+![NPM Version](https://img.shields.io/npm/v/ym-userequest)
+
 [English](./README-en_US.md) | 简体中文
 
 ## 介绍
@@ -423,18 +425,21 @@ console.log(instance1.data, instance2.data); // 3,3
 
 ### 自定义插件
 
-以延时 loading 插件为例
+以延时 ready 功能插件为例
+
 在 instance 中可以获取所有返回项
+
 在 options 中可以获取所有配置项
+
 插件返回对象中，onBefore 中返回 returnNow 为 true 时，将不再发起请求，返回 returnData 将作为 data 数据返回
 
 onInit 可以用来改写请求
-onSuccess 等代表请求的各个时机，
+
+onSuccess 等其他函数对应请求的各个时机
 
 ```ts
 import { definePlugins, TypeChecker, Plugin } from 'ym-userequest';
 import { Ref, unref } from 'vue';
-import type { Plugin } from '../type';
 
 const useReadyPlugin: Plugin<any, any[]> = (instance, options) => {
   const { ready = true } = options;
@@ -449,7 +454,7 @@ const useReadyPlugin: Plugin<any, any[]> = (instance, options) => {
         };
       }
     },
-    // 所有回调签名,对应 useRequest 回调
+    // 所有的返回签名，对应 useRequest 的回调
     // onBefore: (params: P) => onBeforePlugin | void;
     // onInit: (service: () => Promise<R>) => () => Promise<R>,
     // onSuccess(data: R, params: P): void,
