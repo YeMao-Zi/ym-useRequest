@@ -26,12 +26,13 @@ beforeAll(() => {
 describe('useThrottlePlugin', () => {
   test('throttle with throttleInterval', async () => {
     const callback = vi.fn();
-
+    // 默认: {leading: true, trailing: true}
+    // 前后都执行，保证周期性输出,首次执行一次，节流时间结束后再执行一次最后一次
     const demo = componentVue(() => {
       return useRequest(
-        () => {
+        (...args) => {
           callback();
-          return getData();
+          return getData(...args);
         },
         {
           manual: true,
@@ -40,23 +41,27 @@ describe('useThrottlePlugin', () => {
       );
     });
 
-    demo.run();
-    await vi.advanceTimersByTimeAsync(50);
-    demo.run();
-    demo.run();
-    demo.run();
-    await vi.advanceTimersByTimeAsync(50);
+    demo.run(0, 0);
+    await vi.advanceTimersByTimeAsync(51);
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(demo.data).toBe(0);
+    demo.run(1, 0);
+    demo.run(2, 0);
+    demo.run(3, 0);
+    await vi.advanceTimersByTimeAsync(51);
     expect(callback).toHaveBeenCalledTimes(2);
+    expect(demo.data).toBe(3);
   });
 
   test('throttle with throttleOptions', async () => {
     const callback = vi.fn();
-
+    // 执行: {leading: true, trailing: false}
+    // 只在意开始时执行，忽略时段内的所有调用
     const demo = componentVue(() => {
       return useRequest(
-        () => {
+        (...args) => {
           callback();
-          return getData();
+          return getData(...args);
         },
         {
           manual: true,
@@ -69,16 +74,20 @@ describe('useThrottlePlugin', () => {
       );
     });
 
-    demo.run();
+    demo.run(0, 0);
+    await vi.advanceTimersByTimeAsync(51);
     expect(callback).toHaveBeenCalledTimes(1);
-    await vi.advanceTimersByTimeAsync(50);
-    demo.run();
-    demo.run();
-    demo.run();
-    await vi.advanceTimersByTimeAsync(50);
+    expect(demo.data).toBe(0);
+    demo.run(1, 0);
+    demo.run(2, 0);
+    demo.run(3, 0);
+    await vi.advanceTimersByTimeAsync(51);
     expect(callback).toHaveBeenCalledTimes(1);
-    demo.run();
+    expect(demo.data).toBe(0);
+    demo.run(4, 0);
+    await vi.advanceTimersByTimeAsync(51);
     expect(callback).toHaveBeenCalledTimes(2);
+    expect(demo.data).toBe(4);
   });
 
   test('throttle with throttleInterval change', async () => {
@@ -87,9 +96,9 @@ describe('useThrottlePlugin', () => {
 
     const demo = componentVue(() => {
       return useRequest(
-        () => {
+        (...args) => {
           callback();
-          return getData();
+          return getData(...args);
         },
         {
           manual: true,
@@ -98,18 +107,27 @@ describe('useThrottlePlugin', () => {
       );
     });
 
-    demo.run();
-    demo.run();
+    demo.run(0, 0);
+    demo.run(1, 0);
+    await vi.advanceTimersByTimeAsync(51);
     expect(callback).toHaveBeenCalledTimes(1);
-    await vi.advanceTimersByTimeAsync(50);
+    expect(demo.data).toBe(0);
     throttleWaitRef.value = 150;
-    demo.run();
-    demo.run();
+    //  debounceWaitRef 变更，执行 onCleanup 清理副作用，被初始化
+    await vi.advanceTimersByTimeAsync(51);
     expect(callback).toHaveBeenCalledTimes(1);
-    demo.run();
-    await vi.advanceTimersByTimeAsync(100);
-    demo.run();
+    expect(demo.data).toBe(0);
+
+    demo.run(2, 0);
+    demo.run(3, 0);
     expect(callback).toHaveBeenCalledTimes(2);
+    demo.run(4, 0);
+    await vi.advanceTimersByTimeAsync(101);
+    expect(callback).toHaveBeenCalledTimes(2);
+    demo.run(5, 0);
+    await vi.advanceTimersByTimeAsync(151);
+    expect(callback).toHaveBeenCalledTimes(3);
+    expect(demo.data).toBe(5);
   });
 
   test('throttle with cancel', async () => {
@@ -117,9 +135,9 @@ describe('useThrottlePlugin', () => {
 
     const demo = componentVue(() => {
       return useRequest(
-        () => {
+        (...args) => {
           callback();
-          return getData();
+          return getData(...args);
         },
         {
           manual: true,

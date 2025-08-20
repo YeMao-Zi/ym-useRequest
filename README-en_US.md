@@ -244,6 +244,7 @@ const somePromise = () => {
 const ready = ref(false);
 const { data, run } = useRequest(somePromise, {
   ready,
+  // or ready:()=> ready.value,
 });
 console.log(data.value); // null
 ready.value = true;
@@ -441,7 +442,6 @@ Other functions such as onSuccess correspond to various times of the request
 ```ts
 import { definePlugins, TypeChecker, Plugin } from 'ym-userequest';
 import { Ref, unref } from 'vue';
-import type { Plugin } from '../type';
 
 const useReadyPlugin: Plugin<any, any[]> = (instance, options) => {
   const { ready = true } = options;

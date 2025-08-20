@@ -2,10 +2,7 @@ import { watch } from 'vue';
 import type { Plugin } from '../type';
 import { unrefParms, isFunction } from '../utils';
 
-const useRefreshDepsPlugin: Plugin<any, any[]> = (
-  instance,
-  { manual, refreshDeps = null, refreshDepsParams = null },
-) => {
+const useRefreshDepsPlugin: Plugin<any, any[]> = (instance, { refreshDeps = null, refreshDepsParams = null }) => {
   if (refreshDeps) {
     watch(
       refreshDeps,
@@ -20,7 +17,7 @@ const useRefreshDepsPlugin: Plugin<any, any[]> = (
             instance.functionContext.run(...unrefParms(refreshDepsParams));
           }
         } else {
-          !manual && instance.functionContext.refresh();
+          instance.functionContext.refresh();
         }
       },
       { deep: true },

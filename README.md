@@ -244,6 +244,7 @@ const somePromise = () => {
 const ready = ref(false);
 const { data, run } = useRequest(somePromise, {
   ready,
+  // or ready:()=> ready.value,
 });
 console.log(data.value); // null
 ready.value = true;
@@ -474,7 +475,7 @@ definePlugins([useReadyPlugin]);
 
 ```ts
 {
-  // 是否手动发起请求
+  // 是否手动发起请求，默认 false ，会在初始化后自动执行一次 run
   manual?: boolean;
 
   // 设置默认 data，也可用于指定 data 为 ShallowRef 或 Ref
