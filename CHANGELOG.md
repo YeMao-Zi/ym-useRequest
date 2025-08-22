@@ -1,5 +1,18 @@
 
 
+## [1.13.6](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.13.5...v1.13.6) (2025-08-22)
+
+### ✨ Features | 新功能
+
+* 添加Codecov ([fceb2c2](https://github.com/YeMao-Zi/ym-useRequest/commit/fceb2c2807da6d94a2e4fdd36c4c13cd28905bbb))
+* Remove the refreshDeps manual judgment && update docs ([334df14](https://github.com/YeMao-Zi/ym-useRequest/commit/334df14f049feab2c7eb00d9e01cdc81f20f704a))
+
+### 📝 Documentation | 文档
+
+* 目录跳转调整 ([3d4f376](https://github.com/YeMao-Zi/ym-useRequest/commit/3d4f376124624524a2af384ee16f2b25c184cb86))
+* 添加代码覆盖率徽标 ([9aec831](https://github.com/YeMao-Zi/ym-useRequest/commit/9aec831a81942c4b5708caed7c6cbeae96214799))
+* 文档修改 ([3ee23bc](https://github.com/YeMao-Zi/ym-useRequest/commit/3ee23bccd4d83d79c3b29feeae0713f4f67a2a90))
+
 ## [1.13.5](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.13.4...v1.13.5) (2025-08-18)
 
 ### 📝 Documentation | 文档
