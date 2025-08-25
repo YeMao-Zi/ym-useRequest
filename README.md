@@ -17,6 +17,7 @@ npm install ym-userequest
 
 - [手动执行](#手动执行)
 - [自动执行一次并带默认参数](#自动执行一次并带默认参数)
+- [取消响应](#取消响应)
 - [监听响应式数据并自动执行更新数据](#监听响应式数据并自动执行更新数据)
 - [延时 loading](#延时-loading)
 - [修改 data 数据](#修改-data-数据)
@@ -82,6 +83,52 @@ const { data, loading } = useRequest(somePromise2, {
 ```
 
 > defaultParams 传入为数组时表示函数的多个参数，所以如果想要传入单个参数且参数本身为数组，应该使用 [array] 这样传参
+
+### 取消响应
+
+```ts
+const request = () =>
+  fetch('https://xxx...', {
+    method: 'POST',
+    body: JSON.stringify(params),
+    signal,
+  });
+const { data, cancel } = useRequestI(request);
+cancel();
+```
+
+> 调用 cancel 时只是忽略掉当前的请求，不会中断正在请求的请求。想要真正中断请求可以自行实现
+
+```ts
+const requestController = () => {
+  const controller = new AbortController();
+  const signal = controller.signal;
+  return {
+    request: (params) =>
+      fetch('https://xxx...', {
+        method: 'POST',
+        body: JSON.stringify(params),
+        signal,
+      }),
+    cancel: () => controller.abort(),
+  };
+};
+
+function useRequestI(requestController, options) {
+  const { request, cancel } = requestController();
+  return useRequest(request, {
+    ...options,
+    onCancel: () => {
+      cancel();
+      options.onCancel?.();
+    },
+  });
+}
+
+const { data, cancel } = useRequestI(request);
+
+cancel();
+```
 
 ### 监听响应式数据并自动执行更新数据
 
@@ -452,7 +499,7 @@ const useReadyPlugin: Plugin<any, any[]> = (instance, options) => {
         instance.loading.value = false;
         return {
           returnNow: true,
-          returnData: undefined,
+          // returnData: instance.data.value,
         };
       }
     },

@@ -17,6 +17,7 @@ npm install ym-userequest
 
 - [Manual Execution](#manual-execution)
 - [Automatic Execution with Default Parameters](#automatic-execution-with-default-parameters)
+- [Cancel response](#cancel-response)
 - [Reactive Data Monitoring and Automatic Updates](#reactive-data-monitoring-and-automatic-updates)
 - [Delayed Loading](#delayed-loading)
 - [Modify Data](#modify-data)
@@ -82,6 +83,52 @@ const { data, loading } = useRequest(somePromise2, {
 ```
 
 > When defaultParams is passed as an array, it represents multiple parameters of the function. If you want to pass a single parameter that is itself an array, use [array].
+
+### Cancel response
+
+```ts
+const request = () =>
+  fetch('https://xxx...', {
+    method: 'POST',
+    body: JSON.stringify(params),
+    signal,
+  });
+const { data, cancel } = useRequestI(request);
+cancel();
+```
+
+> When cancel is called, it merely ignores the current request and does not interrupt the requests that are being made. If you want to truly interrupt the request, you can do it yourself
+
+```ts
+const requestController = () => {
+  const controller = new AbortController();
+  const signal = controller.signal;
+  return {
+    request: (params) =>
+      fetch('https://xxx...', {
+        method: 'POST',
+        body: JSON.stringify(params),
+        signal,
+      }),
+    cancel: () => controller.abort(),
+  };
+};
+
+function useRequestI(requestController, options) {
+  const { request, cancel } = requestController();
+  return useRequest(request, {
+    ...options,
+    onCancel: () => {
+      cancel();
+      options.onCancel?.();
+    },
+  });
+}
+
+const { data, cancel } = useRequestI(request);
+
+cancel();
+```
 
 ### Reactive Data Monitoring and Automatic Updates
 
@@ -452,7 +499,7 @@ const useReadyPlugin: Plugin<any, any[]> = (instance, options) => {
         instance.loading.value = false;
         return {
           returnNow: true,
-          returnData: undefined,
+          // returnData: instance.data.value,
         };
       }
     },

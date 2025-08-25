@@ -10,7 +10,6 @@ const useReadyPlugin: Plugin<any, any[]> = (instance, { ready = true }) => {
         instance.loading.value = false;
         return {
           returnNow: true,
-          returnData: undefined,
         };
       }
     },

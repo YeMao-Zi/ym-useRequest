@@ -30,16 +30,21 @@ describe.concurrent('useReadyPlugin', () => {
     const demo = componentVue(() => {
       return useRequest(getData, {
         defaultParams: [1],
+        defaultData: 5,
         ready,
       });
     });
 
-    expect(demo.data).toBeUndefined();
-    await vi.runAllTimersAsync();
-    expect(demo.data).toBeUndefined();
+    expect(demo.data).toBe(5);
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(demo.data).toBe(5);
     ready.value = true;
-    demo.run();
-    await vi.runAllTimersAsync();
+    demo.run(1);
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(demo.data).toBe(1);
+    ready.value = false;
+    demo.run(2);
+    await vi.advanceTimersByTimeAsync(1000);
     expect(demo.data).toBe(1);
   });
 

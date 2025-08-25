@@ -44,7 +44,7 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
     count.value++;
     const currentCount = count.value;
     const { returnNow = false, returnData, returnType } = callPlugin('onBefore', args);
-    if (returnData) {
+    if (returnData !== undefined) {
       data.value = returnData;
       if (returnType === 'cache') {
         onCache?.(returnData);
@@ -77,8 +77,8 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
         }
         error.value = undefined;
         const result = await onSuccess?.(res, args);
-        if (result) {
-          data.value = result;
+        if (result !== undefined) {
+          data.value = result as R;
         } else {
           data.value = res;
         }

@@ -79,6 +79,21 @@ describe.concurrent('simple example with result', async () => {
     expect(res).toBe(5);
   });
 
+  test('race cancelled', async () => {
+    const demo = componentVue(() => {
+      return useRequest(getData);
+    });
+    const result1 = await demo.runAsync(1, 1000);
+    const result2 = await demo.runAsync(2, 500);
+    const result3 = await demo.runAsync(3, 800);
+
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(demo.data).toBe(3);
+    expect(result1).toBe(1);
+    expect(result2).toBe(2);
+    expect(result3).toBe(3);
+  });
+
   test('data', async () => {
     const demo = componentVue(() => {
       return useRequest(getData);
