@@ -1,5 +1,15 @@
 
 
+## [1.13.7](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.13.6...v1.13.7) (2025-08-26)
+
+### ✨ Features | 新功能
+
+* 结构优化 ([e300b5b](https://github.com/YeMao-Zi/ym-useRequest/commit/e300b5bcfe0dc51fe4646ad4a2a5779e6262f1fd))
+
+### 🐛 Bug Fixes | Bug 修复
+
+* return value only ignores undefined ([9ac9d7e](https://github.com/YeMao-Zi/ym-useRequest/commit/9ac9d7ec6d07a1954f0724a01f42e30174337f0d))
+
 ## [1.13.6](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.13.5...v1.13.6) (2025-08-22)
 
 ### ✨ Features | 新功能
