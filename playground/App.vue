@@ -12,12 +12,16 @@
     <Item />
   </div> -->
   <!-- <cacheTest /> -->
+  ---------------------------
   <GetRequestVue />
+  ---------------------------
+  <fetchCancelTest />
 </template>
 
 <script setup lang="ts">
 import Item from './item.vue';
 import cacheTest from './cacheTest.vue';
+import fetchCancelTest from './fetchCancelTest.vue';
 import { computed, reactive, ref, shallowRef } from 'vue';
 import { useRequest } from 'ym-userequest';
 import GetRequestVue from './getRequest.vue';

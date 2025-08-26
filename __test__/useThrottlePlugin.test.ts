@@ -56,7 +56,7 @@ describe('useThrottlePlugin', () => {
   test('throttle with throttleOptions', async () => {
     const callback = vi.fn();
     // 执行: {leading: true, trailing: false}
-    // 只在意开始时执行，忽略时段内的所有调用
+    // 只在一开始时执行，忽略时段内的所有调用
     const demo = componentVue(() => {
       return useRequest(
         (...args) => {

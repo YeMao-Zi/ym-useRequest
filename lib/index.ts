@@ -29,9 +29,11 @@ const BasePlugins = [
 ];
 
 let Plugins = [...BasePlugins];
+let GlobalPlugins: Plugin<any, any[]>[] = [];
 
 function definePlugins(plugins: Plugin<any, any[]>[]) {
-  Plugins = [...BasePlugins, ...(plugins || [])];
+  GlobalPlugins = plugins || [];
+  Plugins = [...BasePlugins, ...GlobalPlugins];
 }
 
 function useRequest<R, P extends unknown[] = any>(
@@ -39,7 +41,12 @@ function useRequest<R, P extends unknown[] = any>(
   options?: Options<R, P>,
   plugins?: Plugin<R, P>[],
 ): Request<R, P> {
-  definePlugins(plugins);
+  // 只有当传入了插件参数时才重新定义插件列表
+  // 否则使用当前已定义的插件（包括全局插件）
+  if (plugins) {
+    Plugins = [...BasePlugins, ...GlobalPlugins, ...plugins];
+  }
+  
   const requestInstance = usePlugins<R, P>(service, options, Plugins);
   // 如果提供了 id，则将实例存储起来
   if (options?.id) {
@@ -60,3 +67,5 @@ export {
   definePlugins,
   TypeChecker,
 };
+
+export type * from './type';

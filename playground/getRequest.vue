@@ -1,6 +1,5 @@
 <template>
   <div>
-    ---------------------------
     <div>getRequest:</div>
     <div>{{ instance.data }}</div>
     <div @click="runRequest">runRequest</div>

@@ -87,12 +87,12 @@ const useCachePlugin: Plugin<any, any[]> = (
       let servicePromise = getCachePromise(_cacheKey);
       // If has servicePromise, and is not trigger by self, then use it
       if (servicePromise && servicePromise !== currentPromise) {
-        return () => servicePromise;
+        return { servicePromise };
       }
-      servicePromise = service();
+      servicePromise = service(...params);
       currentPromise = servicePromise;
       setCachePromise(_cacheKey, servicePromise);
-      return () => servicePromise;
+      return { servicePromise };
     },
 
     onSuccess(data, params) {

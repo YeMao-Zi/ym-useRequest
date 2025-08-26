@@ -35,6 +35,8 @@ npm install ym-userequest
 - [监听浏览器页面切换](#监听浏览器页面切换)
 - [获取指定的 useRequest 实例](#获取指定的-userequest-实例)
 - [自定义插件](#自定义插件)
+  - [内置插件 useReadyPlugin](#内置插件-usereadyplugin)
+  - [自定义 Fetch 请求取消插件](#自定义-fetch-请求取消插件)
 - [所有配置项](#所有配置项)
 - [所有返回项](#所有返回项)
 <!-- /TOC -->
@@ -88,7 +90,7 @@ const { data, loading } = useRequest(somePromise2, {
 
 ```ts
 const request = () =>
-  fetch('https://xxx...', {
+  fetch('https://httpbin.org/delay/3', {
     method: 'POST',
     body: JSON.stringify(params),
     signal,
@@ -98,37 +100,6 @@ cancel();
 ```
 
 > 调用 cancel 时只是忽略掉当前的请求，不会中断正在请求的请求。想要真正中断请求可以自行实现
-
-```ts
-const requestController = () => {
-  const controller = new AbortController();
-  const signal = controller.signal;
-  return {
-    request: (params) =>
-      fetch('https://xxx...', {
-        method: 'POST',
-        body: JSON.stringify(params),
-        signal,
-      }),
-    cancel: () => controller.abort(),
-  };
-};
-
-function useRequestI(requestController, options) {
-  const { request, cancel } = requestController();
-  return useRequest(request, {
-    ...options,
-    onCancel: () => {
-      cancel();
-      options.onCancel?.();
-    },
-  });
-}
-
-const { data, cancel } = useRequestI(request);
-
-cancel();
-```
 
 ### 监听响应式数据并自动执行更新数据
 
@@ -474,8 +445,6 @@ console.log(instance1.data, instance2.data); // 3,3
 
 ### 自定义插件
 
-以延时 ready 功能插件为例
-
 在 instance 中可以获取所有返回项
 
 在 options 中可以获取所有配置项
@@ -485,6 +454,8 @@ console.log(instance1.data, instance2.data); // 3,3
 onInit 可以用来改写请求
 
 onSuccess 等其他函数对应请求的各个时机
+
+#### 内置插件 useReadyPlugin
 
 ```ts
 import { definePlugins, TypeChecker, Plugin } from 'ym-userequest';
@@ -505,7 +476,7 @@ const useReadyPlugin: Plugin<any, any[]> = (instance, options) => {
     },
     // 所有的返回签名，对应 useRequest 的回调
     // onBefore: (params: P) => onBeforePlugin | void;
-    // onInit: (service: () => Promise<R>) => () => Promise<R>,
+    // onInit: (service: (...args: P) => Promise<R>) => { servicePromise: Promise<R> },
     // onSuccess(data: R, params: P): void,
     // onError(error: Error, params: P): void,
     // onFinally(params: P, data: R, error: Error): void,
@@ -516,6 +487,80 @@ const useReadyPlugin: Plugin<any, any[]> = (instance, options) => {
 
 // 注册
 definePlugins([useReadyPlugin]);
+```
+
+#### 自定义 Fetch 请求取消插件
+
+插件
+
+```ts
+// useFetchCancelPlugin.ts
+import { type Plugin } from 'ym-userequest';
+
+export const useFetchCancelPlugin: Plugin<any, any[]> = (instance, { controller }) => {
+  if (!controller) {
+    return {};
+  }
+
+  let currentController = new AbortController();
+
+  return {
+    onBefore() {
+      if (currentController.signal.aborted) {
+        currentController = new AbortController();
+      }
+    },
+
+    onInit(service) {
+      return {
+        servicePromise: service(...instance.params.value, currentController.signal),
+      };
+    },
+
+    onCancel() {
+      currentController.abort();
+    },
+  };
+};
+```
+
+注册
+
+```ts
+// main.ts
+import { createApp } from 'vue';
+import App from './App.vue';
+import { useFetchCancelPlugin } from './utils';
+import { definePlugins } from 'ym-userequest';
+
+definePlugins([useFetchCancelPlugin]);
+const app = createApp(App);
+
+app.mount('#app');
+```
+
+使用
+
+```ts
+import { useRequest } from 'ym-userequest';
+const request = (params: any, signal?: AbortSignal) =>
+  fetch('https://httpbin.org/delay/3', {
+    method: 'POST',
+    body: JSON.stringify(params),
+    signal,
+  });
+
+const { data, loading, status, cancel, run } = useRequest(request, {
+  manual: true,
+  controller: true,
+  onCancel() {
+    console.log('onCancel');
+  },
+});
+run(123);
+setTimeout(() => {
+  cancel();
+}, 1000);
 ```
 
 ## 所有配置项

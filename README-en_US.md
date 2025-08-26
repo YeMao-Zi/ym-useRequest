@@ -35,6 +35,8 @@ npm install ym-userequest
 - [Monitor Browser Page Switching](#monitor-browser-page-switching)
 - [Get Specified useRequest Instance](#get-specified-userequest-instance)
 - [Custom Plugins](#custom-plugins)
+  - [UseReadyPlugin](#usereadyplugin)
+  - [Plugin for canceling Fetch requests](#plugin-for-canceling-fetch-requests)
 - [All Configuration Options](#all-configuration-options)
 - [All Returned Properties](#all-returned-properties)
 <!-- /TOC -->
@@ -98,37 +100,6 @@ cancel();
 ```
 
 > When cancel is called, it merely ignores the current request and does not interrupt the requests that are being made. If you want to truly interrupt the request, you can do it yourself
-
-```ts
-const requestController = () => {
-  const controller = new AbortController();
-  const signal = controller.signal;
-  return {
-    request: (params) =>
-      fetch('https://xxx...', {
-        method: 'POST',
-        body: JSON.stringify(params),
-        signal,
-      }),
-    cancel: () => controller.abort(),
-  };
-};
-
-function useRequestI(requestController, options) {
-  const { request, cancel } = requestController();
-  return useRequest(request, {
-    ...options,
-    onCancel: () => {
-      cancel();
-      options.onCancel?.();
-    },
-  });
-}
-
-const { data, cancel } = useRequestI(request);
-
-cancel();
-```
 
 ### Reactive Data Monitoring and Automatic Updates
 
@@ -474,8 +445,6 @@ console.log(instance1.data, instance2.data); // 3, 3
 
 ### Custom Plugins
 
-Example: ready Plugin
-
 In instance, you can access all returned properties.
 
 In options, you can access all configuration options.
@@ -485,6 +454,8 @@ In the plugin's returned object, if onBefore returns returnNow: true, the reques
 onInit can be used to modify the request.
 
 Other functions such as onSuccess correspond to various times of the request
+
+#### useReadyPlugin
 
 ```ts
 import { definePlugins, TypeChecker, Plugin } from 'ym-userequest';
@@ -505,7 +476,7 @@ const useReadyPlugin: Plugin<any, any[]> = (instance, options) => {
     },
     // All return signatures, corresponding to useRequest callbacks
     // onBefore: (params: P) => onBeforePlugin | void;
-    // onInit: (service: () => Promise<R>) => () => Promise<R>,
+    // onInit: (service: (...args: P) => Promise<R>) => { servicePromise: Promise<R> },
     // onSuccess(data: R, params: P): void,
     // onError(error: Error, params: P): void,
     // onFinally(params: P, data: R, error: Error): void,
@@ -516,6 +487,80 @@ const useReadyPlugin: Plugin<any, any[]> = (instance, options) => {
 
 // Register
 definePlugins([useReadyPlugin]);
+```
+
+#### Plugin for canceling Fetch requests
+
+plugin
+
+```ts
+// useFetchCancelPlugin.ts
+import { type Plugin } from 'ym-userequest';
+
+export const useFetchCancelPlugin: Plugin<any, any[]> = (instance, { controller }) => {
+  if (!controller) {
+    return {};
+  }
+
+  let currentController = new AbortController();
+
+  return {
+    onBefore() {
+      if (currentController.signal.aborted) {
+        currentController = new AbortController();
+      }
+    },
+
+    onInit(service) {
+      return {
+        servicePromise: service(...instance.params.value, currentController.signal),
+      };
+    },
+
+    onCancel() {
+      currentController.abort();
+    },
+  };
+};
+```
+
+register
+
+```ts
+// main.ts
+import { createApp } from 'vue';
+import App from './App.vue';
+import { useFetchCancelPlugin } from './utils';
+import { definePlugins } from 'ym-userequest';
+
+definePlugins([useFetchCancelPlugin]);
+const app = createApp(App);
+
+app.mount('#app');
+```
+
+use
+
+```ts
+import { useRequest } from 'ym-userequest';
+const request = (params: any, signal?: AbortSignal) =>
+  fetch('https://httpbin.org/delay/3', {
+    method: 'POST',
+    body: JSON.stringify(params),
+    signal,
+  });
+
+const { data, loading, status, cancel, run } = useRequest(request, {
+  manual: true,
+  controller: true,
+  onCancel() {
+    console.log('onCancel');
+  },
+});
+run(123);
+setTimeout(() => {
+  cancel();
+}, 1000);
 ```
 
 ## All Configuration Options

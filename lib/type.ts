@@ -97,8 +97,8 @@ export interface Options<R, P extends any[]> {
 }
 
 export type PluginHooks<R, P extends unknown[]> = {
-  onBefore: (params: P) => CallPlugin<R> | void;
-  onInit: (service: () => Promise<R>) => () => Promise<R>;
+  onBefore: (params: P) => onBeforePlugin | void;
+  onInit: (service: (...args: P) => Promise<R>) => { servicePromise: Promise<R> };
   onSuccess(data: R, params: P): void;
   onError(error: Error, params: P): void;
   onFinally(params: P, data: R, error: Error): void;
@@ -124,6 +124,7 @@ export type State<R, P> = {
   params: Ref<P>;
   pollingCount: Ref<number>;
   requestTick: (callback?: () => void) => Promise<unknown>;
+  [key: string]: any;
 };
 
 type MutateData<R> = (newData: R) => void;
@@ -150,4 +151,4 @@ export type onBeforePlugin = {
 
 export type CallPlugin<R> = {
   servicePromise?: Promise<R>;
-} & onBeforePlugin
+} & onBeforePlugin;

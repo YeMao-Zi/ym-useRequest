@@ -17,15 +17,9 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
   const count = ref(0);
 
   const callPlugin = (type: keyof PluginHooks<R, P>, ...args: any[]): CallPlugin<R> => {
-    if (type == 'onInit') {
-      const InstanceFn = plugins.value.map((i) => i.onInit).filter(Boolean);
-      // onInit is executed once for all plugins，return finally service
-      return { servicePromise: composeMiddleware(InstanceFn, args[0])() };
-    } else {
-      // @ts-ignore
-      const res = plugins.value.map((i) => i[type]?.(...args));
-      return Object.assign({}, ...res);
-    }
+    // @ts-ignore
+    const res = plugins.value.map((i) => i[type]?.(...args));
+    return Object.assign({}, ...res);
   };
 
   const functionContext = {} as FunctionContext<R, P>;
@@ -56,13 +50,12 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
       return Promise.resolve(returnData);
     }
     onBefore?.(args);
-    let serverWrapper = () => new Promise<R>((resolve) => resolve(service(...params.value)));
-    let { servicePromise } = callPlugin('onInit', serverWrapper);
-    if (servicePromise) {
-      serverWrapper = () => servicePromise;
+    let { servicePromise } = callPlugin('onInit', service);
+    if (!servicePromise) {
+      servicePromise = service(...params.value);
     }
 
-    return await serverWrapper()
+    return servicePromise
       .then(async (res) => {
         onRequest?.({
           params: args,
