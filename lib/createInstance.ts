@@ -1,7 +1,6 @@
 import { ref, shallowRef, isRef } from 'vue';
 import type { Ref } from 'vue';
 import type { Service, Options, FunctionContext, Instance, PluginHooks, CallPlugin } from './type';
-import { composeMiddleware } from './utils';
 
 function createInstance<R, P extends unknown[]>(service: Service<R, P>, options: Options<R, P>): Instance<R, P> {
   const { defaultData, defaultParams, onBefore, onRequest, onSuccess, onError, onFinally, onCancel, onCache } = options;

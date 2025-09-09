@@ -99,7 +99,7 @@ const { data, cancel } = useRequestI(request);
 cancel();
 ```
 
-> When cancel is called, it merely ignores the current request and does not interrupt the requests that are being made. If you want to truly interrupt the request, you can do it yourself
+> When cancel is called, it merely ignores the current request and does not interrupt the requests that are being made. If you want to truly interrupt the request, you can do it yourself,refer to the custom plugin below.
 
 ### Reactive Data Monitoring and Automatic Updates
 
@@ -427,6 +427,8 @@ useRequest(getData, {
 
 ### Get Specified useRequest Instance
 
+It can be applied to different components to obtain the specified useRequest instance
+
 ```ts
 import { useRequest, getRequest } from 'ym-request';
 const instance1 = useRequest(getData, {
@@ -530,7 +532,7 @@ register
 // main.ts
 import { createApp } from 'vue';
 import App from './App.vue';
-import { useFetchCancelPlugin } from './utils';
+import { useFetchCancelPlugin } from './useFetchCancelPlugin';
 import { definePlugins } from 'ym-userequest';
 
 definePlugins([useFetchCancelPlugin]);
@@ -622,7 +624,7 @@ setTimeout(() => {
     trailing?: boolean;
   };
 
-  // Unique identifier for the request
+  // Unique identifier for the cache
   cacheKey?: string | ((params?: P) => string);
   // Cache time, default: 5 * 60 * 1000
   // Cache will be cleared after this time

@@ -34,7 +34,11 @@
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "publishing": "release-it",
-    "release": "tsup && release-it"
+    "release": "tsup && release-it",
+    "release:alpha": "tsup && release-it --preRelease=alpha",
+    "release:beta": "tsup && release-it --preRelease=beta",
+    "release:dry-run": "tsup && release-it --dry-run",
+    "release:alpha:dry-run": "tsup && release-it --preRelease=alpha --dry-run"
   },
   "repository": {
     "type": "git",

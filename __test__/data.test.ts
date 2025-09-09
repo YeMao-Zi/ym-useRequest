@@ -14,7 +14,7 @@ const getData = (value = 1, time = 1000): Promise<number> => {
 const getError = () => {
   return new Promise((_resolve, reject) => {
     setTimeout(() => {
-      reject(new Error('Err'));
+      reject('Err');
     }, 1000);
   });
 };
@@ -312,7 +312,7 @@ describe.concurrent('life cycle', () => {
       });
     });
     await vi.runAllTimersAsync();
-    expect(callback).toHaveBeenCalledWith(new Error('Err'), []);
+    expect(callback).toHaveBeenCalledWith('Err', []);
   });
 
   test('onFinally', async () => {

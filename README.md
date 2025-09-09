@@ -99,7 +99,7 @@ const { data, cancel } = useRequestI(request);
 cancel();
 ```
 
-> 调用 cancel 时只是忽略掉当前的请求，不会中断正在请求的请求。想要真正中断请求可以自行实现
+> 调用 cancel 时只是忽略掉当前的请求，不会中断正在请求的请求。想要真正中断请求可以自行实现，参考下面的自定义 Fetch 请求取消插件
 
 ### 监听响应式数据并自动执行更新数据
 
@@ -427,6 +427,8 @@ useRequest(getData, {
 
 ### 获取指定的 useRequest 实例
 
+可以运用在不同的组件，获取指定的 useRequest 实例
+
 ```ts
 import { useRequest, getRequest } from 'ym-request';
 const instance1 = useRequest(getData, {
@@ -530,7 +532,7 @@ export const useFetchCancelPlugin: Plugin<any, any[]> = (instance, { controller 
 // main.ts
 import { createApp } from 'vue';
 import App from './App.vue';
-import { useFetchCancelPlugin } from './utils';
+import { useFetchCancelPlugin } from './useFetchCancelPlugin';
 import { definePlugins } from 'ym-userequest';
 
 definePlugins([useFetchCancelPlugin]);
@@ -622,7 +624,7 @@ setTimeout(() => {
     trailing?: boolean;
   };
 
-  // 请求的唯一标识
+  // 缓存的唯一标识
   cacheKey?: string | ((params?: P) => string);
   // 缓存时间,默认: 5 * 60 * 1000
   // 超出缓存时间会清除对应缓存
