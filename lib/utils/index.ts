@@ -17,24 +17,12 @@ export const isNonZeroFalsy = (value: any) => {
 };
 
 export const unrefParms = <P extends any[]>(value: Params<P>): P => {
-  let _value = unref(value);
-  _value = TypeChecker.isArray(_value) ? _value : [_value];
-  return _value;
-};
-
-export const composeMiddleware = (middleArray: any[], hook: any) => {
-  return () => {
-    let next = hook;
-    for (let i = middleArray.length; i-- > 0; ) {
-      next = middleArray[i]!(next);
-    }
-    return next();
-  };
+  const _value = unref(value);
+  return TypeChecker.isArray(_value) ? _value : [_value] as P;
 };
 
 export const isType = function (o: any): IsType {
   const s = Object.prototype.toString.call(o);
-  // @ts-ignore
   return s.match(/\[object (.*?)\]/)[1].toLowerCase();
 };
 
@@ -71,5 +59,15 @@ export function limit(fn: any, timespan: number) {
     setTimeout(() => {
       pending = false;
     }, timespan);
+  };
+}
+
+export function wrappedPromise<T, R, P extends unknown[]>(
+  service: (...args: P) => Promise<T>,
+  call: (result: T, params: P) => R | Promise<R>,
+) {
+  return async (...args: P): Promise<R> => {
+    const result = await service(...args);
+    return call(result, args);
   };
 }
