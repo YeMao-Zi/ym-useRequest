@@ -22,6 +22,7 @@ npm install ym-userequest
 - [延时 loading](#延时-loading)
 - [修改 data 数据](#修改-data-数据)
   - [defaultData](#defaultdata)
+  - [wrappedPromise](#wrappedpromise)
   - [mutate](#mutate)
 - [轮询](#轮询)
   - [轮询错误重试](#轮询错误重试)
@@ -163,8 +164,31 @@ const somePromise = () => {
 };
 
 const { data, loading, mutate } = useRequest(somePromise, {
+  manual: true,
   defaultData: 3, // return data:Ref<3>
   // defaultData: shallowRef<3>, // return data:ShallowRef<3>
+});
+```
+
+#### wrappedPromise
+
+通过包装请求的方式来改变返回值，同时返回值的类型也对应改变
+
+```ts
+import { wrappedPromise } from 'ym-userequest';
+
+const somePromise = () => {
+  return new Promise((resolve, reject) => {
+    resolve(1);
+  });
+};
+const { data, loading, mutate, requestTick } = useRequest(
+  wrappedPromise(somePromise, (result, params) => {
+    return { value: result };
+  }),
+);
+requestTick(() => {
+  console.log(data.value); // {value:1}
 });
 ```
 
@@ -177,7 +201,7 @@ const somePromise = () => {
   });
 };
 
-const { data, loading, mutate } = useRequest(somePromise);
+const { data, loading, mutate } = useRequest(somePromise, { manual: true });
 
 mutate(5555);
 console.log(data.value); // 5555

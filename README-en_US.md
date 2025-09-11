@@ -22,6 +22,7 @@ npm install ym-userequest
 - [Delayed Loading](#delayed-loading)
 - [Modify Data](#modify-data)
   - [defaultData](#defaultdata)
+  - [wrappedPromise](#wrappedpromise)
   - [mutate](#mutate)
 - [Polling](#polling)
   - [Polling error retry](#polling-error-retry)
@@ -163,8 +164,31 @@ const somePromise = () => {
 };
 
 const { data, loading, mutate } = useRequest(somePromise, {
+  manual: true,
   defaultData: 3, // Returns data: Ref<3>
   // defaultData: shallowRef<3>, // Returns data: ShallowRef<3>
+});
+```
+
+#### wrappedPromise
+
+The return value is changed by wrapping the request, and the type of the return value is also changed accordingly.
+
+```ts
+import { wrappedPromise } from 'ym-userequest';
+
+const somePromise = () => {
+  return new Promise((resolve, reject) => {
+    resolve(1);
+  });
+};
+const { data, loading, mutate, requestTick } = useRequest(
+  wrappedPromise(somePromise, (result, params) => {
+    return { value: result };
+  }),
+);
+requestTick(() => {
+  console.log(data.value); // {value:1}
 });
 ```
 
@@ -177,7 +201,7 @@ const somePromise = () => {
   });
 };
 
-const { data, loading, mutate } = useRequest(somePromise);
+const { data, loading, mutate } = useRequest(somePromise, { manual: true });
 
 mutate(5555);
 console.log(data.value); // 5555
