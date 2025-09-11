@@ -582,7 +582,7 @@ setTimeout(() => {
   // 监听依赖
   refreshDeps?: WatchSource<any>[] | WatchSource<any>;
   // 依赖变更后的执行参数，若为函数会执行该函数，有返回值则会将返回值作为参数发起一次请求
-  refreshDepsParams?: Params<P> | (() => void | Params<P>);
+  refreshDepsParams?: Params<P> | ((value: P, oldValue: P) => void | Params<P>);
 
   // 请求延时
   loadingDelay?: number;

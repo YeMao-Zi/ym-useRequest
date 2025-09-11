@@ -6,10 +6,10 @@ const useRefreshDepsPlugin: Plugin<any, any[]> = (instance, { refreshDeps = null
   if (refreshDeps) {
     watch(
       refreshDeps,
-      async () => {
+      async (oldValue, newValue) => {
         if (refreshDepsParams) {
           if (isFunction(refreshDepsParams)) {
-            const res = await refreshDepsParams();
+            const res = await refreshDepsParams(oldValue, newValue);
             if (res) {
               instance.functionContext.run(...unrefParms(res));
             }

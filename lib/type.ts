@@ -36,7 +36,7 @@ export interface Options<R, P extends any[]> {
   // 监听依赖
   refreshDeps?: WatchSource<any>[] | WatchSource<any>;
   // 依赖变更后的执行参数，若为函数会执行该函数，有返回值则会将返回值作为参数发起一次请求
-  refreshDepsParams?: Params<P> | (() => void | Params<P>);
+  refreshDepsParams?: Params<P> | ((value: P, oldValue: P) => void | Params<P>);
 
   // 错误重试次数
   retryCount?: number;

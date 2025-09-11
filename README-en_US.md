@@ -582,7 +582,7 @@ setTimeout(() => {
   // Dependencies to monitor
   refreshDeps?: WatchSource<any>[] | WatchSource<any>;
   // Parameters to execute after dependency changes. If it's a function, it will be executed, and its return value will be used as the parameter for the request.
-  refreshDepsParams?: Params<P> | (() => void | Params<P>);
+  refreshDepsParams?: Params<P> | ((value: P, oldValue: P) => void | Params<P>);
 
   // Request delay
   loadingDelay?: number;

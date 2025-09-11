@@ -87,12 +87,15 @@ describe('data with params', () => {
 
   test('depend params with function return', async () => {
     pages.page = 1;
-
+    let capturedNewValue: any;
+    let capturedOldValue: any;
     const demo = componentVue(() => {
       return useRequest(getDataParams, {
         defaultParams: pages,
         refreshDeps: () => pages.page,
-        refreshDepsParams: () => {
+        refreshDepsParams: (newValue, oldValue) => {
+          capturedNewValue = newValue;
+          capturedOldValue = oldValue;
           return {
             page: 2,
           };
@@ -105,6 +108,8 @@ describe('data with params', () => {
     pages.page = 0;
     await vi.runAllTimersAsync();
     expect(demo.data.length).toBe(2);
+    expect(capturedNewValue).toBe(0);
+    expect(capturedOldValue).toBe(1);
   });
 
   test('depend params with function void', async () => {
