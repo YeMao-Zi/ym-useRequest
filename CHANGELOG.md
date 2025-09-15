@@ -1,5 +1,25 @@
 
 
+## [1.13.8-beta.0](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.13.7...v1.13.8-beta.0) (2025-09-15)
+
+### ✨ Features | 新功能
+
+* **lib:** 添加 wrappedPromise 函数并更新导入 ([99a729a](https://github.com/YeMao-Zi/ym-useRequest/commit/99a729a8b2f2b4f36d68852442dd538cd5b0c252))
+* **useRefreshDepsPlugin:** 增加 refreshDepsParams 函数的参数传递 ([b7a66a6](https://github.com/YeMao-Zi/ym-useRequest/commit/b7a66a6b8d4da480e9fa549eb8ccb9b8ef48aa03))
+
+### 📝 Documentation | 文档
+
+* 添加wrappedPromise文档 ([87ee7a4](https://github.com/YeMao-Zi/ym-useRequest/commit/87ee7a44e7685755af682d3fa0420bac6114c54a))
+
+### ✅ Tests | 测试
+
+* 重构测试用例并增加wrappedPromise相关测试 ([1eca181](https://github.com/YeMao-Zi/ym-useRequest/commit/1eca181202b030a7dc25c1dea1eabcc6771c0acc))
+* **definePlugins:** 增加插件覆盖和优先级配置的测试用例 ([568e593](https://github.com/YeMao-Zi/ym-useRequest/commit/568e593588bd4585b75aa3235370707a15def3a3))
+
+### 👷‍ Build System | 构建
+
+* add release scripts ([0b64f0d](https://github.com/YeMao-Zi/ym-useRequest/commit/0b64f0dd1d564159d16157cfc7865e4f15369707))
+
 ## [1.13.7](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.13.6...v1.13.7) (2025-08-26)
 
 ### ✨ Features | 新功能
