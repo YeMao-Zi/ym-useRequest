@@ -22,6 +22,7 @@ const useCachePlugin: Plugin<any, any[]> = (
 
   let unSubscribe = () => {};
   let currentPromise: Promise<any>;
+  let currentCacheKey: string;
 
   const cacheKey = (isFunction(customCacheKey) ? customCacheKey : () => customCacheKey) as (params?: any) => string;
 
@@ -43,7 +44,8 @@ const useCachePlugin: Plugin<any, any[]> = (
   };
 
   // get data from cache when init
-  const cache = _getCache(cacheKey());
+  const initialCacheKey = cacheKey();
+  const cache = _getCache(initialCacheKey);
   if (cache && Reflect.has(cache, 'data')) {
     instance.data.value = cache.data;
     instance.params.value = cache.params;
@@ -51,16 +53,33 @@ const useCachePlugin: Plugin<any, any[]> = (
 
   // subscribe same cachekey update, trigger update
   const setUnSubscribe = (params?: any) => {
-    unSubscribe = subscribe(cacheKey(params), (data) => {
-      instance.data.value = data;
-      onCache?.(data);
-    });
+    const newCacheKey = cacheKey(params);
+    // 只有当 cacheKey 改变时才重新订阅
+    if (newCacheKey !== currentCacheKey) {
+      unSubscribe();
+      currentCacheKey = newCacheKey;
+      unSubscribe = subscribe(currentCacheKey, (data) => {
+        instance.data.value = data;
+        onCache?.(data);
+      });
+    }
   };
   setUnSubscribe();
 
   onBeforeUnmount(() => {
     unSubscribe();
   });
+
+  // 提取公共的缓存更新逻辑
+  const updateCache = (data: any, params: any[]) => {
+    const _cacheKey = cacheKey(params);
+    if (_cacheKey) {
+      // cancel subscribe, avoid trigger self
+      unSubscribe();
+      _setCache(_cacheKey, { data, params, time: new Date().getTime() }, cacheTime);
+      setUnSubscribe(params);
+    }
+  };
 
   return {
     onBefore(params) {
@@ -96,23 +115,11 @@ const useCachePlugin: Plugin<any, any[]> = (
     },
 
     onSuccess(data, params) {
-      const _cacheKey = cacheKey(params);
-      if (_cacheKey) {
-        // cancel subscribe, avoid trigger self
-        unSubscribe();
-        _setCache(_cacheKey, { data, params, time: new Date().getTime() }, cacheTime);
-        setUnSubscribe(params);
-      }
+      updateCache(data, params);
     },
     onMutate(data) {
       const params = instance.params.value;
-      const _cacheKey = cacheKey(params);
-      if (_cacheKey) {
-        // cancel subscribe, avoid trigger self
-        unSubscribe();
-        _setCache(_cacheKey, { data, params, time: new Date().getTime() }, cacheTime);
-        setUnSubscribe(params);
-      }
+      updateCache(data, params);
     },
   };
 };

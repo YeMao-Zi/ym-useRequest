@@ -123,10 +123,9 @@ export type State<R, P> = {
   error: ShallowRef<any>;
   params: Ref<P>;
   pollingCount: Ref<number>;
-  requestTick: (callback?: () => void) => Promise<unknown>;
+  requestTick: (callback?: (context: { params: P; data: R }) => void) => Promise<{ params: P; data: R }>;
   [key: string]: any;
 };
-
 type MutateData<R> = (newData: R) => void;
 type MutateFunction<R> = (arg: (oldData: R) => R) => void;
 export interface Mutate<R> extends MutateData<R>, MutateFunction<R> {}

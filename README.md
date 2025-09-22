@@ -713,6 +713,7 @@ setTimeout(() => {
   // data 处理进程,默认undfined,表示未被请求过
   status: Ref<'pending' | 'settled'>;
   // 等待接口完成
-  requestTick: (callback?: () => void) => Promise<unknown>;
+  requestTick: (callback?: (context: { params: P; data: R }) => void) => Promise<{ params: P; data: R }>;
+
 }
 ```

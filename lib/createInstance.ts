@@ -23,19 +23,65 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
 
   const functionContext = {} as FunctionContext<R, P>;
 
-  let resolveTick: (value?: unknown) => void;
-  const tickPromise = new Promise((resolve) => {
+  let resolveTick: (context: { params: P; data: R }) => void;
+  let tickPromise = new Promise<{ params: P; data: R }>((resolve) => {
     resolveTick = resolve;
   });
 
-  functionContext.runAsync = async (...args: P) => {
-    loading.value = true;
-    if (args?.length) {
-      params.value = args;
+  // 提取重复的计数检查逻辑
+  // if currentCount < count.value with race cancelled
+  // if currentCount > count.value with cancel function
+  const isCurrentRequest = (requestCount: number) => requestCount === count.value;
+
+  // 重置 tickPromise 的方法
+  const resetTickPromise = () => {
+    tickPromise = new Promise((resolve) => {
+      resolveTick = resolve;
+    });
+  };
+
+  // 处理请求结果的函数
+  const handleRequestSuccess = async (currentCount: number, res: R, args: P) => {
+    if (!isCurrentRequest(currentCount)) {
+      return;
     }
-    status.value = 'pending';
-    count.value++;
-    const currentCount = count.value;
+
+    error.value = undefined;
+    const result = await onSuccess?.(res, args);
+    data.value = result !== undefined ? (result as R) : res;
+    callPlugin('onSuccess', data.value, args);
+    return data.value;
+  };
+
+  // 处理请求错误的函数
+  const handleRequestError = (currentCount: number, err: any, args: P) => {
+    if (!isCurrentRequest(currentCount)) {
+      return;
+    }
+
+    error.value = err;
+    callPlugin('onError', err, args);
+    onError?.(err, args);
+    throw err;
+  };
+
+  // 处理请求完成的函数
+  const handleRequestFinally = (currentCount: number, args: P) => {
+    loading.value = false;
+    status.value = 'settled';
+    resolveTick({ params: params.value, data: data.value });
+
+    // 检查是否是当前请求
+    if (!isCurrentRequest(currentCount)) {
+      return;
+    }
+
+    callPlugin('onFinally', args);
+    onFinally?.();
+  };
+
+  // 发起请求的函数
+  const makeRequest = async (currentCount: number, args: P) => {
     const { returnNow = false, returnData, returnType } = callPlugin('onBefore', args);
     if (returnData !== undefined) {
       data.value = returnData;
@@ -54,54 +100,44 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
       servicePromise = service(...params.value);
     }
 
-    return servicePromise
-      .then(async (res) => {
-        onRequest?.({
-          params: args,
-          response: res,
-          error: undefined,
-          abort: currentCount !== count.value,
-        });
-        // if currentCount < count.value with race cancelled
-        // if currentCount > count.value with cancel function
-        if (currentCount !== count.value) {
-          return;
-        }
-        error.value = undefined;
-        const result = await onSuccess?.(res, args);
-        if (result !== undefined) {
-          data.value = result as R;
-        } else {
-          data.value = res;
-        }
-        callPlugin('onSuccess', data.value, args);
-        return data.value;
-      })
-      .catch((err: any) => {
-        onRequest?.({
-          params: args,
-          response: undefined,
-          error: err,
-          abort: currentCount !== count.value,
-        });
-        if (currentCount !== count.value) {
-          return;
-        }
-        error.value = err;
-        callPlugin('onError', err, args);
-        onError?.(err, args);
-        throw err;
-      })
-      .finally(() => {
-        loading.value = false;
-        status.value = 'settled';
-        resolveTick();
-        if (currentCount !== count.value) {
-          return;
-        }
-        callPlugin('onFinally', args);
-        onFinally?.();
+    try {
+      const res = await servicePromise;
+
+      onRequest?.({
+        params: args,
+        response: res,
+        error: undefined,
+        abort: !isCurrentRequest(currentCount),
       });
+
+      return await handleRequestSuccess(currentCount, res, args);
+    } catch (err: any) {
+      onRequest?.({
+        params: args,
+        response: undefined,
+        error: err,
+        abort: !isCurrentRequest(currentCount),
+      });
+
+      return handleRequestError(currentCount, err, args);
+    } finally {
+      handleRequestFinally(currentCount, args);
+    }
+  };
+
+  functionContext.runAsync = async (...args: P) => {
+    loading.value = true;
+    if (args?.length) {
+      params.value = args;
+    }
+    status.value = 'pending';
+    count.value++;
+    const currentCount = count.value;
+
+    // 重置 tickPromise，避免状态复用
+    resetTickPromise();
+
+    return makeRequest(currentCount, args);
   };
 
   functionContext.run = (...args: P) => {
@@ -126,9 +162,11 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
     callPlugin('onMutate', data.value);
   };
 
-  const requestTick = async (callback?: () => void) => {
+  const requestTick = async (callback?: (res?: { params: P; data: R }) => void) => {
     if (status.value === 'pending') {
-      await tickPromise;
+      const res = await tickPromise;
+      callback?.(res as { params: P; data: R });
+      return res;
     }
     callback?.();
   };

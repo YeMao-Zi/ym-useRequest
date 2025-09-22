@@ -18,7 +18,7 @@ export const isNonZeroFalsy = (value: any) => {
 
 export const unrefParms = <P extends any[]>(value: Params<P>): P => {
   const _value = unref(value);
-  return TypeChecker.isArray(_value) ? _value : [_value] as P;
+  return TypeChecker.isArray(_value) ? _value : ([_value] as P);
 };
 
 export const isType = function (o: any): IsType {

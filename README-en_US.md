@@ -712,6 +712,7 @@ setTimeout(() => {
   // Data processing status, default: undefined (not requested yet)
   status: Ref<'pending' | 'settled'>;
   // Wait for the request to complete
-  requestTick: (callback?: () => void) => Promise<unknown>;
+   requestTick: (callback?: (context: { params: P; data: R }) => void) => Promise<{ params: P; data: R }>;
+
 }
 ```

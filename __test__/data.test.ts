@@ -219,6 +219,30 @@ describe.concurrent('simple example with result', async () => {
     runAll();
     runEmpty();
   });
+
+  test('requestTick with call context', async () => {
+    const demo = componentVue(() => {
+      const { run, requestTick } = useRequest(getData, {
+        manual: true,
+      });
+
+      return {
+        run,
+        requestTick,
+      };
+    });
+    demo.run(1);
+
+    const res1 = await demo.requestTick((res) => {
+      expect(res).toStrictEqual({ params: [1], data: 1 });
+    });
+
+    expect(res1).toStrictEqual({ params: [1], data: 1 });
+    demo.run(2);
+    demo.requestTick((res) => {
+      expect(res).toStrictEqual({ params: [2], data: 2 });
+    });
+  });
 });
 
 describe.concurrent('life cycle', () => {

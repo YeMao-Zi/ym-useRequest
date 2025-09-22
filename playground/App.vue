@@ -16,15 +16,18 @@
   <GetRequestVue />
   ---------------------------
   <fetchCancelTest />
+
+  <requestTick />
 </template>
 
 <script setup lang="ts">
-import Item from './item.vue';
-import cacheTest from './cacheTest.vue';
-import fetchCancelTest from './fetchCancelTest.vue';
+import Item from './components/item.vue';
+import cacheTest from './components/cacheTest.vue';
+import fetchCancelTest from './components/fetchCancelTest.vue';
+import requestTick from './components/requestTick.vue';
 import { computed, reactive, ref, shallowRef } from 'vue';
 import { useRequest } from 'ym-userequest';
-import GetRequestVue from './getRequest.vue';
+import GetRequestVue from './components/getRequest.vue';
 // import { useRequest } from '../dist';
 import debounce from '../lib/utils/debounce';
 const pages = reactive({
