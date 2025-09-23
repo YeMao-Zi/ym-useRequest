@@ -122,6 +122,19 @@ describe.concurrent('simple example with result', async () => {
     expect(demo.data).toBe(3);
   });
 
+  test('onError', async () => {
+    const callback = vi.fn();
+    const demo = componentVue(() => {
+      return useRequest(getError, {
+        onError: callback,
+      });
+    });
+    await vi.runAllTimersAsync();
+    expect(callback).toHaveBeenCalledWith('Err', []);
+    // 确保错误状态被正确设置
+    expect(demo.error).toBe('Err');
+  });
+
   test('defaultParams', async () => {
     const demo = componentVue(() => {
       return useRequest(getData, { defaultParams: 5 });
@@ -218,6 +231,22 @@ describe.concurrent('simple example with result', async () => {
     };
     runAll();
     runEmpty();
+  });
+
+  // 添加测试 requestTick 在非 pending 状态下的调用
+  test('requestTick when not pending', async () => {
+    const demo = componentVue(() => {
+      const { requestTick } = useRequest(getData, { manual: true });
+      return { requestTick };
+    });
+
+    // 在没有运行任何请求的情况下调用 requestTick
+    let callbackCalled = false;
+    await demo.requestTick(() => {
+      callbackCalled = true;
+    });
+
+    expect(callbackCalled).toBe(true);
   });
 
   test('requestTick with call context', async () => {

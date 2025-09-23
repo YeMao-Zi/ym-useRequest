@@ -1,6 +1,7 @@
 import { expect, test, describe, vi, beforeAll } from 'vitest';
 import { definePlugins, useRequest } from '../lib';
 import { componentVue } from './utils';
+import { getPluginPriorityMap, getGlobalPlugins, getSortedBasePlugins } from '../lib/registerPlugin';
 
 // 创建一个简单的插件用于测试
 const testPlugin = (instance: any) => {
@@ -56,6 +57,49 @@ const defaultPriorityPlugin = (instance: any) => {
     onBefore: () => {
       console.log('defaultPriorityPlugin onBefore called');
     },
+  };
+};
+
+// 创建用于测试插件执行顺序的插件
+const orderTestPlugin1 = () => {
+  return {
+    onBefore: () => {
+      console.log('orderTestPlugin1 onBefore called');
+    }
+  };
+};
+
+const orderTestPlugin2 = () => {
+  return {
+    onBefore: () => {
+      console.log('orderTestPlugin2 onBefore called');
+    }
+  };
+};
+
+const orderTestPlugin3 = () => {
+  return {
+    onBefore: () => {
+      console.log('orderTestPlugin3 onBefore called');
+    }
+  };
+};
+
+// 创建用于测试插件去重的插件
+const duplicatePlugin1 = () => {
+  return {
+    onBefore: () => {
+      console.log('duplicatePlugin1 onBefore called');
+    }
+  };
+};
+
+// 同名插件（函数名相同）
+const duplicatePlugin1_2 = () => {
+  return {
+    onBefore: () => {
+      console.log('duplicatePlugin1_2 onBefore called');
+    }
   };
 };
 
@@ -304,5 +348,219 @@ describe('definePlugins', () => {
 
     spy.mockRestore();
     demo.unmount();
+  });
+
+  // 新增测试用例：测试插件执行顺序
+  test('should execute plugins in correct order based on priority', async () => {
+    // 设置插件优先级，确保特定的执行顺序
+    definePlugins(
+      [orderTestPlugin1, orderTestPlugin2, orderTestPlugin3],
+      [
+        { name: 'orderTestPlugin1', priority: 5 },
+        { name: 'orderTestPlugin2', priority: 15 },
+        { name: 'orderTestPlugin3', priority: 25 }
+      ]
+    );
+
+    const spy = vi.spyOn(console, 'log');
+
+    const demo = componentVue(() => {
+      return useRequest(getData, {
+        manual: true,
+        cacheKey: () => 'test-key',
+        cacheTime: 1000,
+      });
+    });
+
+    demo.run(1);
+    await vi.advanceTimersByTimeAsync(1000);
+
+    // 验证调用顺序
+    expect(spy).toHaveBeenNthCalledWith(1, 'orderTestPlugin1 onBefore called');
+    expect(spy).toHaveBeenNthCalledWith(2, 'orderTestPlugin2 onBefore called');
+    expect(spy).toHaveBeenNthCalledWith(3, 'orderTestPlugin3 onBefore called');
+
+    spy.mockRestore();
+    demo.unmount();
+  });
+
+  // 新增测试用例：测试插件去重功能
+  test('should deduplicate plugins with same name, keeping the last one', () => {
+    // 由于函数名不同，这两个插件不会被去重
+    definePlugins([duplicatePlugin1, duplicatePlugin1_2]);
+
+    const spy = vi.spyOn(console, 'log');
+
+    const demo = componentVue(() => {
+      return useRequest(getData, {
+        manual: true,
+      });
+    });
+
+    demo.run(1);
+
+    // 两个插件都应该被调用，因为它们函数名不同
+    expect(spy).toHaveBeenCalledWith('duplicatePlugin1 onBefore called');
+    expect(spy).toHaveBeenCalledWith('duplicatePlugin1_2 onBefore called');
+
+    spy.mockRestore();
+    demo.unmount();
+  });
+
+  // 新增测试用例：测试全局插件和请求级插件的优先级和覆盖
+  test('should prioritize request-level plugins over global plugins', async () => {
+    // 创建一个全局插件
+    const globalPlugin = () => {
+      return {
+        onBefore: () => {
+          console.log('globalPlugin onBefore called');
+        }
+      };
+    };
+    
+    // 设置函数名称确保插件名称相同
+    Object.defineProperty(globalPlugin, 'name', {
+      value: 'testPlugin'
+    });
+
+    // 创建一个与全局插件同名的请求级插件
+    const requestPluginOverride = () => {
+      return {
+        onBefore: () => {
+          console.log('requestPluginOverride onBefore called');
+        }
+      };
+    };
+    
+    // 设置函数名称确保插件名称相同
+    Object.defineProperty(requestPluginOverride, 'name', {
+      value: 'testPlugin'
+    });
+
+    // 设置全局插件
+    definePlugins([globalPlugin]);
+
+    const spy = vi.spyOn(console, 'log');
+
+    const demo = componentVue(() => {
+      return useRequest(
+        getData,
+        {
+          manual: true,
+        },
+        [requestPluginOverride] // 同名的请求级插件
+      );
+    });
+
+    demo.run(1);
+    await vi.advanceTimersByTimeAsync(1000);
+
+    // 请求级插件应该覆盖全局插件
+    expect(spy).toHaveBeenCalledWith('requestPluginOverride onBefore called');
+    expect(spy).not.toHaveBeenCalledWith('globalPlugin onBefore called');
+
+    spy.mockRestore();
+    demo.unmount();
+  });
+
+  // 新增测试用例：测试边界优先级值
+  test('should handle edge case priority values', () => {
+    const edgeCasePlugin = () => {
+      return {
+        onBefore: () => {
+          console.log('edgeCasePlugin onBefore called');
+        }
+      };
+    };
+
+    // 使用非常大和非常小的优先级值
+    definePlugins(
+      [edgeCasePlugin],
+      [
+        { name: 'edgeCasePlugin', priority: -1000 }, // 非常高的优先级
+      ]
+    );
+
+    const spy = vi.spyOn(console, 'log');
+
+    const demo = componentVue(() => {
+      return useRequest(getData, {
+        manual: true,
+      });
+    });
+
+    demo.run(1);
+
+    // 插件应该被正确调用
+    expect(spy).toHaveBeenCalledWith('edgeCasePlugin onBefore called');
+
+    spy.mockRestore();
+    demo.unmount();
+  });
+
+  // 新增测试用例：测试插件优先级的默认行为
+  test('should assign incremental priorities to plugins without explicit priority', () => {
+    const noPriorityPlugin1 = () => ({
+      onBefore: () => console.log('noPriorityPlugin1 onBefore called')
+    });
+
+    const noPriorityPlugin2 = () => ({
+      onBefore: () => console.log('noPriorityPlugin2 onBefore called')
+    });
+
+    definePlugins([noPriorityPlugin1, noPriorityPlugin2]);
+
+    const spy = vi.spyOn(console, 'log');
+
+    const demo = componentVue(() => {
+      return useRequest(getData, {
+        manual: true,
+      });
+    });
+
+    demo.run(1);
+
+    // 两个插件都应该被调用
+    expect(spy).toHaveBeenCalledWith('noPriorityPlugin1 onBefore called');
+    expect(spy).toHaveBeenCalledWith('noPriorityPlugin2 onBefore called');
+
+    spy.mockRestore();
+    demo.unmount();
+  });
+  
+  // 新增测试用例：测试 getPluginPriorityMap 函数
+  test('should return plugin priority map', () => {
+    // 先清空状态
+    definePlugins([], []);
+    
+    // 设置插件和优先级
+    const testPlugin = () => ({});
+    definePlugins(
+      [testPlugin],
+      [{ name: 'testPlugin', priority: 100 }]
+    );
+    
+    const priorityMap = getPluginPriorityMap();
+    expect(priorityMap).toBeInstanceOf(Map);
+    expect(priorityMap.get('testPlugin')).toBe(100);
+  });
+  
+  // 新增测试用例：测试 getGlobalPlugins 函数
+  test('should return global plugins', () => {
+    const testPlugin = () => ({});
+    definePlugins([testPlugin]);
+    
+    const globalPlugins = getGlobalPlugins();
+    expect(globalPlugins).toBeInstanceOf(Array);
+    expect(globalPlugins).toHaveLength(1);
+    expect(globalPlugins[0]).toBe(testPlugin);
+  });
+  
+  // 新增测试用例：测试 getSortedBasePlugins 函数
+  test('should return sorted base plugins', () => {
+    const basePlugins = getSortedBasePlugins();
+    expect(basePlugins).toBeInstanceOf(Array);
+    // 基础插件应该存在
+    expect(basePlugins.length).toBeGreaterThan(0);
   });
 });

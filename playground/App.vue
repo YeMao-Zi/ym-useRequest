@@ -52,6 +52,17 @@ const errorPromise = () => {
   });
 };
 
+const errInstance = useRequest(errorPromise, {
+  onError() {
+    console.log('error');
+  },
+});
+
+// 启动一个请求
+const promise1 = errInstance.run();
+// 立即启动另一个请求，使第一个请求被取消
+const promise2 = errInstance.run();
+
 const refreshDepsParams = computed(() => [
   {
     page: pages.page,
