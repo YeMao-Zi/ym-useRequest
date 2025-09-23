@@ -1,5 +1,15 @@
 
 
+## [1.13.8-beta.1](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.13.8-beta.0...v1.13.8-beta.1) (2025-09-23)
+
+### 🐛 Bug Fixes | Bug 修复
+
+* requestTick状态重置，回调添加返回参数和结果 ([ef1a823](https://github.com/YeMao-Zi/ym-useRequest/commit/ef1a82369e0219042e2c5e3104021f52c4a088aa))
+
+### ♻ Code Refactoring | 代码重构
+
+* **registerPlugin:** 重构插件优先级管理逻辑 ([9079100](https://github.com/YeMao-Zi/ym-useRequest/commit/9079100c0dbbd4e610a547e8d656343b53bcdbf6))
+
 ## [1.13.8-beta.0](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.13.7...v1.13.8-beta.0) (2025-09-15)
 
 ### ✨ Features | 新功能
