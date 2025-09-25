@@ -21,6 +21,20 @@ export type Params<P extends any[]> = Ref<P> | P | P[0] | Ref<P[0]>;
 
 export type MaybePromise<T> = T | Promise<T>;
 
+export type UseRequest<R, P extends unknown[] = any> = (
+  service: Service<R, P>,
+  options?: Options<R, P>,
+  plugins?: Plugin<R, P>[],
+) => UseRequestResult<R, P>;
+
+export type UseRequestMiddleware<R, P extends unknown[]> = (
+  next: UseRequest<R, P>,
+) => (
+  service: Service<R, P>,
+  options?: Options<R, P>,
+  plugins?: Plugin<R, P>[],
+) => UseRequestResult<R, P>;
+
 export interface Options<R, P extends any[]> {
   // 请求标识
   id?: string;
@@ -92,6 +106,8 @@ export interface Options<R, P extends any[]> {
   onFinally?: () => void;
   // 取消响应回调
   onCancel?: () => void;
+  // 中间件
+  use?: UseRequestMiddleware<R, P>[];
 
   [key: string]: any;
 }
@@ -138,7 +154,7 @@ export type FunctionContext<R, P extends unknown[]> = {
   mutate: Mutate<R>;
 };
 
-export interface Request<R, P extends unknown[]> extends State<R, P>, FunctionContext<R, P> {}
+export interface UseRequestResult<R, P extends unknown[]> extends State<R, P>, FunctionContext<R, P> {}
 
 export type Service<R, P extends unknown[]> = (...args: P) => Promise<R>;
 
@@ -151,3 +167,4 @@ export type onBeforePlugin = {
 export type CallPlugin<R> = {
   servicePromise?: Promise<R>;
 } & onBeforePlugin;
+

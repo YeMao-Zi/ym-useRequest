@@ -38,6 +38,7 @@ npm install ym-userequest
 - [Custom Plugins](#custom-plugins)
   - [UseReadyPlugin](#usereadyplugin)
   - [Plugin for canceling Fetch requests](#plugin-for-canceling-fetch-requests)
+- [middleware](#middleware)
 - [All Configuration Options](#all-configuration-options)
 - [All Returned Properties](#all-returned-properties)
 <!-- /TOC -->
@@ -589,6 +590,45 @@ setTimeout(() => {
 }, 1000);
 ```
 
+### middleware
+
+```ts
+const logs: string[] = [];
+const logger1 = (useRequestNext: any) => {
+  return (service: any, options: any, plugins: any) => {
+    logs.push('logger1 enter');
+    const extendedService = (...args: any[]) => {
+      logs.push('logger1 service');
+      return service(...args);
+    };
+    const next = useRequestNext(extendedService, options, plugins);
+    logs.push('logger1 exit');
+    return next;
+  };
+};
+
+const logger2 = (useRequestNext: any) => {
+  return (service: any, options: any, plugins: any) => {
+    logs.push('logger2 enter');
+    const extendedService = (...args: any[]) => {
+      logs.push('logger2 service');
+      return service(...args);
+    };
+    const next = useRequestNext(extendedService, options, plugins);
+    logs.push('logger2 exit');
+    return next;
+  };
+};
+
+useRequest(getData, {
+  manual: true,
+  use: [logger1, logger2],
+});
+
+run();
+// logs: ['logger1 enter', 'logger2 enter', 'logger2 exit', 'logger1 exit', 'logger2 service', 'logger1 service'];
+```
+
 ## All Configuration Options
 
 ```ts
@@ -680,6 +720,8 @@ setTimeout(() => {
   onFinally?: () => void;
   // Callback when the current Promise is ignored
   onCancel?: () => void;
+  // middleware
+  use?: UseRequestMiddleware<R, P>[];
 }
 ```
 

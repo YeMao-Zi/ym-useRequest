@@ -38,6 +38,7 @@ npm install ym-userequest
 - [自定义插件](#自定义插件)
   - [内置插件 useReadyPlugin](#内置插件-usereadyplugin)
   - [自定义 Fetch 请求取消插件](#自定义-fetch-请求取消插件)
+- [中间件](#中间件)
 - [所有配置项](#所有配置项)
 - [所有返回项](#所有返回项)
 <!-- /TOC -->
@@ -589,6 +590,45 @@ setTimeout(() => {
 }, 1000);
 ```
 
+### 中间件
+
+```ts
+const logs: string[] = [];
+const logger1 = (useRequestNext: any) => {
+  return (service: any, options: any, plugins: any) => {
+    logs.push('logger1 enter');
+    const extendedService = (...args: any[]) => {
+      logs.push('logger1 service');
+      return service(...args);
+    };
+    const next = useRequestNext(extendedService, options, plugins);
+    logs.push('logger1 exit');
+    return next;
+  };
+};
+
+const logger2 = (useRequestNext: any) => {
+  return (service: any, options: any, plugins: any) => {
+    logs.push('logger2 enter');
+    const extendedService = (...args: any[]) => {
+      logs.push('logger2 service');
+      return service(...args);
+    };
+    const next = useRequestNext(extendedService, options, plugins);
+    logs.push('logger2 exit');
+    return next;
+  };
+};
+
+useRequest(getData, {
+  manual: true,
+  use: [logger1, logger2],
+});
+
+run();
+// logs: ['logger1 enter', 'logger2 enter', 'logger2 exit', 'logger1 exit', 'logger2 service', 'logger1 service'];
+```
+
 ## 所有配置项
 
 ```ts
@@ -681,6 +721,8 @@ setTimeout(() => {
   onFinally?: () => void;
   // 忽略当前 Promise 时执行回调
   onCancel?:()=>void;
+  // 中间件
+  use?: UseRequestMiddleware<R, P>[];
 }
 ```
 
