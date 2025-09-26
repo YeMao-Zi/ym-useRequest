@@ -3,7 +3,7 @@
  * https://github.com/lodash/lodash.git
  */
 /* istanbul ignore next */
-import { isObject } from './index';
+import { TypeChecker } from './index';
 
 function debounce(
   func: (...args: any[]) => any,
@@ -29,7 +29,7 @@ function debounce(
     throw new TypeError('Expected a function');
   }
   wait = +wait || 0;
-  if (options && isObject(options)) {
+  if (options && TypeChecker.isObject(options)) {
     leading = !!options.leading;
     maxing = 'maxWait' in options;
     maxWait = maxing ? Math.max(+options.maxWait! || 0, wait) : maxWait!;

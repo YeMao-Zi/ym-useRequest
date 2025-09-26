@@ -1,5 +1,4 @@
-import type { Service, Options, Plugin, UseRequest } from './type';
-import { getCurrentInstance } from 'vue';
+import type { Service, Options, Plugin } from './type';
 import { setRequest, getRequest } from './requestMap';
 import debounce from './utils/debounce';
 import throttle from './utils/throttle';
