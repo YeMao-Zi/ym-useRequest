@@ -1,4 +1,5 @@
-import type { Service, Options, Plugin, UseRequest, UseRequestMiddleware } from './type';
+import type { Service, Options, Plugin, UseRequest } from './type';
+import { getCurrentInstance } from 'vue';
 import { setRequest, getRequest } from './requestMap';
 import debounce from './utils/debounce';
 import throttle from './utils/throttle';
@@ -15,6 +16,9 @@ import useThrottlePlugin from './plugins/useThrottlePlugin';
 import useCachePlugin from './plugins/useCachePlugin';
 import useRetryPlugin from './plugins/useRetryPlugin';
 import useWindowVisibilityChangePlugin from './plugins/useWindowVisibilityChangePlugin';
+import { useRequestConfig, getGlobalConfig } from './utils/useRequestConfig';
+// 引入新的配置管理模块
+import { mergeOptions, composeMiddlewares } from './utils/useRequestMiddleware';
 // 引入插件排序管理模块
 import {
   initializePluginPriorityMap,
@@ -53,24 +57,22 @@ function baseUseRequest<R, P extends unknown[] = any>(
   return requestInstance;
 }
 
-function composeMiddlewares<R, P extends unknown[] = any>(
-  middlewares: UseRequestMiddleware<R, P>[] = [],
-  core: UseRequest<R, P>,
-): UseRequest<R, P> {
-  if (!middlewares.length) return core;
-  return middlewares.reduceRight<UseRequest<R, P>>((next, middleware) => {
-    const wrapped = middleware(next);
-    return (service, options, plugins) => wrapped(service, options, plugins);
-  }, core);
-}
-
 function useRequest<R, P extends unknown[] = any>(
   service: Service<R, P>,
   options?: Options<R, P>,
   plugins?: Plugin<R, P>[],
 ) {
-  const runUseRequest = composeMiddlewares<R, P>(options?.use as UseRequestMiddleware<R, P>[] | undefined, baseUseRequest);
-  return runUseRequest(service, options, plugins);
+  // 获取全局配置，无论在组件内外
+  const globalConfig = getGlobalConfig<R, P>();
+
+  // 使用改进的合并逻辑
+  const mergedOptions = mergeOptions(globalConfig, options);
+
+  const runUseRequest = composeMiddlewares<R, P>(
+    (mergedOptions?.use as any[] | undefined) || undefined,
+    baseUseRequest,
+  );
+  return runUseRequest(service, mergedOptions, plugins);
 }
 
 // 初始化
@@ -80,6 +82,7 @@ updateBasePluginsSort();
 
 export {
   useRequest,
+  useRequestConfig,
   getRequest,
   clearCache,
   setCache,

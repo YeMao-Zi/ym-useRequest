@@ -2,7 +2,7 @@ import { ref, watchEffect, unref } from 'vue';
 import type { Plugin } from '../type';
 import debounce from '../utils/debounce';
 
-const useDebouncePlugin: Plugin<any, any[]> = (instance, { debounceWait, debounceOptions }) => {
+const useDebouncePlugin: Plugin<unknown, unknown[]> = (instance, { debounceWait, debounceOptions }) => {
   const debouncedRef = ref<ReturnType<typeof debounce>>();
 
   watchEffect((onCleanup) => {

@@ -5,7 +5,7 @@ import { setCache, getCache, type CacheData } from '../utils/cache';
 import { subscribe, trigger } from '../utils/cacheSubscribe';
 import { getCachePromise, setCachePromise } from '../utils/cachePromise';
 
-const useCachePlugin: Plugin<any, any[]> = (
+const useCachePlugin: Plugin<unknown, unknown[]> = (
   instance,
   {
     cacheKey: customCacheKey,

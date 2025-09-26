@@ -3,7 +3,7 @@ import type { Plugin } from '../type';
 import debounce from '../utils/debounce';
 import throttle from '../utils/throttle';
 
-const useThrottlePlugin: Plugin<any, any[]> = (instance, { throttleWait, throttleOptions }) => {
+const useThrottlePlugin: Plugin<unknown, unknown[]> = (instance, { throttleWait, throttleOptions }) => {
   const throttleRef = ref<ReturnType<typeof debounce>>();
 
   watchEffect((onCleanup) => {

@@ -3,7 +3,7 @@ import type { Plugin } from '../type';
 import { limit } from '../utils/index';
 import { refreshSubscribe, cancelSubscribe } from '../utils/subscribeVisivilityChange';
 
-const useWindowVisibilityChangePlugin: Plugin<any, any[]> = (
+const useWindowVisibilityChangePlugin: Plugin<unknown, unknown[]> = (
   instance,
   { refreshOnWindowFocus, cancelOnWindowBlur, focusTimespan = 5000 },
 ) => {

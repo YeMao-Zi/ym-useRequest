@@ -39,6 +39,7 @@ npm install ym-userequest
   - [UseReadyPlugin](#usereadyplugin)
   - [Plugin for canceling Fetch requests](#plugin-for-canceling-fetch-requests)
 - [middleware](#middleware)
+- [Global Config](#global-config)
 - [All Configuration Options](#all-configuration-options)
 - [All Returned Properties](#all-returned-properties)
 <!-- /TOC -->
@@ -627,6 +628,14 @@ useRequest(getData, {
 
 run();
 // logs: ['logger1 enter', 'logger2 enter', 'logger2 exit', 'logger1 exit', 'logger2 service', 'logger1 service'];
+```
+
+## Global Config 
+
+When using in a component, the default options for useRequest of that component and its child components will be the options passed to useRequestConfig.
+
+```ts
+useRequestConfig({ manual: true });
 ```
 
 ## All Configuration Options

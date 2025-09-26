@@ -2,7 +2,7 @@ import type { Plugin } from '../type';
 import { computed, ref, unref, watch } from 'vue';
 import { useDelay, isNonZeroFalsy } from '../utils';
 
-const usePollingPlugin: Plugin<any, any[]> = (instance, { pollingInterval, pollingErrorRetryCount = -1 }) => {
+const usePollingPlugin: Plugin<unknown, unknown[]> = (instance, { pollingInterval, pollingErrorRetryCount = -1 }) => {
   const timerRef = ref();
   const countRef = ref(0);
   const pollingIntervalRef = computed(() => unref(pollingInterval));

@@ -39,6 +39,7 @@ npm install ym-userequest
   - [内置插件 useReadyPlugin](#内置插件-usereadyplugin)
   - [自定义 Fetch 请求取消插件](#自定义-fetch-请求取消插件)
 - [中间件](#中间件)
+- [全局配置](#全局配置)
 - [所有配置项](#所有配置项)
 - [所有返回项](#所有返回项)
 <!-- /TOC -->
@@ -627,6 +628,14 @@ useRequest(getData, {
 
 run();
 // logs: ['logger1 enter', 'logger2 enter', 'logger2 exit', 'logger1 exit', 'logger2 service', 'logger1 service'];
+```
+
+## 全局配置
+
+在组件中使用时该组件及其子组件的 useRequest 的 options 默认为 useRequestConfig 传入的 options
+
+```ts
+useRequestConfig({ manual: true });
 ```
 
 ## 所有配置项
