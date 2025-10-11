@@ -1,5 +1,16 @@
 
 
+## [1.14.0](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.13.8-beta.1...v1.14.0) (2025-10-11)
+
+### ✨ Features | 新功能
+
+* 添加全局配置 ([e3fe052](https://github.com/YeMao-Zi/ym-useRequest/commit/e3fe052dff9a64c2a8e1e82a25ea86cb5c34d1cd))
+* 添加中间件 ([8641f07](https://github.com/YeMao-Zi/ym-useRequest/commit/8641f077d6eb85dabd6b9070ecb6f2dae8568073))
+
+### ♻ Code Refactoring | 代码重构
+
+* **utils:** 重构类型检查工具 ([aa3b835](https://github.com/YeMao-Zi/ym-useRequest/commit/aa3b8356aec94472aefcce75e13d78337bbd7c2b))
+
 ## [1.13.8-beta.1](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.13.8-beta.0...v1.13.8-beta.1) (2025-09-23)
 
 ### 🐛 Bug Fixes | Bug 修复
