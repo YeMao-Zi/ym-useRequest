@@ -1,6 +1,6 @@
 import { onUnmounted } from 'vue';
 import type { Service, Options, UseRequestResult, Plugin } from './type';
-import { unrefParms } from './utils';
+import { unrefParms, getMayFunctionResult } from './utils';
 import createInstance from './createInstance';
 import { removeRequest } from './requestMap';
 
@@ -10,10 +10,10 @@ function usePlugins<R, P extends unknown[]>(
   plugins: Plugin<R, P>[],
 ): UseRequestResult<R, P> {
   const { id, manual = false, defaultParams = [] as unknown as P, ...rest } = options;
-  const _defaultParams = unrefParms(defaultParams);
+
   const fetchOptions = {
     manual,
-    defaultParams: _defaultParams,
+    defaultParams,
     ...rest,
   };
 
@@ -22,7 +22,7 @@ function usePlugins<R, P extends unknown[]>(
   instance.plugins.value = plugins.map((p) => p(instance, fetchOptions));
 
   if (!manual) {
-    instance.functionContext.run(..._defaultParams);
+    instance.functionContext.run(...unrefParms(getMayFunctionResult(defaultParams)));
   }
 
   onUnmounted(() => {

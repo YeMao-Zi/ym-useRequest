@@ -151,6 +151,43 @@ describe.concurrent('simple example with result', async () => {
     expect(demo.data).toBe(5);
   });
 
+  test('defaultParams with function', async () => {
+    const demo = componentVue(() => {
+      return useRequest(getData, {
+        defaultParams: () => [10],
+      });
+    });
+    await vi.runAllTimersAsync();
+    expect(demo.data).toBe(10);
+  });
+
+  test('runAsync with defaultParams function and no args', async () => {
+    const demo = componentVue(() => {
+      return useRequest(getData, {
+        manual: true,
+        defaultParams: () => [20],
+      });
+    });
+    expect(demo.data).toBeUndefined();
+
+    const result = await demo.runAsync();
+    expect(result).toBe(20);
+    expect(demo.data).toBe(20);
+  });
+
+  test('runAsync with defaultParams function and args', async () => {
+    const demo = componentVue(() => {
+      return useRequest(getData, {
+        manual: true,
+        defaultParams: () => [30],
+      });
+    });
+
+    const result = await demo.runAsync(40);
+    expect(result).toBe(40);
+    expect(demo.data).toBe(40);
+  });
+
   test('cancel', async () => {
     let count = 0;
     const demo = componentVue(() => {

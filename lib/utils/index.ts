@@ -36,6 +36,19 @@ export const unrefParms = <P extends any[]>(value: Params<P>): P => {
   return TypeChecker.isArray(_value) ? _value : ([_value] as P);
 };
 
+/**
+ * 获取可能为函数的值的结果
+ * 如果传入的参数是函数，则执行该函数并返回结果；否则直接返回参数本身
+ * @param target 可能为函数的未知类型参数
+ * @returns 如果target是函数则返回函数执行结果，否则返回target本身
+ */
+export function getMayFunctionResult<T>(target: T | (() => T)): T {
+  if (isFunction(target)) {
+    return target();
+  }
+  return target;
+}
+
 const TYPE_MAP = {
   null: 'null',
   undefined: 'undefined',

@@ -1,21 +1,14 @@
 import { ref, shallowRef, isRef } from 'vue';
 import type { Ref } from 'vue';
 import type { Service, Options, FunctionContext, Instance, PluginHooks, CallPlugin } from './type';
-import { isFunction } from './utils';
+import { isFunction, unrefParms, getMayFunctionResult } from './utils';
 
 function createInstance<R, P extends unknown[]>(service: Service<R, P>, options: Options<R, P>): Instance<R, P> {
   const { defaultData, defaultParams, onBefore, onRequest, onSuccess, onError, onFinally, onCancel, onCache } = options;
 
-  const getMayFunctionResult = (target: unknown) => {
-    if (isFunction(target)) {
-      return target();
-    }
-    return isRef(target) ? target.value : target;
-  };
-
   const data = isRef(defaultData) ? defaultData : (ref(defaultData) as Ref<R>);
   const loading = ref(false);
-  const params = ref(getMayFunctionResult(defaultParams)) as Ref<P>;
+  const params = ref(unrefParms(getMayFunctionResult(defaultParams))) as Ref<P>;
   const pollingCount = ref(0);
   const error = shallowRef();
   const status = ref() as Instance<R, P>['status'];
@@ -140,7 +133,7 @@ function createInstance<R, P extends unknown[]>(service: Service<R, P>, options:
       params.value = args;
     } else {
       if (isFunction(defaultParams)) {
-        params.value = getMayFunctionResult(defaultParams);
+        params.value = unrefParms(getMayFunctionResult(defaultParams));
       }
     }
     status.value = 'pending';
