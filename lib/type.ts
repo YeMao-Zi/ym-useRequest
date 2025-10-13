@@ -29,11 +29,7 @@ export type UseRequest<R, P extends unknown[] = any> = (
 
 export type UseRequestMiddleware<R, P extends unknown[]> = (
   next: UseRequest<R, P>,
-) => (
-  service: Service<R, P>,
-  options?: Options<R, P>,
-  plugins?: Plugin<R, P>[],
-) => UseRequestResult<R, P>;
+) => (service: Service<R, P>, options?: Options<R, P>, plugins?: Plugin<R, P>[]) => UseRequestResult<R, P>;
 
 export interface Options<R, P extends any[]> {
   // 请求标识
@@ -45,7 +41,7 @@ export interface Options<R, P extends any[]> {
   defaultData?: R | Ref<R>;
 
   // 当 manual 为 false 时，自动执行的默认参数
-  defaultParams?: Params<P>;
+  defaultParams?: Params<P> | (() => Params<P>);
 
   // 监听依赖
   refreshDeps?: WatchSource<any>[] | WatchSource<any>;
@@ -167,4 +163,3 @@ export type onBeforePlugin = {
 export type CallPlugin<R> = {
   servicePromise?: Promise<R>;
 } & onBeforePlugin;
-
