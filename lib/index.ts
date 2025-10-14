@@ -67,10 +67,7 @@ function useRequest<R, P extends unknown[] = any>(
   // 使用改进的合并逻辑
   const mergedOptions = mergeOptions(globalConfig, options);
 
-  const runUseRequest = composeMiddlewares<R, P>(
-    (mergedOptions?.use as any[] | undefined) || undefined,
-    baseUseRequest,
-  );
+  const runUseRequest = composeMiddlewares<R, P>(mergedOptions?.use, baseUseRequest);
   return runUseRequest(service, mergedOptions, plugins);
 }
 
@@ -81,6 +78,7 @@ updateBasePluginsSort();
 
 export {
   useRequest,
+  getGlobalConfig,
   useRequestConfig,
   getRequest,
   clearCache,
