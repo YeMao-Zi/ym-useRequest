@@ -31,7 +31,7 @@ export const isNonZeroFalsy = (value: any): boolean => {
  * @param value 参数值
  * @returns 解引用后的参数数组
  */
-export const unrefParms = <P extends any[]>(value: Params<P>): P => {
+export const unrefParams = <P extends any[]>(value: Params<P>): P => {
   const _value = unref(value);
   return TypeChecker.isArray(_value) ? _value : ([_value] as P);
 };

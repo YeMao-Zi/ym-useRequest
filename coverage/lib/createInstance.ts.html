@@ -452,14 +452,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { ref, shallowRef, isRef } from 'vue';
 import type { Ref } from 'vue';
 import type { Service, Options, FunctionContext, Instance, PluginHooks, CallPlugin } from './type';
-import { isFunction, unrefParms, getMayFunctionResult } from './utils';
+import { isFunction, unrefParams, getMayFunctionResult } from './utils';
 &nbsp;
 function createInstance&lt;R, P extends unknown[]&gt;(service: Service&lt;R, P&gt;, options: Options&lt;R, P&gt;): Instance&lt;R, P&gt; {
   const { defaultData, defaultParams, onBefore, onRequest, onSuccess, onError, onFinally, onCancel, onCache } = options;
 &nbsp;
   const data = isRef(defaultData) ? defaultData : (ref(defaultData) as Ref&lt;R&gt;);
   const loading = ref(false);
-  const params = ref(unrefParms(getMayFunctionResult(defaultParams))) as Ref&lt;P&gt;;
+  const params = ref(unrefParams(getMayFunctionResult(defaultParams))) as Ref&lt;P&gt;;
   const pollingCount = ref(0);
   const error = shallowRef();
   const status = ref() as Instance&lt;R, P&gt;['status'];
@@ -584,7 +584,7 @@ function createInstance&lt;R, P extends unknown[]&gt;(service: Service&lt;R, P&g
       params.value = args;
     } else {
       if (isFunction(defaultParams)) {
-        params.value = unrefParms(getMayFunctionResult(defaultParams));
+        params.value = unrefParams(getMayFunctionResult(defaultParams));
       }
     }
     status.value = 'pending';

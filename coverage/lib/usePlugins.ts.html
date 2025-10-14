@@ -155,7 +155,7 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { onUnmounted } from 'vue';
 import type { Service, Options, UseRequestResult, Plugin } from './type';
-import { unrefParms, getMayFunctionResult } from './utils';
+import { unrefParams, getMayFunctionResult } from './utils';
 import createInstance from './createInstance';
 import { removeRequest } from './requestMap';
 &nbsp;
@@ -177,7 +177,7 @@ function usePlugins&lt;R, P extends unknown[]&gt;(
   instance.plugins.value = plugins.map((p) =&gt; p(instance, fetchOptions));
 &nbsp;
   if (!manual) {
-    instance.functionContext.run(...unrefParms(getMayFunctionResult(defaultParams)));
+    instance.functionContext.run(...unrefParams(getMayFunctionResult(defaultParams)));
   }
 &nbsp;
   onUnmounted(() =&gt; {
