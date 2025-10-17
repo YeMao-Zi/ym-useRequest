@@ -10,23 +10,14 @@ export function mergeMiddlewares<R, P extends unknown[] = any>(
   middlewares1: UseRequestMiddleware<R, P>[] = [],
   middlewares2: UseRequestMiddleware<R, P>[] = [],
 ): UseRequestMiddleware<R, P>[] {
-  // 使用 Map 来去重，保持插入顺序
   const middlewareMap = new Map<string, UseRequestMiddleware<R, P>>();
 
-  // 添加第一个数组中的中间件
-  middlewares1.forEach((middleware) => {
+  [...middlewares1, ...middlewares2].forEach((middleware) => {
     // 使用函数名或函数体作为唯一标识
     const key = middleware.name || middleware.toString();
     middlewareMap.set(key, middleware);
   });
 
-  // 添加第二个数组中的中间件
-  middlewares2.forEach((middleware) => {
-    const key = middleware.name || middleware.toString();
-    middlewareMap.set(key, middleware);
-  });
-
-  // 返回去重后的中间件数组
   return Array.from(middlewareMap.values());
 }
 
@@ -37,24 +28,21 @@ export function mergeMiddlewares<R, P extends unknown[] = any>(
  * @returns 合并后的配置
  */
 export function mergeOptions<R, P extends unknown[] = any>(
-  globalConfig: Options<R, P> | undefined,
-  localOptions: Options<R, P> | undefined,
+  globalConfig: Options<R, P> | undefined = {},
+  localOptions: Options<R, P> | undefined = {},
 ): Options<R, P> | undefined {
   if (!globalConfig && !localOptions) return undefined;
-  if (!globalConfig) return localOptions;
-  if (!localOptions) return globalConfig;
 
-  // 合并中间件
+  // 使用空对象作为默认值，避免重复的 if 判断
   const mergedUse = mergeMiddlewares(
-    globalConfig.use as UseRequestMiddleware<R, P>[] | undefined,
-    localOptions.use as UseRequestMiddleware<R, P>[] | undefined,
+    globalConfig?.use as UseRequestMiddleware<R, P>[] | undefined,
+    localOptions?.use as UseRequestMiddleware<R, P>[] | undefined,
   );
 
   // 合并配置，局部配置优先
   const mergedOptions: Options<R, P> = {
     ...globalConfig,
     ...localOptions,
-    // 特殊处理中间件
     ...(mergedUse.length ? { use: mergedUse } : {}),
   };
 

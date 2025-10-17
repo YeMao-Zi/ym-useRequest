@@ -9,7 +9,7 @@ export interface PluginPriorityItem {
 const PLUGIN_DEFAULT_PRIORITY: ReadonlyArray<PluginPriorityItem> = [
   { name: 'useReadyPlugin', priority: 10 },
   { name: 'useCachePlugin', priority: 20 },
-  { name: 'useLoadingDelayPlugins', priority: 30 },
+  { name: 'useLoadingDelayPlugin', priority: 30 },
   { name: 'useDebouncePlugin', priority: 40 },
   { name: 'useThrottlePlugin', priority: 50 },
   { name: 'usePollingPlugin', priority: 60 },
@@ -40,7 +40,7 @@ export function sortPlugins(plugins: Plugin<any, any[]>[]): Plugin<any, any[]>[]
   return [...plugins].sort((a, b) => {
     const priorityA = pluginPriorityMap.get(a.name) || 0;
     const priorityB = pluginPriorityMap.get(b.name) || 0;
-    return priorityA - priorityB; // 从小到大排序
+    return priorityA - priorityB;
   });
 }
 

@@ -16,9 +16,7 @@ import useCachePlugin from './plugins/useCachePlugin';
 import useRetryPlugin from './plugins/useRetryPlugin';
 import useWindowVisibilityChangePlugin from './plugins/useWindowVisibilityChangePlugin';
 import { useRequestConfig, getGlobalConfig } from './utils/useRequestConfig';
-// 引入新的配置管理模块
 import { mergeOptions, composeMiddlewares } from './utils/useRequestMiddleware';
-// 引入插件排序管理模块
 import {
   initializePluginPriorityMap,
   updateBasePluginsSort,
@@ -61,10 +59,7 @@ function useRequest<R, P extends unknown[] = any>(
   options?: Options<R, P>,
   plugins?: Plugin<R, P>[],
 ) {
-  // 获取全局配置，无论在组件内外
   const globalConfig = getGlobalConfig<R, P>();
-
-  // 使用改进的合并逻辑
   const mergedOptions = mergeOptions(globalConfig, options);
 
   const runUseRequest = composeMiddlewares<R, P>(mergedOptions?.use, baseUseRequest);

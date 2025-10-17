@@ -11,10 +11,8 @@ let globalConfig: Options<any, any> | undefined;
 export function useRequestConfig<R, P extends any[]>(options: Options<R, P>) {
   // 如果在组件中使用，使用 provide/inject 机制
   if (getCurrentInstance()) {
-    // 直接覆盖式 provide，最近的 provide 生效
     provide(USE_REQUEST_CONFIG_KEY, options as unknown as Options<any, any>);
   } else {
-    // 如果不在组件中使用，使用全局变量
     globalConfig = options as unknown as Options<any, any>;
   }
 }

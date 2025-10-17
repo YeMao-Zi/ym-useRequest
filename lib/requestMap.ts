@@ -2,7 +2,6 @@ import type { UseRequestResult } from './type';
 // 存储所有带 id 的 useRequest 实例
 const requestInstances = new Map<string, UseRequestResult<any, any>>();
 
-// 将实例存储起来
 export function setRequest(id: string, requestInstance: UseRequestResult<any, any>) {
   requestInstances.set(id, requestInstance);
 }
