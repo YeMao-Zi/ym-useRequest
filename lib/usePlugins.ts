@@ -1,4 +1,4 @@
-import { onUnmounted } from 'vue';
+import { onUnmounted } from 'vue-demi';
 import type { Service, Options, UseRequestResult, Plugin } from './type';
 import { unrefParams, getMayFunctionResult } from './utils';
 import createInstance from './createInstance';

@@ -18,56 +18,81 @@ const PLUGIN_DEFAULT_PRIORITY: ReadonlyArray<PluginPriorityItem> = [
   { name: 'useWindowVisibilityChangePlugin', priority: 90 },
 ] as const;
 
-// 全局状态
-let pluginPriorityMap: Map<string, number>;
-let globalPlugins: Plugin<any, any[]>[] = [];
-let sortedBasePlugins: Plugin<any, any[]>[] = [];
+// 使用全局对象存储状态，确保打包后所有模块共享同一个实例
+const GLOBAL_PLUGIN_STATE_KEY = '__YM_USE_REQUEST_PLUGIN_STATE__';
 
-// 基础插件列表
-let BASE_PLUGINS: Plugin<any, any[]>[] = [];
+interface PluginState {
+  pluginPriorityMap: Map<string, number>;
+  globalPlugins: Plugin<any, any[]>[];
+  sortedBasePlugins: Plugin<any, any[]>[];
+  BASE_PLUGINS: Plugin<any, any[]>[];
+}
+
+// 扩展 globalThis 类型
+declare global {
+  // eslint-disable-next-line no-var
+  var __YM_USE_REQUEST_PLUGIN_STATE__: PluginState | undefined;
+}
+
+function getPluginState(): PluginState {
+  if (!globalThis[GLOBAL_PLUGIN_STATE_KEY]) {
+    globalThis[GLOBAL_PLUGIN_STATE_KEY] = {
+      pluginPriorityMap: new Map<string, number>(),
+      globalPlugins: [],
+      sortedBasePlugins: [],
+      BASE_PLUGINS: [],
+    };
+  }
+  return globalThis[GLOBAL_PLUGIN_STATE_KEY]!;
+}
 
 export function setBasePlugins(plugins: Plugin<any, any[]>[]): void {
-  BASE_PLUGINS = plugins;
+  getPluginState().BASE_PLUGINS = plugins;
 }
 
 // 初始化优先级映射
 export function initializePluginPriorityMap() {
-  pluginPriorityMap = new Map(PLUGIN_DEFAULT_PRIORITY.map((item) => [item.name, item.priority]));
+  const state = getPluginState();
+  state.pluginPriorityMap = new Map(PLUGIN_DEFAULT_PRIORITY.map((item) => [item.name, item.priority]));
 }
 
 // 对插件列表进行排序（从小到大）
 export function sortPlugins(plugins: Plugin<any, any[]>[]): Plugin<any, any[]>[] {
+  const state = getPluginState();
   return [...plugins].sort((a, b) => {
-    const priorityA = pluginPriorityMap.get(a.name) || 0;
-    const priorityB = pluginPriorityMap.get(b.name) || 0;
+    const priorityA = state.pluginPriorityMap.get(a.name) || 0;
+    const priorityB = state.pluginPriorityMap.get(b.name) || 0;
     return priorityA - priorityB;
   });
 }
 
 // 更新基础插件排序
 export function updateBasePluginsSort() {
-  sortedBasePlugins = sortPlugins(BASE_PLUGINS);
+  const state = getPluginState();
+  state.sortedBasePlugins = sortPlugins(state.BASE_PLUGINS);
 }
 
 // 为插件设置优先级（如果没有设置）
 export function ensurePluginPriority(plugins: Plugin<any, any[]>[]): void {
+  const state = getPluginState();
   plugins.forEach((plugin) => {
-    if (!pluginPriorityMap.has(plugin.name)) {
-      const maxPriority = Math.max(...pluginPriorityMap.values(), 0) + 10;
-      pluginPriorityMap.set(plugin.name, maxPriority);
+    if (!state.pluginPriorityMap.has(plugin.name)) {
+      const maxPriority = Math.max(...state.pluginPriorityMap.values(), 0) + 10;
+      state.pluginPriorityMap.set(plugin.name, maxPriority);
     }
   });
 }
 
 // 定义全局插件和优先级
 export function definePlugins(plugins: Plugin<any, any[]>[] = [], priorityItems: PluginPriorityItem[] = []) {
+  const state = getPluginState();
   priorityItems.forEach((item) => {
-    pluginPriorityMap.set(item.name, item.priority);
+    state.pluginPriorityMap.set(item.name, item.priority);
   });
 
-  globalPlugins = plugins || [];
+  state.globalPlugins = plugins || [];
 
-  ensurePluginPriority(globalPlugins);
+  ensurePluginPriority(state.globalPlugins);
 
   updateBasePluginsSort();
 }
@@ -76,9 +101,10 @@ export function definePlugins(plugins: Plugin<any, any[]>[] = [], priorityItems:
 export function getSortedPlugins(customPlugins: Plugin<any, any[]>[] = []): Plugin<any, any[]>[] {
   ensurePluginPriority(customPlugins);
 
+  const state = getPluginState();
   const allPluginsMap = new Map<string, Plugin<any, any[]>>();
 
-  [...sortedBasePlugins, ...globalPlugins, ...customPlugins].forEach((plugin) => {
+  [...state.sortedBasePlugins, ...state.globalPlugins, ...customPlugins].forEach((plugin) => {
     allPluginsMap.set(plugin.name, plugin);
   });
 
@@ -88,13 +114,13 @@ export function getSortedPlugins(customPlugins: Plugin<any, any[]>[] = []): Plug
 }
 
 export function getPluginPriorityMap(): Map<string, number> {
-  return pluginPriorityMap;
+  return getPluginState().pluginPriorityMap;
 }
 
 export function getGlobalPlugins(): Plugin<any, any[]>[] {
-  return globalPlugins;
+  return getPluginState().globalPlugins;
 }
 
 export function getSortedBasePlugins(): Plugin<any, any[]>[] {
-  return sortedBasePlugins;
+  return getPluginState().sortedBasePlugins;
 }

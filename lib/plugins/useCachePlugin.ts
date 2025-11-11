@@ -1,4 +1,4 @@
-import { onBeforeUnmount } from 'vue';
+import { onBeforeUnmount } from 'vue-demi';
 import type { Plugin } from '../type';
 import { isFunction } from '../utils';
 import { setCache, getCache, type CacheData } from '../utils/cache';

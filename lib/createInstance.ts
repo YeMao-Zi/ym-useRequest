@@ -1,5 +1,5 @@
-import { ref, shallowRef, isRef } from 'vue';
-import type { Ref } from 'vue';
+import { ref, shallowRef, isRef } from 'vue-demi';
+import type { Ref } from 'vue-demi';
 import type { Service, Options, FunctionContext, Instance, PluginHooks, CallPlugin } from './type';
 import { isFunction, unrefParams, getMayFunctionResult } from './utils';
 

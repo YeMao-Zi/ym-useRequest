@@ -1,5 +1,5 @@
 import type { Plugin } from '../type';
-import { ref } from 'vue';
+import { ref } from 'vue-demi';
 
 const useRetryPlugin: Plugin<unknown, unknown[]> = (instance, { retryCount, retryInterval }) => {
   const timerRef = ref<NodeJS.Timeout>();

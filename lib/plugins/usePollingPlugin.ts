@@ -1,5 +1,5 @@
 import type { Plugin } from '../type';
-import { computed, ref, unref, watch } from 'vue';
+import { computed, ref, unref, watch } from 'vue-demi';
 import { useDelay, isNonZeroFalsy } from '../utils';
 
 const usePollingPlugin: Plugin<unknown, unknown[]> = (instance, { pollingInterval, pollingErrorRetryCount = -1 }) => {

@@ -26,9 +26,9 @@ import cacheTest from './components/cacheTest.vue';
 import fetchCancelTest from './components/fetchCancelTest.vue';
 import requestTick from './components/requestTick.vue';
 import { computed, reactive, ref, shallowRef } from 'vue';
-import { useRequest } from 'ym-userequest';
+// import { useRequest } from 'ym-userequest';
+import { useRequest } from '../dist';
 import GetRequestVue from './components/getRequest.vue';
-// import { useRequest } from '../dist';
 import debounce from '../lib/utils/debounce';
 const pages = reactive({
   page: 0,

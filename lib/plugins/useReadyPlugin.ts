@@ -1,4 +1,4 @@
-import { Ref, unref } from 'vue';
+import { Ref, unref } from 'vue-demi';
 import type { Plugin } from '../type';
 import { TypeChecker } from '../utils/index';
 

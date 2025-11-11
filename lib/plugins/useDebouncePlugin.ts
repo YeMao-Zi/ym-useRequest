@@ -1,4 +1,4 @@
-import { ref, watchEffect, unref } from 'vue';
+import { ref, watchEffect, unref } from 'vue-demi';
 import type { Plugin } from '../type';
 import debounce from '../utils/debounce';
 

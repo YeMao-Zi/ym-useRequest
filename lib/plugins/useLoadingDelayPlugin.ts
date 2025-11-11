@@ -1,6 +1,6 @@
 import type { Plugin } from '../type';
 import { useDelay } from '../utils';
-import { ref } from 'vue';
+import { ref } from 'vue-demi';
 
 const useLoadingDelayPlugin: Plugin<unknown, unknown[]> = (instance, { loadingDelay }) => {
   const timerRef = ref<NodeJS.Timeout>();

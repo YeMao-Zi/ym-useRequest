@@ -11,9 +11,24 @@ interface CacheMapValue extends CacheData {
 
 type CachedKey = string;
 
-const cache = new Map<CachedKey, CacheMapValue>();
+// 使用全局对象存储 Map，确保打包后所有模块共享同一个实例
+const GLOBAL_CACHE_KEY = '__YM_USE_REQUEST_CACHE__';
+
+// 扩展 globalThis 类型
+declare global {
+  // eslint-disable-next-line no-var
+  var __YM_USE_REQUEST_CACHE__: Map<CachedKey, CacheMapValue> | undefined;
+}
+
+function getCacheMap(): Map<CachedKey, CacheMapValue> {
+  if (!globalThis[GLOBAL_CACHE_KEY]) {
+    globalThis[GLOBAL_CACHE_KEY] = new Map<CachedKey, CacheMapValue>();
+  }
+  return globalThis[GLOBAL_CACHE_KEY]!;
+}
 
 const setCache = (key: CachedKey, value: CacheData, cacheTime: number) => {
+  const cache = getCacheMap();
   const currentCache = cache.get(key);
   if (currentCache?.timer) {
     clearTimeout(currentCache.time);
@@ -31,10 +46,11 @@ const setCache = (key: CachedKey, value: CacheData, cacheTime: number) => {
 };
 
 const getCache = (key: CachedKey) => {
-  return cache.get(key);
+  return getCacheMap().get(key);
 };
 
 const clearCache = (key?: CachedKey | CachedKey[]) => {
+  const cache = getCacheMap();
   if (key) {
     const cachedKeys = Array.isArray(key) ? key : [key];
     cachedKeys.forEach((cachedKey) => cache.delete(cachedKey));
