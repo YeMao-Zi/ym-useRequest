@@ -1,5 +1,18 @@
 
 
+## [1.14.1-beta.0](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.14.0...v1.14.1-beta.0) (2025-11-11)
+
+### ✨ Features | 新功能
+
+* 导出全局属性获取方法，可实现更复杂的配置处理逻辑 ([b86466f](https://github.com/YeMao-Zi/ym-useRequest/commit/b86466f18853ba6d8a38cca03d6b3dbb79107395))
+* 优化了params的控制方式，运行函数方式执行 ([6260991](https://github.com/YeMao-Zi/ym-useRequest/commit/6260991081f67a55a504fd5f232833c20e8dbe54))
+
+### 🎫 Chores | 其他更新
+
+* 代码优化 ([568a7bc](https://github.com/YeMao-Zi/ym-useRequest/commit/568a7bcbb6196a59daa82259a4fdb44b55db3c6a))
+* 命名调整 ([55a2f6b](https://github.com/YeMao-Zi/ym-useRequest/commit/55a2f6b128e8c134abdea88010d0d5354a416b78))
+* vue-demi改造 ([a6892f6](https://github.com/YeMao-Zi/ym-useRequest/commit/a6892f6fd3e66460d1659803d41470b82330c440))
+
 ## [1.14.0](https://github.com/YeMao-Zi/ym-useRequest/compare/v1.13.8-beta.1...v1.14.0) (2025-10-11)
 
 ### ✨ Features | 新功能
