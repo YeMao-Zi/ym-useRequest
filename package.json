@@ -1,6 +1,6 @@
 {
   "name": "ym-userequest",
-  "description": "useRequest for vue",
+  "description": "useRequest for vue3",
   "version": "1.14.1-beta.0",
   "private": false,
   "exports": {
@@ -51,12 +51,8 @@
     "vue3",
     "hooks"
   ],
-  "dependencies": {
-    "vue-demi": "latest"
-  },
   "peerDependencies": {
-    "@vue/composition-api": "^1.0.0-rc.1",
-    "vue": "^2.0.0 || >=3.0.0"
+    "vue": "^3.2.47"
   },
   "devDependencies": {
     "@release-it/conventional-changelog": "^9.0.0",
@@ -70,11 +66,6 @@
     "vitest": "^0.32.0",
     "vue": "^3.2.47",
     "@swc/core": "^1.4.12"
-  },
-  "peerDependenciesMeta": {
-    "@vue/composition-api": {
-      "optional": true
-    }
   },
   "engines": {
     "node": ">=14"

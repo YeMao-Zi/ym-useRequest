@@ -5,7 +5,7 @@ export default defineConfig({
   clean: true,
   dts: true,
   shims: true,
-  external: ['vue-demi', '@vue/composition-api'],
+  external: ['vue'],
   format: ['cjs', 'esm'],
   target: 'es5',
 });

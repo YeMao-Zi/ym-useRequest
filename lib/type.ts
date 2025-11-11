@@ -1,4 +1,4 @@
-import type { WatchSource, Ref, ShallowRef } from 'vue-demi';
+import type { WatchSource, Ref, ShallowRef } from 'vue';
 import type { CacheData } from './utils/cache';
 
 interface DebounceOptionsBase {

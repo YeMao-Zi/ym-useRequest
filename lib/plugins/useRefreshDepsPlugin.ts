@@ -1,4 +1,4 @@
-import { watch } from 'vue-demi';
+import { watch } from 'vue';
 import type { Plugin } from '../type';
 import { unrefParams, isFunction } from '../utils';
 

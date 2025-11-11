@@ -3729,11 +3729,6 @@ vitest@^0.32.0:
     vite-node "0.32.4"
     why-is-node-running "^2.2.2"
 
-vue-demi@latest:
-  version "0.14.10"
-  resolved "https://registry.yarnpkg.com/vue-demi/-/vue-demi-0.14.10.tgz#afc78de3d6f9e11bf78c55e8510ee12814522f04"
-  integrity sha512-nMZBOwuzabUO0nLgIcc6rycZEebF6eeUfaiQx9+WSk8e29IbLvPU9feI6tqW4kTo3hvoYAJkMh8n8D0fuISphg==
-
 vue@^3.2.47:
   version "3.5.12"
   resolved "https://registry.npmmirror.com/vue/-/vue-3.5.12.tgz#e08421c601b3617ea2c9ef0413afcc747130b36c"

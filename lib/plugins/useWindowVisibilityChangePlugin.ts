@@ -1,4 +1,4 @@
-import { unref, ref, watchEffect, onUnmounted } from 'vue-demi';
+import { unref, ref, watchEffect, onUnmounted } from 'vue';
 import type { Plugin } from '../type';
 import { limit } from '../utils/index';
 import { refreshSubscribe, cancelSubscribe } from '../utils/subscribeVisivilityChange';

@@ -1,4 +1,4 @@
-import { provide, InjectionKey, getCurrentInstance, inject } from 'vue-demi';
+import { provide, InjectionKey, getCurrentInstance, inject } from 'vue';
 import type { Options } from '../type';
 
 // 提供一个全局的注入 key，供父组件向子组件传递默认 options
