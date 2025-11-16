@@ -35,17 +35,17 @@ describe('useCachePlugin', () => {
 
     demo.run(1);
     await vi.advanceTimersByTimeAsync(1000);
-    expect(demo.data).toBe(1);
+    expect(demo.data.value).toBe(1);
     demo.run(2);
     await vi.advanceTimersByTimeAsync(1000);
-    expect(demo.data).toBe(1);
+    expect(demo.data.value).toBe(1);
     demo.run(2);
     await vi.advanceTimersByTimeAsync(3000);
-    expect(demo.data).toBe(1);
+    expect(demo.data.value).toBe(1);
     await vi.advanceTimersByTimeAsync(6000);
     demo.run(2);
     await vi.advanceTimersByTimeAsync(1000);
-    expect(demo.data).toBe(2);
+    expect(demo.data.value).toBe(2);
     demo.unmount();
   });
 
@@ -61,14 +61,14 @@ describe('useCachePlugin', () => {
 
     demo.run(1, 0);
     await vi.advanceTimersByTimeAsync(10);
-    expect(demo.data).toBe(1);
+    expect(demo.data.value).toBe(1);
     demo.run(2, 0);
     await vi.advanceTimersByTimeAsync(10);
-    expect(demo.data).toBe(1);
+    expect(demo.data.value).toBe(1);
     await vi.advanceTimersByTimeAsync(5000);
     demo.run(2, 0);
     await vi.advanceTimersByTimeAsync(10);
-    expect(demo.data).toBe(2);
+    expect(demo.data.value).toBe(2);
   });
 
   test('clearCache with all', async () => {
@@ -83,14 +83,14 @@ describe('useCachePlugin', () => {
 
     demo.run(1, 0);
     await vi.advanceTimersByTimeAsync(10);
-    expect(demo.data).toBe(1);
+    expect(demo.data.value).toBe(1);
     demo.run(2, 0);
     await vi.advanceTimersByTimeAsync(10);
-    expect(demo.data).toBe(1);
+    expect(demo.data.value).toBe(1);
     clearCache();
     demo.run(2, 0);
     await vi.advanceTimersByTimeAsync(10);
-    expect(demo.data).toBe(2);
+    expect(demo.data.value).toBe(2);
   });
 
   test('clearCache with key', async () => {
@@ -105,14 +105,14 @@ describe('useCachePlugin', () => {
 
     demo.run(1, 0);
     await vi.advanceTimersByTimeAsync(10);
-    expect(demo.data).toBe(1);
+    expect(demo.data.value).toBe(1);
     demo.run(2, 0);
     await vi.advanceTimersByTimeAsync(10);
-    expect(demo.data).toBe(1);
+    expect(demo.data.value).toBe(1);
     clearCache(['test4']);
     demo.run(2, 0);
     await vi.advanceTimersByTimeAsync(10);
-    expect(demo.data).toBe(2);
+    expect(demo.data.value).toBe(2);
   });
 
   test('setCache and getCache', async () => {
@@ -133,14 +133,14 @@ describe('useCachePlugin', () => {
 
     demo.run(1, 0);
     await vi.advanceTimersByTimeAsync(10);
-    expect(demo.data).toBe(1);
+    expect(demo.data.value).toBe(1);
     demo.run(2, 0);
     await vi.advanceTimersByTimeAsync(10);
-    expect(demo.data).toBe(1);
+    expect(demo.data.value).toBe(1);
     localStorage.clear();
     demo.run(2, 0);
     await vi.advanceTimersByTimeAsync(10);
-    expect(demo.data).toBe(2);
+    expect(demo.data.value).toBe(2);
   });
 
   test('cache with mutate', async () => {
@@ -155,13 +155,13 @@ describe('useCachePlugin', () => {
 
     demo.run(1, 0);
     await vi.advanceTimersByTimeAsync(10);
-    expect(demo.data).toBe(2);
+    expect(demo.data.value).toBe(2);
     await vi.advanceTimersByTimeAsync(10000);
     demo.run(1, 0);
     await vi.advanceTimersByTimeAsync(10);
-    expect(demo.data).toBe(1);
+    expect(demo.data.value).toBe(1);
     demo.mutate(3);
-    expect(demo.data).toBe(3);
+    expect(demo.data.value).toBe(3);
   });
 
   test('cache with sameKey', async () => {
@@ -201,14 +201,14 @@ describe('useCachePlugin', () => {
 
     demo.run1();
     await vi.advanceTimersByTimeAsync(10);
-    expect(demo.data1).toBe(1);
+    expect(demo.data1.value).toBe(1);
 
     demo.run2();
     await vi.advanceTimersByTimeAsync(1000);
-    expect(demo.data2).toBe(1);
+    expect(demo.data2.value).toBe(1);
     demo.run2();
     await vi.advanceTimersByTimeAsync(1000);
-    expect(demo.data2).toBe(1);
+    expect(demo.data2.value).toBe(1);
   });
 
   test('cache with changeKey', async () => {
@@ -248,14 +248,14 @@ describe('useCachePlugin', () => {
 
     demo.run2();
     await vi.advanceTimersByTimeAsync(10);
-    expect(demo.data2).toBe(4);
+    expect(demo.data2.value).toBe(4);
     demo.run1();
     await vi.advanceTimersByTimeAsync(10);
-    expect(demo.data1).toBe(1);
+    expect(demo.data1.value).toBe(1);
     key = 'test7';
     demo.run1();
     await vi.advanceTimersByTimeAsync(1000);
-    expect(demo.data2).toBe(4);
+    expect(demo.data2.value).toBe(4);
   });
 
   test('cache with onCache', async () => {
@@ -315,12 +315,12 @@ describe('useCachePlugin', () => {
     demo.run1();
     await vi.advanceTimersByTimeAsync(10);
     expect(callback).toHaveBeenCalledTimes(1);
-    expect(demo.data1).toBe(1);
+    expect(demo.data1.value).toBe(1);
     demo.run2();
     await vi.advanceTimersByTimeAsync(10);
     expect(callback).toHaveBeenCalledTimes(3);
-    expect(demo.data2).toBe(5);
-    expect(demo.data1).toBe(5);
+    expect(demo.data2.value).toBe(5);
+    expect(demo.data1.value).toBe(5);
   });
 
   // 添加测试用例：验证 servicePromise 与 currentPromise 比较逻辑

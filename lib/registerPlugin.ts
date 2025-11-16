@@ -14,7 +14,6 @@ const PLUGIN_DEFAULT_PRIORITY: ReadonlyArray<PluginPriorityItem> = [
   { name: 'useThrottlePlugin', priority: 50 },
   { name: 'usePollingPlugin', priority: 60 },
   { name: 'useRetryPlugin', priority: 70 },
-  { name: 'useRefreshDepsPlugin', priority: 80 },
   { name: 'useWindowVisibilityChangePlugin', priority: 90 },
 ] as const;
 

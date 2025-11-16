@@ -1,4 +1,4 @@
-import { unref } from 'vue';
+import { unref } from './reactive';
 import type { Params } from '../type';
 
 /**
@@ -157,3 +157,4 @@ export function wrappedPromise<T, R, P extends unknown[]>(
     return call(result, args);
   };
 }
+

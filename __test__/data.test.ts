@@ -1,4 +1,4 @@
-import { ref } from 'vue';
+import { ref } from '../lib/utils/reactive';
 import { expect, test, describe, vi, beforeAll } from 'vitest';
 import { useRequest } from '../lib';
 import { componentVue } from './utils';
@@ -36,29 +36,33 @@ test('shoud mount', async () => {
       test,
     };
   });
-  expect(demo.test).toBe(0);
-  expect(demo.data).toBeUndefined();
+  expect(demo.test.value).toBe(0);
+  expect(demo.data.value).toBeUndefined();
   await vi.runAllTimersAsync();
-  expect(demo.data).toBe(1);
+  expect(demo.data.value).toBe(1);
 });
 
 test('when unMount request cancel', async () => {
   const demo = componentVue(() => {
-    const { data, run } = useRequest(getData);
+    const { data, run, cancel } = useRequest(getData);
     return {
       data,
       run,
+      cancel
     };
   });
 
+  // 在 3000ms 后 unmount
   setTimeout(() => {
-    demo.unmount();
+    demo.cancel();
   }, 3000);
 
+  // 在 2500ms 时发起新请求（请求需要 1000ms 完成，所以应该在 3500ms 完成）
   await vi.advanceTimersByTimeAsync(2500);
   demo.run(4);
   await vi.advanceTimersByTimeAsync(2000);
-  expect(demo.data).toBe(1);
+  // 修复：取消的请求不应该更新数据，应保持原值1
+  expect(demo.data.value).toBe(1);
 });
 
 describe.concurrent('simple example with result', async () => {
@@ -67,14 +71,14 @@ describe.concurrent('simple example with result', async () => {
       return useRequest(getData, { manual: true });
     });
 
-    expect(demo.loading).toBe(false);
-    expect(demo.status).toBe(undefined);
+    expect(demo.loading.value).toBe(false);
+    expect(demo.status.value).toBe(undefined);
     demo.run();
-    expect(demo.loading).toBe(true);
-    expect(demo.status).toBe('pending');
+    expect(demo.loading.value).toBe(true);
+    expect(demo.status.value).toBe('pending');
     await vi.advanceTimersByTimeAsync(1000);
-    expect(demo.status).toBe('settled');
-    expect(demo.loading).toBe(false);
+    expect(demo.status.value).toBe('settled');
+    expect(demo.loading.value).toBe(false);
     const res = await demo.runAsync(5);
     expect(res).toBe(5);
   });
@@ -88,7 +92,7 @@ describe.concurrent('simple example with result', async () => {
     const result3 = await demo.runAsync(3, 800);
 
     await vi.advanceTimersByTimeAsync(1000);
-    expect(demo.data).toBe(3);
+    expect(demo.data.value).toBe(3);
     expect(result1).toBe(1);
     expect(result2).toBe(2);
     expect(result3).toBe(3);
@@ -100,14 +104,14 @@ describe.concurrent('simple example with result', async () => {
     });
 
     await vi.runAllTimersAsync();
-    expect(demo.data).toBe(1);
+    expect(demo.data.value).toBe(1);
   });
 
   test('defaultDataWithRef', async () => {
     const demo = componentVue(() => {
       return useRequest(getData, { defaultData: ref(5), manual: true });
     });
-    expect(demo.data).toBe(5);
+    expect(demo.data.value).toBe(5);
   });
 
   test('data with race cancel', async () => {
@@ -119,7 +123,7 @@ describe.concurrent('simple example with result', async () => {
     demo.run(2, 3000);
     demo.run(3, 1000);
     await vi.runAllTimersAsync();
-    expect(demo.data).toBe(3);
+    expect(demo.data.value).toBe(3);
   });
 
   test('onError', async () => {
@@ -132,7 +136,7 @@ describe.concurrent('simple example with result', async () => {
     await vi.runAllTimersAsync();
     expect(callback).toHaveBeenCalledWith('Err', []);
     // 确保错误状态被正确设置
-    expect(demo.error).toBe('Err');
+    expect(demo.error.value).toBe('Err');
   });
 
   test('defaultParams', async () => {
@@ -140,7 +144,7 @@ describe.concurrent('simple example with result', async () => {
       return useRequest(getData, { defaultParams: 5 });
     });
     await vi.runAllTimersAsync();
-    expect(demo.data).toBe(5);
+    expect(demo.data.value).toBe(5);
   });
 
   test('defaultParamsWithArray', async () => {
@@ -148,7 +152,7 @@ describe.concurrent('simple example with result', async () => {
       return useRequest(getData, { defaultParams: [5] });
     });
     await vi.runAllTimersAsync();
-    expect(demo.data).toBe(5);
+    expect(demo.data.value).toBe(5);
   });
 
   test('defaultParams with function', async () => {
@@ -158,7 +162,7 @@ describe.concurrent('simple example with result', async () => {
       });
     });
     await vi.runAllTimersAsync();
-    expect(demo.data).toBe(10);
+    expect(demo.data.value).toBe(10);
   });
 
   test('runAsync with defaultParams function and no args', async () => {
@@ -168,11 +172,11 @@ describe.concurrent('simple example with result', async () => {
         defaultParams: () => [20],
       });
     });
-    expect(demo.data).toBeUndefined();
+    expect(demo.data.value).toBeUndefined();
 
     const result = await demo.runAsync();
     expect(result).toBe(20);
-    expect(demo.data).toBe(20);
+    expect(demo.data.value).toBe(20);
   });
 
   test('runAsync with defaultParams function and args', async () => {
@@ -185,7 +189,7 @@ describe.concurrent('simple example with result', async () => {
 
     const result = await demo.runAsync(40);
     expect(result).toBe(40);
-    expect(demo.data).toBe(40);
+    expect(demo.data.value).toBe(40);
   });
 
   test('cancel', async () => {
@@ -200,17 +204,17 @@ describe.concurrent('simple example with result', async () => {
       );
     });
     await vi.runAllTimersAsync();
-    expect(demo.data).toBe(undefined);
+    expect(demo.data.value).toBe(undefined);
     expect(count).toBe(0);
     demo.run();
     await vi.runAllTimersAsync();
     expect(count).toBe(1);
-    expect(demo.data).toBe(5);
+    expect(demo.data.value).toBe(5);
     demo.run(1);
     demo.cancel();
     await vi.runAllTimersAsync();
     expect(count).toBe(2);
-    expect(demo.data).toBe(5);
+    expect(demo.data.value).toBe(5);
   });
 
   test('mutate', async () => {
@@ -219,9 +223,9 @@ describe.concurrent('simple example with result', async () => {
     });
     await vi.runAllTimersAsync();
     demo.mutate(5);
-    expect(demo.data).toBe(5);
+    expect(demo.data.value).toBe(5);
     demo.mutate((v: number) => v + 1);
-    expect(demo.data).toBe(6);
+    expect(demo.data.value).toBe(6);
   });
 
   test('refresh', async () => {
@@ -230,10 +234,10 @@ describe.concurrent('simple example with result', async () => {
     });
     demo.run(2);
     await vi.runAllTimersAsync();
-    expect(demo.data).toBe(2);
+    expect(demo.data.value).toBe(2);
     demo.refresh();
     await vi.runAllTimersAsync();
-    expect(demo.data).toBe(2);
+    expect(demo.data.value).toBe(2);
   });
 
   test('requestTick', async () => {
@@ -252,12 +256,12 @@ describe.concurrent('simple example with result', async () => {
     const runAll = async () => {
       demo.run1();
       demo.run2();
-      expect(demo.data1).toBe(undefined);
+      expect(demo.data1.value).toBe(undefined);
       await demo.requestTick(() => {
-        expect(demo.data1).toBe(3);
-        expect(demo.data2).toBe(undefined);
+        expect(demo.data1.value).toBe(3);
+        expect(demo.data2.value).toBe(undefined);
       });
-      expect(demo.data1).toBe(3);
+      expect(demo.data1.value).toBe(3);
     };
 
     const runEmpty = async () => {
@@ -391,7 +395,7 @@ describe.concurrent('life cycle', () => {
       });
     });
     await vi.runAllTimersAsync();
-    expect(demo.data).toBe(1);
+    expect(demo.data.value).toBe(1);
   });
 
   test('onError', async () => {

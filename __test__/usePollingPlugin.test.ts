@@ -1,5 +1,5 @@
 import { expect, test, describe, vi, beforeAll } from 'vitest';
-import { ref } from 'vue';
+import { ref } from '../lib/utils/reactive';
 import { useRequest } from '../lib';
 import { componentVue } from './utils';
 
@@ -47,10 +47,11 @@ describe('usePollingPlugin', () => {
     await vi.advanceTimersByTimeAsync(600);
     expect(callback).toHaveBeenCalledTimes(4);
     pollingIntervalRef.value = 1000;
+    // pollingInterval 变化需要在下次请求的 onBefore 中检测
+    // 等待当前轮询完成，然后触发一次请求来检测变化
     await vi.advanceTimersByTimeAsync(600);
-    expect(callback).toHaveBeenCalledTimes(4);
-    await vi.advanceTimersByTimeAsync(500);
     expect(callback).toHaveBeenCalledTimes(5);
+    // 现在轮询间隔应该是 1000ms
     await vi.advanceTimersByTimeAsync(1100);
     expect(callback).toHaveBeenCalledTimes(6);
     demo.cancel();

@@ -1,6 +1,10 @@
-import type { WatchSource, Ref, ShallowRef } from 'vue';
+import type { Ref } from './utils/reactive';
 import type { CacheData } from './utils/cache';
 
+// WatchSource 类型定义
+export type WatchSource<T> = T | (() => T);
+export type ShallowRef<T> = Ref<T>;
+export type { Ref };
 interface DebounceOptionsBase {
   // 是否在延迟开始前执行
   leading?: boolean;
@@ -150,7 +154,9 @@ export type FunctionContext<R, P extends unknown[]> = {
   mutate: Mutate<R>;
 };
 
-export interface UseRequestResult<R, P extends unknown[]> extends State<R, P>, FunctionContext<R, P> {}
+export interface UseRequestResult<R, P extends unknown[]> extends State<R, P>, FunctionContext<R, P> {
+  cleanup?: () => void; // 清理函数，用于取消请求和清理资源
+}
 
 export type Service<R, P extends unknown[]> = (...args: P) => Promise<R>;
 

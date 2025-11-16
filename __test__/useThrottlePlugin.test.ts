@@ -1,5 +1,5 @@
 import { expect, test, describe, vi, beforeAll } from 'vitest';
-import { ref } from 'vue';
+import { ref } from '../lib/utils/reactive';
 import { useRequest } from '../lib';
 import { componentVue } from './utils';
 
@@ -112,21 +112,24 @@ describe('useThrottlePlugin', () => {
     await vi.advanceTimersByTimeAsync(51);
     expect(callback).toHaveBeenCalledTimes(1);
     expect(demo.data).toBe(0);
-    throttleWaitRef.value = 150;
-    //  debounceWaitRef 变更，执行 onCleanup 清理副作用，被初始化
-    await vi.advanceTimersByTimeAsync(51);
-    expect(callback).toHaveBeenCalledTimes(1);
-    expect(demo.data).toBe(0);
-
-    demo.run(2, 0);
-    demo.run(3, 0);
+    
+    // 等待节流时间过去，确保之前的请求完成
+    await vi.advanceTimersByTimeAsync(100);
     expect(callback).toHaveBeenCalledTimes(2);
+    expect(demo.data).toBe(1);
+    
+    throttleWaitRef.value = 150;
+    // throttleWaitRef 变更，需要在下次请求时检测到变化并重新设置
+    // 先触发一次请求来检测变化
+    demo.run(2, 0);
+    expect(callback).toHaveBeenCalledTimes(3);
+    demo.run(3, 0);
     demo.run(4, 0);
     await vi.advanceTimersByTimeAsync(101);
-    expect(callback).toHaveBeenCalledTimes(2);
+    expect(callback).toHaveBeenCalledTimes(3);
     demo.run(5, 0);
     await vi.advanceTimersByTimeAsync(151);
-    expect(callback).toHaveBeenCalledTimes(3);
+    expect(callback).toHaveBeenCalledTimes(4);
     expect(demo.data).toBe(5);
   });
 

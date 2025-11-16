@@ -1,5 +1,5 @@
 import { expect, test, describe, vi, beforeAll } from 'vitest';
-import { ref } from 'vue';
+import { ref } from '../lib/utils/reactive';
 import { useRequest } from '../lib';
 import { componentVue } from './utils';
 

@@ -10,15 +10,9 @@ export function mergeMiddlewares<R, P extends unknown[] = any>(
   middlewares1: UseRequestMiddleware<R, P>[] = [],
   middlewares2: UseRequestMiddleware<R, P>[] = [],
 ): UseRequestMiddleware<R, P>[] {
-  const middlewareMap = new Map<string, UseRequestMiddleware<R, P>>();
-
-  [...middlewares1, ...middlewares2].forEach((middleware) => {
-    // 使用函数名或函数体作为唯一标识
-    const key = middleware.name || middleware.toString();
-    middlewareMap.set(key, middleware);
-  });
-
-  return Array.from(middlewareMap.values());
+  // 直接合并，保持顺序：middlewares1 在前，middlewares2 在后
+  // 不使用 Map 去重，因为同一个中间件可能需要被多次应用
+  return [...(middlewares1 || []), ...(middlewares2 || [])];
 }
 
 /**

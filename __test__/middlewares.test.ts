@@ -66,7 +66,7 @@ describe('middleware', () => {
     demo.run(5);
     await vi.advanceTimersByTimeAsync(1000);
 
-    expect(demo.data).toBe(5);
+    expect(demo.data.value).toBe(5);
     // 执行请求时，service按照相反的顺序执行（洋葱模型）
     expect(logs).toEqual([
       'logger1 enter',
@@ -90,7 +90,7 @@ describe('middleware', () => {
     demo.run(10);
     await vi.advanceTimersByTimeAsync(1000);
 
-    expect(demo.data).toBe(10);
+    expect(demo.data.value).toBe(10);
     demo.unmount();
   });
 
@@ -105,7 +105,7 @@ describe('middleware', () => {
     demo.run(15);
     await vi.advanceTimersByTimeAsync(1000);
 
-    expect(demo.data).toBe(15);
+    expect(demo.data.value).toBe(15);
     demo.unmount();
   });
 
@@ -130,7 +130,7 @@ describe('middleware', () => {
     demo.run(1);
     await vi.advanceTimersByTimeAsync(1000);
 
-    expect(demo.data).toBe(42); // 被中间件修改为42
+    expect(demo.data.value).toBe(42); // 被中间件修改为42
     demo.unmount();
   });
 });

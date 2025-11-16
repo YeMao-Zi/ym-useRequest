@@ -1,5 +1,5 @@
-import { Ref, unref } from 'vue';
-import type { Plugin } from '../type';
+import { unref } from '../utils/reactive';
+import type { Plugin, Ref } from '../type';
 import { TypeChecker } from '../utils/index';
 
 const useReadyPlugin: Plugin<unknown, unknown[]> = (instance, { ready = true }) => {

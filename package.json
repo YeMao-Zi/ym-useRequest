@@ -47,13 +47,8 @@
   "keywords": [
     "request",
     "useRequest",
-    "vue",
-    "vue3",
     "hooks"
   ],
-  "peerDependencies": {
-    "vue": "^3.2.47"
-  },
   "devDependencies": {
     "@release-it/conventional-changelog": "^9.0.0",
     "@vitejs/plugin-vue": "^4.3.4",

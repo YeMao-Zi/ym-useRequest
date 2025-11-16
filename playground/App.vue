@@ -12,12 +12,12 @@
     <Item />
   </div> -->
   <!-- <cacheTest /> -->
-  ---------------------------
+  <!-- ---------------------------
   <GetRequestVue />
   ---------------------------
   <fetchCancelTest />
 
-  <requestTick />
+  <requestTick /> -->
 </template>
 
 <script setup lang="ts">

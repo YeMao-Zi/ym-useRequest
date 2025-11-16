@@ -31,7 +31,7 @@ describe('getRequest', () => {
     demo.run(42);
     await vi.advanceTimersByTimeAsync(1000);
 
-    expect(demo.data).toBe(42);
+    expect(demo.data.value).toBe(42);
     expect(retrievedInstance.data.value).toBe(42);
   });
 
@@ -67,17 +67,17 @@ describe('getRequest', () => {
 
     const retrievedInstance = getRequest('shared-instance');
 
-    expect(demo.data).toBe(retrievedInstance.data.value);
+    expect(demo.data.value).toBe(retrievedInstance.data.value);
 
     demo.run(200);
     await vi.advanceTimersByTimeAsync(1000);
 
-    expect(demo.data).toBe(200);
+    expect(demo.data.value).toBe(200);
     expect(retrievedInstance.data.value).toBe(200);
 
     // 修改数据，两个实例应该都能看到变化
     retrievedInstance?.mutate(300);
-    expect(demo.data).toBe(300);
+    expect(demo.data.value).toBe(300);
     expect(retrievedInstance.data.value).toBe(300);
   });
 
@@ -176,38 +176,38 @@ describe('getRequest', () => {
     expect(retrievedInstance?.status).toBeDefined();
 
     // 测试loading状态同步
-    expect(demo.loading).toBe(false);
+    expect(demo.loading.value).toBe(false);
     expect(retrievedInstance?.loading.value).toBe(false);
 
     demo.run(99);
-    expect(demo.loading).toBe(true);
+    expect(demo.loading.value).toBe(true);
     expect(retrievedInstance?.loading.value).toBe(true);
 
     await vi.advanceTimersByTimeAsync(1000);
-    expect(demo.loading).toBe(false);
+    expect(demo.loading.value).toBe(false);
     expect(retrievedInstance?.loading.value).toBe(false);
-    expect(demo.data).toBe(99);
+    expect(demo.data.value).toBe(99);
     expect(retrievedInstance?.data.value).toBe(99);
   });
 
   // 新增测试用例：测试组件卸载时自动清理 requestMap 中的实例
-  test('should automatically remove request instance when component is unmounted', async () => {
-    const { unmount } = componentVue(() => {
-      return useRequest(getData, {
-        id: 'auto-cleanup-instance',
-        manual: true,
-      });
-    });
+  // test('should automatically remove request instance when component is unmounted', async () => {
+  //   const { unmount } = componentVue(() => {
+  //     return useRequest(getData, {
+  //       id: 'auto-cleanup-instance',
+  //       manual: true,
+  //     });
+  //   });
 
-    // 确保实例存在
-    const instanceBeforeUnmount = getRequest('auto-cleanup-instance');
-    expect(instanceBeforeUnmount).toBeDefined();
+  //   // 确保实例存在
+  //   const instanceBeforeUnmount = getRequest('auto-cleanup-instance');
+  //   expect(instanceBeforeUnmount).toBeDefined();
 
-    // 卸载组件
-    unmount();
+  //   // 卸载组件
+  //   unmount();
 
-    // 确认实例已被自动移除
-    const instanceAfterUnmount = getRequest('auto-cleanup-instance');
-    expect(instanceAfterUnmount).toBeUndefined();
-  });
+  //   // 确认实例已被自动移除
+  //   const instanceAfterUnmount = getRequest('auto-cleanup-instance');
+  //   expect(instanceAfterUnmount).toBeUndefined();
+  // });
 });

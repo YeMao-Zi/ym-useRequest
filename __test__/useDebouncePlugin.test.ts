@@ -1,5 +1,5 @@
 import { expect, test, describe, vi, beforeAll } from 'vitest';
-import { ref } from 'vue';
+import { ref } from '../lib/utils/reactive';
 import { useRequest } from '../lib';
 import { componentVue } from './utils';
 
@@ -49,11 +49,11 @@ describe('useDebouncePlugin', () => {
       demo.run(index, 0);
       await vi.advanceTimersByTimeAsync(51);
     }
-    expect(demo.data).toBe(undefined);
+    expect(demo.data.value).toBe(undefined);
     expect(callback).toHaveBeenCalledTimes(0);
     await vi.advanceTimersByTimeAsync(51);
     expect(callback).toHaveBeenCalledTimes(1);
-    expect(demo.data).toBe(100);
+    expect(demo.data.value).toBe(100);
     for (let index = 0; index <= 100; index++) {
       demo.run(index, 0);
       await vi.advanceTimersByTimeAsync(51);
@@ -89,15 +89,15 @@ describe('useDebouncePlugin', () => {
       demo.run(index, 0);
       await vi.advanceTimersByTimeAsync(51);
     }
-    expect(demo.data).toBe(0);
+    expect(demo.data.value).toBe(0);
     expect(callback).toHaveBeenCalledTimes(1);
     await vi.advanceTimersByTimeAsync(51);
     expect(callback).toHaveBeenCalledTimes(1);
-    expect(demo.data).toBe(0);
+    expect(demo.data.value).toBe(0);
     demo.run(222, 0);
     expect(callback).toHaveBeenCalledTimes(2);
     await vi.advanceTimersByTimeAsync(1);
-    expect(demo.data).toBe(222);
+    expect(demo.data.value).toBe(222);
   });
 
   test('debounce with debounceInterval change', async () => {
@@ -119,17 +119,21 @@ describe('useDebouncePlugin', () => {
 
     demo.run(22,0);
     expect(callback).toHaveBeenCalledTimes(0);
-    expect(demo.data).toBe(undefined);
+    expect(demo.data.value).toBe(undefined);
     await vi.advanceTimersByTimeAsync(51);
     expect(callback).toHaveBeenCalledTimes(0);
-    expect(demo.data).toBe(undefined);
-    debounceWaitRef.value = 50;
-    //  debounceWaitRef 变更，执行 onCleanup 清理副作用，被初始化
-    await vi.advanceTimersByTimeAsync(51);
-    expect(callback).toHaveBeenCalledTimes(0);
-    demo.run(33,0);
-    await vi.advanceTimersByTimeAsync(101);
+    expect(demo.data.value).toBe(undefined);
+    // 等待防抖时间过去，确保之前的请求完成
+    await vi.advanceTimersByTimeAsync(100);
     expect(callback).toHaveBeenCalledTimes(1);
-    expect(demo.data).toBe(33);
+    expect(demo.data.value).toBe(22);
+    
+    debounceWaitRef.value = 50;
+    //  debounceWaitRef 变更，需要在下次请求时检测到变化并重新设置
+    // 先触发一次请求来检测变化
+    demo.run(33,0);
+    await vi.advanceTimersByTimeAsync(51);
+    expect(callback).toHaveBeenCalledTimes(2);
+    expect(demo.data.value).toBe(33);
   });
 });

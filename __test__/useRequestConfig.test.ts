@@ -1,7 +1,8 @@
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
-import { createApp, defineComponent, ref } from 'vue';
+import { ref } from '../lib/utils/reactive';
 import { getGlobalConfig } from '../lib/utils/useRequestConfig';
 import { useRequest, useRequestConfig } from '../lib';
+import { componentVue } from './utils';
 
 const getData = (value = 1, time = 1000): Promise<number> => {
   return new Promise((resolve) => {
@@ -12,29 +13,18 @@ const getData = (value = 1, time = 1000): Promise<number> => {
 };
 
 function mountWithChild(childSetup: any, parentSetup?: any) {
-  const Child = defineComponent({
-    name: 'ChildComp',
-    setup: childSetup,
-    template: '<div />',
-  });
-
-  const Parent = defineComponent({
-    name: 'ParentComp',
-    components: { Child },
-    setup() {
-      const childRef = ref<any>();
-      parentSetup?.();
-      return { childRef };
+  // 无 Vue 版本：直接调用 setup 函数
+  parentSetup?.();
+  const childResult = componentVue(childSetup);
+  
+  return {
+    childRef: childResult,
+    unmount: () => {
+      if (childResult?.unmount) {
+        childResult.unmount();
+      }
     },
-    template: '<Child ref="childRef" />',
-  });
-
-  const el = document.createElement('div');
-  const app = createApp(Parent);
-  const unmount = () => app.unmount();
-  const comp = app.mount(el) as any;
-  (comp as any).unmount = unmount;
-  return comp;
+  };
 }
 
 describe('useRequestConfig', () => {
@@ -46,14 +36,13 @@ describe('useRequestConfig', () => {
   });
 
   test('inherits manual=true from parent config when child not set', async () => {
-    const parentSetup = () => {
-      useRequestConfig({ manual: true });
-    };
+    // 在无 Vue 版本中，配置是全局的
+    useRequestConfig({ manual: true });
 
     const comp = mountWithChild(() => {
       const result = useRequest(getData, { defaultParams: [5] });
       return result as any;
-    }, parentSetup);
+    });
 
     // Will not execute automatically
     await vi.advanceTimersByTimeAsync(1000);
@@ -64,21 +53,25 @@ describe('useRequestConfig', () => {
     expect(comp.childRef.data).toBe(5);
 
     comp.unmount();
+    // 清理全局配置
+    useRequestConfig({});
   });
 
   test('child options override parent defaults (defaultParams)', async () => {
-    const parentSetup = () => {
-      useRequestConfig({ defaultParams: [2] });
-    };
+    // 在无 Vue 版本中，配置是全局的
+    useRequestConfig({ defaultParams: [2] });
 
     const comp = mountWithChild(() => {
       const result = useRequest(getData, { defaultParams: [3] });
       return result as any;
-    }, parentSetup);
+    });
 
     await vi.advanceTimersByTimeAsync(1000);
+    // 局部配置会覆盖全局配置
     expect(comp.childRef.data).toBe(3);
     comp.unmount();
+    // 清理全局配置
+    useRequestConfig({});
   });
 
   test('merge use middlewares: parent first, child next; service call reverses', async () => {
@@ -108,14 +101,13 @@ describe('useRequestConfig', () => {
       };
     };
 
-    const parentSetup = () => {
-      useRequestConfig({ use: [loggerParent] });
-    };
+    // 在无 Vue 版本中，配置是全局的
+    useRequestConfig({ use: [loggerParent] });
 
     const comp = mountWithChild(() => {
       const result = useRequest(getData, { manual: true, use: [loggerChild] });
       return result as any;
-    }, parentSetup);
+    });
 
     // Initialize in parent->child enter order, child->parent exit order
     expect(logs).toEqual(['parent enter', 'child enter', 'child exit', 'parent exit']);
@@ -134,6 +126,8 @@ describe('useRequestConfig', () => {
     ]);
 
     comp.unmount();
+    // 清理全局配置
+    useRequestConfig({});
   });
 
   describe('Global configuration in non-component environment', () => {
@@ -143,25 +137,16 @@ describe('useRequestConfig', () => {
     });
 
     test('Set global configuration in non-component environment', () => {
-      // Simulate non-component environment (getCurrentInstance returns null)
-      const originalGetCurrentInstance = vi.fn(() => null);
-      vi.stubGlobal('getCurrentInstance', originalGetCurrentInstance);
-
+      // 无 Vue 版本：直接设置全局配置
       const config = { manual: true, defaultParams: [10] };
       useRequestConfig(config);
 
       const globalConfig = getGlobalConfig();
       expect(globalConfig).toEqual(config);
-
-      vi.unstubAllGlobals();
     });
 
     test('Global configuration affects useRequest in non-component environment', async () => {
-      // Simulate non-component environment
-      const originalGetCurrentInstance = vi.fn(() => null);
-      vi.stubGlobal('getCurrentInstance', originalGetCurrentInstance);
-
-      // Set global configuration
+      // 无 Vue 版本：直接设置全局配置
       useRequestConfig({ manual: true, defaultParams: [20] });
 
       // Use useRequest in non-component environment
@@ -175,32 +160,36 @@ describe('useRequestConfig', () => {
       result.run();
       await vi.advanceTimersByTimeAsync(1000);
       expect(result.data.value).toBe(20);
-
-      vi.unstubAllGlobals();
     });
 
     test('Merging global and component configurations', async () => {
       // Set global configuration first
-      const originalGetCurrentInstance = vi.fn(() => null);
-      vi.stubGlobal('getCurrentInstance', originalGetCurrentInstance);
       useRequestConfig({ manual: true, defaultParams: [30] });
-      vi.unstubAllGlobals();
 
-      // Set different configuration in component
+      // Set different configuration (will merge with global)
       const parentSetup = () => {
-        useRequestConfig({ defaultParams: [40] }); // Component configuration completely overrides global configuration
+        useRequestConfig({ defaultParams: [40] }); // This will merge with global configuration
       };
 
       const comp = mountWithChild(() => {
+        // 在调用 useRequest 时，会合并全局配置和局部配置
         const result = useRequest(getData);
         return result as any;
       }, parentSetup);
 
-      // Component configuration completely overrides global configuration, so manual will not be retained
+      // 由于全局配置设置了 manual: true，parentSetup 中设置了 defaultParams
+      // useRequestConfig 会合并配置，所以最终全局配置是 { manual: true, defaultParams: [40] }
+      // 但 useRequest 调用时没有传入 options，所以使用全局配置
       await vi.advanceTimersByTimeAsync(1000);
-      expect(comp.childRef.data).toBe(40); // Automatically execute, use component's defaultParams
+      expect(comp.childRef.data.value).toBeUndefined(); // manual: true，不会自动执行
+      
+      comp.childRef.run();
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(comp.childRef.data.value).toBe(40); // 使用合并后的 defaultParams
 
       comp.unmount();
+      // 清理全局配置
+      useRequestConfig({});
     });
 
     test('Global configuration middleware merging', async () => {
@@ -228,12 +217,9 @@ describe('useRequestConfig', () => {
       };
 
       // Set global middleware
-      const originalGetCurrentInstance = vi.fn(() => null);
-      vi.stubGlobal('getCurrentInstance', originalGetCurrentInstance);
       useRequestConfig({ use: [globalMiddleware] });
-      vi.unstubAllGlobals();
 
-      // Set component middleware in component
+      // Set component middleware (will merge with global)
       const parentSetup = () => {
         useRequestConfig({ use: [componentMiddleware] });
       };
@@ -243,18 +229,24 @@ describe('useRequestConfig', () => {
         return result as any;
       }, parentSetup);
 
-      // In component environment, getGlobalConfig only returns injected configuration, not global configuration
-      // So only component middleware will be executed
-      expect(logs).toEqual(['component middleware']);
+      // In non-Vue version, middleware should be merged: global first, then component
+      expect(logs).toEqual(['global middleware', 'component middleware']);
 
       comp.childRef.run(50);
       await vi.advanceTimersByTimeAsync(1000);
-      expect(comp.childRef.data).toBe(50);
+      expect(comp.childRef.data.value).toBe(50);
 
-      // When executing, only component service
-      expect(logs).toEqual(['component middleware', 'component service']);
+      // When executing: component service -> global service
+      expect(logs).toEqual([
+        'global middleware',
+        'component middleware',
+        'component service',
+        'global service',
+      ]);
 
       comp.unmount();
+      // 清理全局配置
+      useRequestConfig({});
     });
 
     test('Behavior of getGlobalConfig in component environment', () => {
@@ -274,10 +266,6 @@ describe('useRequestConfig', () => {
     });
 
     test('Global configuration updates', async () => {
-      // Simulate non-component environment
-      const originalGetCurrentInstance = vi.fn(() => null);
-      vi.stubGlobal('getCurrentInstance', originalGetCurrentInstance);
-
       // Set initial global configuration
       useRequestConfig({ manual: true, defaultParams: [70] });
       let globalConfig = getGlobalConfig();
@@ -292,8 +280,6 @@ describe('useRequestConfig', () => {
       const result = useRequest(getData);
       await vi.advanceTimersByTimeAsync(1000);
       expect(result.data.value).toBe(80); // Automatically execute, use new parameters
-
-      vi.unstubAllGlobals();
     });
 
     test('Merging global configuration with directly passed options in non-component environment', async () => {
@@ -320,10 +306,6 @@ describe('useRequestConfig', () => {
         };
       };
 
-      // Simulate non-component environment
-      const originalGetCurrentInstance = vi.fn(() => null);
-      vi.stubGlobal('getCurrentInstance', originalGetCurrentInstance);
-
       // Set global configuration
       useRequestConfig({ manual: true, defaultParams: [90], use: [globalMiddleware] });
 
@@ -349,8 +331,6 @@ describe('useRequestConfig', () => {
         'direct service',
         'global service',
       ]);
-
-      vi.unstubAllGlobals();
     });
   });
 });

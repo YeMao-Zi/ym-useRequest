@@ -9,7 +9,6 @@ import usePlugins from './usePlugins';
 import useLoadingDelayPlugins from './plugins/useLoadingDelayPlugin';
 import usePollingPlugin from './plugins/usePollingPlugin';
 import useReadyPlugin from './plugins/useReadyPlugin';
-import useRefreshDepsPlugin from './plugins/useRefreshDepsPlugin';
 import useDebouncePlugin from './plugins/useDebouncePlugin';
 import useThrottlePlugin from './plugins/useThrottlePlugin';
 import useCachePlugin from './plugins/useCachePlugin';
@@ -34,7 +33,6 @@ const BASE_PLUGINS = [
   useThrottlePlugin,
   usePollingPlugin,
   useRetryPlugin,
-  useRefreshDepsPlugin,
   useWindowVisibilityChangePlugin,
 ];
 

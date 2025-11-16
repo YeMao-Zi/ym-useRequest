@@ -1,4 +1,3 @@
-import { onBeforeUnmount } from 'vue';
 import type { Plugin } from '../type';
 import { isFunction } from '../utils';
 import { setCache, getCache, type CacheData } from '../utils/cache';
@@ -66,10 +65,6 @@ const useCachePlugin: Plugin<unknown, unknown[]> = (
   };
   setUnSubscribe();
 
-  onBeforeUnmount(() => {
-    unSubscribe();
-  });
-
   // 提取公共的缓存更新逻辑
   const updateCache = (data: any, params: any[]) => {
     const _cacheKey = cacheKey(params);
@@ -120,6 +115,9 @@ const useCachePlugin: Plugin<unknown, unknown[]> = (
     onMutate(data) {
       const params = instance.params.value;
       updateCache(data, params);
+    },
+    onCancel() {
+      unSubscribe();
     },
   };
 };

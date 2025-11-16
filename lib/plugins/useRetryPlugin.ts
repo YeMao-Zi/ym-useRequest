@@ -1,8 +1,8 @@
 import type { Plugin } from '../type';
-import { ref } from 'vue';
+import { ref } from '../utils/reactive';
 
 const useRetryPlugin: Plugin<unknown, unknown[]> = (instance, { retryCount, retryInterval }) => {
-  const timerRef = ref<NodeJS.Timeout>();
+  const timerRef = ref<NodeJS.Timeout | undefined>(undefined);
   const countRef = ref(0);
   const triggerByRetry = ref(false);
 
